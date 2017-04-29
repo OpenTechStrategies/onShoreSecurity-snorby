@@ -1,0 +1,7 @@
+$('div#notes_<%= @event_filtering.id %>').prepend("<%= escape_javascript(render(:partial => 'event_filterings/add_note')) %>");
+
+$('button.add_new_note-working').removeClass('add_new_note-working').addClass('add_new_main_note');
+
+Snorby.helpers.remove_click_events(false);
+
+$('button').removeClass('loading');

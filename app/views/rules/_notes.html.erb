@@ -1,0 +1,20 @@
+<div class='section-title plus'>Notes</div>
+<div id='notes_<%= @rule.id %>' class='notes plus'>
+  <% if @rule.notes.blank? %>
+    <strong class='no-notes'>
+      This rule currently has zero notes - You can add a note by clicking the button below.<br /><br />
+    </strong>
+  <% else %>
+    <%= render :partial => 'rule_notes/note', :collection => @rule.notes(:order => [:id.desc]) %>
+  <%#= pager(rule.notes, "rules/#{rule.id}", false) %>
+  <% end %>
+
+  <div id='new_note' class='fake_form'>
+    <%= text_area_tag :body, {}, :style => 'display:none;' %>
+
+    <%= form_actions do %>
+      <%= button "Add A Note To This Rule", :class => 'add_new_rule_note' %>
+    <% end %>
+  </div>
+
+</div>

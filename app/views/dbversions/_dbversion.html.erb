@@ -1,0 +1,56 @@
+<tr id='dbversion_<%= dbversion.id %>' class='dbversion'>
+  <td class="first">
+    <span title='<%= dbversion.timestamp.strftime('%A, %b %d, %Y at %I:%M:%S %p') %>' class='add_tipsy'><%= dbversion.pretty_time %></span>
+  </td>
+  <%- dbversion.virtual_sensors %>
+  <td>
+    <%- source_name = dbversion.sources.map{|s| s.name.upcase}.join(", ") %>
+    <%- if source_name.length > 30 %>
+      <span title="<%= source_name %>" class='add_tipsy' ><%= truncate(source_name, :length => 30, :omission => '...') %></span>
+    <%- else %>
+      <%= source_name %>
+    <%- end %>
+  </td>
+  <td class="numbers"><%= link_to dbversion.rules_count, rules_path(:dbversion_id => dbversion.id, :disabled_rules=> true) %></td>
+  <td class="numbers"><%= link_to dbversion.rules_new_count, rules_path(:dbversion_id => dbversion.id, :is_new => true, :disabled_rules=> true)  %></td>
+  <td class="numbers"><%= link_to dbversion.rules_modified_count, rules_path(:dbversion_id => dbversion.id, :is_modified => true, :disabled_rules=> true)  %></td>
+  <td class="numbers"><%= link_to dbversion.rules_deprecated_count, rules_path(:dbversion_id => (dbversion.previous.nil? ? 0 : dbversion.previous.id), :is_deprecated => true, :disabled_rules=> true) %></td>
+  <% if Snorby::Worker.running? and Snorby::Jobs.sensor_update_dbversion? %>
+    <% handler = /^.*dbversion_id:\s*(?<id>\d+).*$/.match(Snorby::Jobs.sensor_update_dbversion.handler) %>
+    <td class="icons">
+      <% if handler[:id].to_i == dbversion.id %>
+        <%= link_to image_tag("icons/pager.gif", :size => '16x16', :class => 'trash'), '#', :onclick => "return false;" %>
+      <% else %>
+        <%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), '#', :class => 'disabled', :onclick => "return false;" %>
+      <% end %>
+    </td>
+    <td class="icons last"><%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), '#', :class => 'disabled', :onclick => "return false;" %></td>
+  <% elsif Setting.find('global_dbversion_id') != dbversion.id %>
+    <td class="icons">
+      <li class="dbversion-options" dbversion-id='<%= dbversion.id %>'><%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), '#' %></li>
+      <dl id="dbversion-menu-<%= dbversion.id %>" class="dbversion-menu" dbversion-id='<%= dbversion.id %>' style='display:none;'>
+        <div class="arrow"></div>
+        <dd>
+          <%= link_to "Update version", dbversion_update_sensors_path(:dbversion_id => dbversion.id), :confirm => "Are you sure you want to update all sensors to this Rules' Version?" %>
+        </dd>
+        <dd>
+          <%= link_to "Delayed update", dbversion_update_sensors_path(:dbversion_id => dbversion.id, :delayed => true), :confirm => "Are you sure you want to update all sensors to this Rules' Version?" %>
+        </dd>
+      </dl>
+    </td>
+    <td class='icons last'>
+      <% if dbversion.id.equal?(@first_ruledbversion_id) %>
+        <% if Snorby::Jobs.delete_dbversion? %>
+          <%= link_to image_tag("icons/pager.gif", :size => '16x16', :class => 'trash'), '#', :class => 'disabled', :onclick => "return false;" %>
+        <% else %>
+          <%= link_to image_tag( "icons/destroy.png", :size => '16x16', :class => 'trash'), dbversion_delete_rules_path(:dbversion_id => dbversion.id), :method => :destroy, :confirm => "Are you sure you want to remove this rules?" %>
+        <% end %>
+      <% else %>
+        <%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), '#', :class => 'disabled', :onclick => "return false;" %>
+      <% end %>
+    </td>
+  <% else %>
+    <td class="icons"><%= image_tag("icons/incident.png", :size => '16x16', :class => 'current') %></td>
+    <td class="icons last"><%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), '#', :class => 'disabled', :onclick => "return false;" %></td>
+  <% end %>
+</tr>

@@ -1,0 +1,10 @@
+$('div#notes_<%= @reputation.id %>').prepend("<%= escape_javascript(render(:partial => 'note', :locals => {:note => @note})) %>");
+
+update_main_note_count('<%= @reputation.id %>', {notes_count_in_words: "It has <%= pluralize(@reputation.notes.count, 'note') %>", notes_count: <%= @reputation.notes.count %>});
+
+$('div#new_note_box').remove();
+Snorby.helpers.remove_click_events(false);
+$('div#notes_<%= @reputation.id %>').find('textarea#body').val('');
+$('strong.no-notes').remove();
+$('button').removeClass('loading');
+flash();

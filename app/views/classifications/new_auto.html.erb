@@ -1,0 +1,74 @@
+<%= snorby_box("Create Auto Classification", false) do %>
+
+  <div class="error_box"></div>
+
+  <%= form_tag create_auto_classifications_path, :method => :post, :class => 'basic-form validate', :id => 'new_auto_classification_form' do |f|%>
+
+    <div id="auto_classification_options">
+      <div class='grid_6' style='width:400px'>
+        <div>
+          <%= label_tag "Classification" %><br/>
+          <%= select_tag :classification_id, options_from_collection_for_select(Classification.all(:order => [:name.asc]), :id, :name, Classification.false_positive.id), { :id => 'classification' } %>
+        </div>
+        <div>
+          <%= label_tag "", "Sensor <i>(optional - Blank = All)</i>".html_safe %><br />
+          <%= select_tag :sid, options_from_collection_for_select(Sensor.all(:domain => true, :sid.not => 1, :order => [:name.asc]), :sid, :name), { :include_blank => true, :id => 'sel_sensor' } %>
+        </div>
+        <div>
+          <%= label_tag "Source IP" %><br />
+          <%= text_field_tag :ip_src, nil, :autocomplete=>:off, :class => 'ipaddr', :id => 'source_ip' %>
+        </div>
+      </div>
+      <div class='grid_5' style='width:300px'>
+        <div></div>
+        <div>
+          <%= label_tag "signature" %><br />
+          <%#= select_tag :signature_id, options_from_collection_for_select(Signature.all(:fields => [:sig_name, :sig_sid, :sig_gid], :unique => true, :order => :sig_name), :sig_id, :sig_name), { :include_blank => true, :id => 'signature'} %>
+          <%= select_tag :signature_id, options_for_select(Signature.all(:fields => [:sig_name, :sig_sid, :sig_gid], :unique => true, :order => :sig_name).map{|s| [s.sig_name, "#{s.sig_gid}-#{s.sig_sid}"]}), { :include_blank => true, :id => 'signature'} %> 
+        </div>
+        <div>
+          <%= label_tag "Destination IP" %><br />
+          <%= text_field_tag :ip_dst, nil, :autocomplete=>:off, :class => 'ipaddr', :id => 'destination_ip' %>
+        </div>
+      </div>
+    </div>
+    <%= snorby_box_footer do %>
+      <%= form_actions do %>
+        <%= button "Create", :class => 'success' %>
+        <%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+<% end %>
+
+<script type="text/javascript">
+
+  $('select#signature > option').each(function(){
+    var option = $(this);
+    if(option.text().length > 40){
+      option.text(option.text().substring(0,40) + '...');
+    }
+  });
+
+  $('#new_auto_classification_form.validate').validate({
+
+    invalidHandler: function(form, validator) {
+      var errors_count = validator.numberOfInvalids();
+      var errors = validator.errorList;
+
+      $("div.error_box").empty();
+      $("div.error_box").hide();
+
+      if (errors_count){
+        var message = "";
+        for (var name in errors){
+          message += errors[name].element.id + ': ' + errors[name].message + '<br />'; 
+        }
+        $("div.error_box").html(message);
+        $("div.error_box").show();
+      }
+    }
+  });
+
+</script>

@@ -1,0 +1,31 @@
+<div class="boxit versions" data-action='<%= params[:action] %>' data-page='<%= params[:page].to_i %>'>
+  <ul class="table categories">
+    <li class="category boxit">
+      <div class="sec-title" id="title">
+        <div class="grid_6" id="title-header">Versions <i>( Installed Rules Versions at this Manager )</i></div>
+      </div>
+      <ul class="table">
+        <li class="group">
+          <div class="row">
+            <table class="default">
+              <tr>
+                <th class="first">Timestamp</th>
+                <th>Sources</th>
+                <th class="numbers">Nº rules</th>
+                <th class="numbers">New rules</th>
+                <th class="numbers">Modified rules</th>
+                <th class="numbers">Del rules</th>
+                <th class=""></th>
+                <th class="last"></th>
+              </tr>
+              <tbody class='sensors'>
+                <%= render :partial => 'dbversion', :collection => @dbversions %>
+              </tbody>
+            </table>
+          </div>
+        </li>
+      </ul>
+      <%= pager(@dbversions, request.fullpath) %>
+    </li>
+  </ul>
+</div>

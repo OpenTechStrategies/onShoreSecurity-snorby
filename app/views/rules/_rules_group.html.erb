@@ -1,0 +1,3 @@
+<% @families.each do |family| %>
+  <%= render :partial => 'rules/family', :locals => {:family => family, :action => nil, :group => @group} %>
+<% end %>

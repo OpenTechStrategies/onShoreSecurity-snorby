@@ -1,0 +1,529 @@
+<% content_for :footer do %>  
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+
+      //Actualizacion de reglas global
+      $('#title-menu #incident dd a.action').live('click', function(event) {
+        var self            = $(this);
+        var action_id       = self.attr('data');
+        var sensor_id       = $("#rules").attr("data-sensor-sid");
+        var box_cmp         = self.parent().parent()
+        var compiled_rules  =  $("#rules").hasClass("compiled_rules");
+        var pending_rules   = $("#rules").hasClass("pending_rules");
+        var filter_msg      = $('#msg').attr("value");
+
+        if (!box_cmp.hasClass("loading")) {
+          box_cmp.addClass("loading");
+          if (action_id>=0 && sensor_id>=0) {
+            $.blockUI({ css: { 
+                border: 'none', 
+                padding: '15px', 
+                backgroundColor: '#000', 
+                '-webkit-border-radius': '10px', 
+                '-moz-border-radius': '10px', 
+                opacity: .5, 
+                color: '#fff' 
+            } });
+            //$('div.content').fadeTo(500, 0.4);
+            var i;
+            var selected_categories = [];
+            var inputs = $("input#category-selector:checked");
+            for (i = 0; i < inputs.length; i++){
+              selected_categories.push($(inputs[i]).parents(".category").attr("data"));
+            }
+            var selected_groups = [];
+            inputs = $("input#group-selector:checked");
+            for (i = 0; i < inputs.length; i++){
+              if (!$(inputs[i]).parents("li.category").children(".row").children(".select").children("input#category-selector").attr("checked") && $(inputs[i]).is(':visible'))
+                selected_groups.push($(inputs[i]).parents(".group").attr("data"));
+            }
+            var selected_families = [];
+            inputs = $("input#family-selector:checked");
+            for (i = 0; i < inputs.length; i++){
+              if (!$(inputs[i]).parents("li.group").children(".row").children(".select").children("input#category-selector").attr("checked") && $(inputs[i]).is(':visible'))
+                selected_families.push($(inputs[i]).parents(".family").attr("data"));
+            }
+            var selected_rules = [];
+            inputs = $("input#rule-selector:checked");
+            for (i = 0; i < inputs.length; i++){
+              if (!$(inputs[i]).parents("li.family").children(".row").children(".select").children("input#category-selector").attr("checked") && $(inputs[i]).is(':visible'))
+                selected_rules.push($(inputs[i]).parents(".rule").attr("data"));
+            }
+
+            $.ajax({
+              url: "/sensors/" +sensor_id +"/update_rules_action",
+              data: {
+                action_id: action_id,
+                selected_categories: selected_categories,
+                selected_groups: selected_groups,
+                selected_families: selected_families,
+                selected_rules: selected_rules,
+                compiled_rules: compiled_rules,
+                msg: filter_msg,
+                <%= "dbversion_id: #{params[:dbversion_id]}," unless params[:dbversion_id].nil?%>
+                <%= "favorite: #{params[:favorite]}," unless params[:favorite].nil?%>
+                <%= "cve: '#{params[:cve]}'," unless params[:cve].nil?%>
+                <%= "bugtraq: '#{params[:bugtraq]}'," unless params[:bugtraq].nil?%>
+                <%= "nessus: '#{params[:nessus]}'," unless params[:nessus].nil?%>
+                <%= "flowbit_state: '#{params[:flowbit_state]}'," unless params[:flowbit_state].nil?%>
+                <%= "flowbit_state_id: '#{params[:flowbit_state_id]}'," unless params[:flowbit_state_id].nil?%>
+                <%= "flowbit_id: '#{params[:flowbit_id]}'," unless params[:flowbit_id].nil?%>
+                <%= "policy_id: '#{params[:policy_id]}'," unless params[:policy_id].nil?%>
+                <%= "source_id: '#{params[:source_id]}'," unless params[:source_id].nil?%>
+                <%= "compilation_id: '#{params[:compilation_id]}'," unless params[:compilation_id].nil?%>
+                <%= "category_id: '#{params[:group_id]}'," unless params[:category_id].nil?%>
+                <%= "group_id: '#{params[:group_id]}'," unless params[:group_id].nil?%>
+                <%= "family_id: '#{params[:family_id]}'," unless params[:family_id].nil?%>
+                <%= "rule_id: '#{params[:rule_id]}'," unless params[:rule_id].nil?%>
+                <%= "inherited: '#{params[:inherited]}'," unless params[:inherited].nil?%>
+                <%= "is_new: '#{params[:is_new]}'," unless params[:is_new].nil?%>
+                <%= "is_deprecated: '#{params[:is_deprecated]}'," unless params[:is_deprecated].nil?%>
+                <%= "is_modified: '#{params[:is_modified]}'," unless params[:is_modified].nil?%>
+                pending_rules: pending_rules
+              },success: function(data){
+                box_cmp.removeClass("loading");
+                $(".blockUI.blockMsg.blockPage h1").html("Reloading page. Please wait ...")
+                window.location.reload();
+              }
+            });
+          }
+        }
+        return false;
+      });
+
+      //Actualizacion de reglas individual. Cambiamos la accion
+      $('li > .row > .action > .rule_actions-menu .rule_action-button a').live('click', function(event) {
+        var self           = $(this);
+        var sensor_id      = $("#rules").attr("data-sensor-sid");
+        var compiled_rules =  $("#rules").hasClass("compiled_rules");
+        var pending_rules  = $("#rules").hasClass("pending_rules");
+        var category_id    = $(self).parents(".category").attr("data");
+        var group_id       = $(self).parents(".group").attr("data");
+        var family_id      = $(self).parents(".family").attr("data");
+        var rule_id        = $(self).parents(".rule").attr("data");
+        var box_cmp        = self.parent().parent();
+        var filter_msg     = $('#msg').attr("value");
+        
+        if (!box_cmp.hasClass("loading") && sensor_id>=0) {
+            box_cmp.addClass("loading");
+            box_cmp.fadeOut();
+            box_cmp.prev("dl.rule_actions").children("dd").attr('class', "loading")
+            var action_cmp = box_cmp.prev("dl.rule_actions").children("dd").children("span");
+            action_cmp.html('<img src="/images/icons/pager.gif">');
+            
+            $.ajax({
+              url: "/sensors/" +sensor_id +"/update_rule_action",
+              data: {
+                category_id: <%= params[:category_id].nil? ? 'category_id' : params[:category_id] %>,
+                group_id: <%= params[:group_id].nil? ? 'group_id' : params[:group_id] %>,
+                family_id: <%= params[:family_id].nil? ? 'family_id' : params[:family_id] %>,
+                rule_id: <%= params[:rule_id].nil? ? 'rule_id' : params[:rule_id] %>,
+                action_id: self.parent().attr('data'),
+                compiled_rules: compiled_rules,
+                msg: filter_msg,
+                <%= "dbversion_id: #{params[:dbversion_id]}," unless params[:dbversion_id].nil?%>
+                <%= "favorite: #{params[:favorite]}," unless params[:favorite].nil?%>
+                <%= "cve: '#{params[:cve]}'," unless params[:cve].nil?%>
+                <%= "bugtraq: '#{params[:bugtraq]}'," unless params[:bugtraq].nil?%>
+                <%= "nessus: '#{params[:nessus]}'," unless params[:nessus].nil?%>
+                <%= "flowbit_state: '#{params[:flowbit_state]}'," unless params[:flowbit_state].nil?%>
+                <%= "flowbit_state_id: '#{params[:flowbit_state_id]}'," unless params[:flowbit_state_id].nil?%>
+                <%= "flowbit_id: '#{params[:flowbit_id]}'," unless params[:flowbit_id].nil?%>
+                <%= "policy_id: '#{params[:policy_id]}'," unless params[:policy_id].nil?%>
+                <%= "source_id: '#{params[:source_id]}'," unless params[:source_id].nil?%>
+                <%= "compilation_id: '#{params[:compilation_id]}'," unless params[:compilation_id].nil?%>
+                <%= "inherited: '#{params[:inherited]}'," unless params[:inherited].nil?%>
+                <%= "is_new: '#{params[:is_new]}'," unless params[:is_new].nil?%>
+                <%= "is_deprecated: '#{params[:is_deprecated]}'," unless params[:is_deprecated].nil?%>
+                <%= "is_modified: '#{params[:is_modified]}'," unless params[:is_modified].nil?%>
+                pending_rules: pending_rules,
+              }
+            });
+        }
+        return false;
+      });
+
+      //Actualizacion el allow overwrite
+      $('#rules div.allow-overwrite.enabled, #rules div.not-allow-overwrite.enabled').live('click', function(event) {
+        var self            = $(this);
+        var sensor_id       = $("#rules").attr("data-sensor-sid");
+        var compiled_rules  = $("#rules").hasClass("compiled_rules");
+        var pending_rules   = $("#rules").hasClass("pending_rules");
+        var category_id     = $(self).parents(".category").attr("data");
+        var group_id        = $(self).parents(".group").attr("data");
+        var family_id       = $(self).parents(".family").attr("data");
+        var rule_id         = $(self).parents(".rule").attr("data");
+        var box_cmp         = self;
+        var allow_overwrite = !self.hasClass("allow-overwrite")
+        var flag            = true;
+        var filter_msg      = $('#msg').attr("value");
+
+        if (rule_id==null) {
+          if (allow_overwrite)
+            flag = confirm("Would you like to unprotect the selected active rules?");
+          else
+            flag = confirm("Would you like to protect the selected active rules?");
+        }
+
+        if (!box_cmp.hasClass("loading") && sensor_id>=0 && flag) {
+            var parent_cmp = self.parents(".row").parent();
+            box_cmp.addClass("loading");
+            if (allow_overwrite) {
+              self.removeClass('not-allow-overwrite').addClass('allow-overwrite');
+            } else {
+              self.removeClass('allow-overwrite').addClass('not-allow-overwrite');
+            }
+            var remove_highlight = false
+            if (!parent_cmp.hasClass('highlight')) {
+              remove_highlight = true
+              parent_cmp.addClass('highlight')
+            }
+            $.ajax({
+              url: "/sensors/" +sensor_id +"/update_rule_overwrite",
+              data: {
+                category_id: <%= params[:category_id].nil? ? 'category_id' : params[:category_id] %>,
+                group_id: <%= params[:group_id].nil? ? 'group_id' : params[:group_id] %>,
+                family_id: <%= params[:family_id].nil? ? 'family_id' : params[:family_id] %>,
+                rule_id: <%= params[:rule_id].nil? ? 'rule_id' : params[:rule_id] %>,
+                action_id: self.parent().attr('data'),
+                compiled_rules: compiled_rules,
+                allow_overwrite: allow_overwrite,
+                msg: filter_msg,
+                <%= "dbversion_id: #{params[:dbversion_id]}," unless params[:dbversion_id].nil?%>
+                <%= "favorite: #{params[:favorite]}," unless params[:favorite].nil?%>
+                <%= "cve: '#{params[:cve]}'," unless params[:cve].nil?%>
+                <%= "bugtraq: '#{params[:bugtraq]}'," unless params[:bugtraq].nil?%>
+                <%= "nessus: '#{params[:nessus]}'," unless params[:nessus].nil?%>
+                <%= "flowbit_state: '#{params[:flowbit_state]}'," unless params[:flowbit_state].nil?%>
+                <%= "flowbit_state_id: '#{params[:flowbit_state_id]}'," unless params[:flowbit_state_id].nil?%>
+                <%= "flowbit_id: '#{params[:flowbit_id]}'," unless params[:flowbit_id].nil?%>
+                <%= "policy_id: '#{params[:policy_id]}'," unless params[:policy_id].nil?%>
+                <%= "source_id: '#{params[:source_id]}'," unless params[:source_id].nil?%>
+                <%= "compilation_id: '#{params[:compilation_id]}'," unless params[:compilation_id].nil?%>
+                <%= "inherited: '#{params[:inherited]}'," unless params[:inherited].nil?%>
+                <%= "is_new: '#{params[:is_new]}'," unless params[:is_new].nil?%>
+                <%= "is_deprecated: '#{params[:is_deprecated]}'," unless params[:is_deprecated].nil?%>
+                <%= "is_modified: '#{params[:is_modified]}'," unless params[:is_modified].nil?%>
+                pending_rules: pending_rules,
+              },
+              success: function(data) {
+                if (remove_highlight)
+                  parent_cmp.removeClass('highlight');
+                
+                box_cmp.removeClass("loading").removeClass("blank");
+              }
+            });
+        }
+        return false;
+      });
+
+      //Actualizacion el favorite!!!
+      $('#rules div.create-favorite.enabled,#rules div.destroy-favorite.enabled').live('click', function(event) {
+        var self            = $(this);
+        var sensor_id       = $("#rules").attr("data-sensor-sid");
+        var compiled_rules  = $("#rules").hasClass("compiled_rules");
+        var pending_rules   = $("#rules").hasClass("pending_rules");
+        var category_id     = $(self).parents(".category").attr("data");
+        var group_id        = $(self).parents(".group").attr("data");
+        var family_id       = $(self).parents(".family").attr("data");
+        var rule_id         = $(self).parents(".rule").attr("data");
+        var box_cmp         = self;
+        var create_favorite = self.hasClass("create-favorite")
+        var flag            = true;
+        var filter_msg      = $('#msg').attr("value");
+
+        if (rule_id==null) {
+          if (create_favorite)
+            flag = confirm("Would you like to set as favorite the selected rules?");
+          else
+            flag = confirm("Would you like to unset as favorite the selected rules?");
+        }
+
+        if (!box_cmp.hasClass("loading") && sensor_id>=0 && flag) {
+            var parent_cmp = self.parents(".row").parent();
+            box_cmp.addClass("loading");
+            var remove_highlight = false
+            if (!parent_cmp.hasClass('highlight')) {
+              remove_highlight = true
+              parent_cmp.addClass('highlight')
+            }
+
+            $.ajax({
+              url: "/sensors/" +sensor_id +"/update_rule_favorite",
+              data: {
+                category_id: <%= params[:category_id].nil? ? 'category_id' : params[:category_id] %>,
+                group_id: <%= params[:group_id].nil? ? 'group_id' : params[:group_id] %>,
+                family_id: <%= params[:family_id].nil? ? 'family_id' : params[:family_id] %>,
+                rule_id: <%= params[:rule_id].nil? ? 'rule_id' : params[:rule_id] %>,
+                action_id: self.parent().attr('data'),
+                compiled_rules: compiled_rules,
+                create_favorite: create_favorite,
+                msg: filter_msg,
+                <%= "dbversion_id: #{params[:dbversion_id]}," unless params[:dbversion_id].nil?%>
+                <%= "favorite: #{params[:favorite]}," unless params[:favorite].nil?%>
+                <%= "cve: '#{params[:cve]}'," unless params[:cve].nil?%>
+                <%= "bugtraq: '#{params[:bugtraq]}'," unless params[:bugtraq].nil?%>
+                <%= "nessus: '#{params[:nessus]}'," unless params[:nessus].nil?%>
+                <%= "flowbit_state: '#{params[:flowbit_state]}'," unless params[:flowbit_state].nil?%>
+                <%= "flowbit_state_id: '#{params[:flowbit_state_id]}'," unless params[:flowbit_state_id].nil?%>
+                <%= "flowbit_id: '#{params[:flowbit_id]}'," unless params[:flowbit_id].nil?%>
+                <%= "policy_id: '#{params[:policy_id]}'," unless params[:policy_id].nil?%>
+                <%= "source_id: '#{params[:source_id]}'," unless params[:source_id].nil?%>
+                <%= "compilation_id: '#{params[:compilation_id]}'," unless params[:compilation_id].nil?%>
+                <%= "inherited: '#{params[:inherited]}'," unless params[:inherited].nil?%>
+                <%= "is_new: '#{params[:is_new]}'," unless params[:is_new].nil?%>
+                <%= "is_deprecated: '#{params[:is_deprecated]}'," unless params[:is_deprecated].nil?%>
+                <%= "is_modified: '#{params[:is_modified]}'," unless params[:is_modified].nil?%>
+                pending_rules: pending_rules,
+              },
+              success: function(data) {
+                if (remove_highlight)
+                  parent_cmp.removeClass('highlight');
+
+                box_cmp.removeClass("loading").removeClass("blank");
+              }
+            });
+        }
+        return false;
+      });
+
+      //Expandimos las diferentes categorías, grupos y familias
+      $('.content > li.category > div.row > .message').live('click', function(event) {
+        var self           = $(this)
+        var sensor_id      = $("#rules").attr("data-sensor-sid");
+        var compiled_rules =  $("#rules").hasClass("compiled_rules");
+        var pending_rules  = $("#rules").hasClass("pending_rules");
+        var category_id    = self.parents("li.category").attr("data");
+        var content        = self.parent().next();
+        var filter_msg     = $('#msg').attr("value");
+
+        if (category_id>0 && sensor_id>=0) {
+          if (!self.hasClass("loaded")) {
+            self.addClass("loaded");
+            self.addClass("loading");
+            self.parents("li.category").toggleClass("highlight");
+            var select_comp = self.parents(".row").children(".select");
+            var select_html = select_comp.html();
+            select_comp.html('<img src="/images/icons/loading.gif">');
+            
+            $.ajax({
+              url: "/sensors/" +sensor_id +"/update_rule_category",
+              data: {
+                category_id: category_id,
+                sensor_id: sensor_id,
+                compiled_rules: compiled_rules,
+                msg: filter_msg,        
+                <%= "group_id: #{params[:group_id]}," unless params[:group_id].nil?%>
+                <%= "family_id: #{params[:family_id]}," unless params[:family_id].nil?%>
+                <%= "dbversion_id: #{params[:dbversion_id]}," unless params[:dbversion_id].nil?%>
+                <%= "action_id: #{params[:action_id]}," unless params[:action_id].nil?%>
+                <%= "favorite: #{params[:favorite]}," unless params[:favorite].nil?%>
+                <%= "cve: '#{params[:cve]}'," unless params[:cve].nil?%>
+                <%= "bugtraq: '#{params[:bugtraq]}'," unless params[:bugtraq].nil?%>
+                <%= "nessus: '#{params[:nessus]}'," unless params[:nessus].nil?%>
+                <%= "flowbit_state: '#{params[:flowbit_state]}'," unless params[:flowbit_state].nil?%>
+                <%= "flowbit_state_id: '#{params[:flowbit_state_id]}'," unless params[:flowbit_state_id].nil?%>
+                <%= "flowbit_id: '#{params[:flowbit_id]}'," unless params[:flowbit_id].nil?%>
+                <%= "policy_id: '#{params[:policy_id]}'," unless params[:policy_id].nil?%>
+                <%= "source_id: '#{params[:source_id]}'," unless params[:source_id].nil?%>
+                <%= "compilation_id: '#{params[:compilation_id]}'," unless params[:compilation_id].nil?%>
+                <%= "inherited: '#{params[:inherited]}'," unless params[:inherited].nil?%>
+                <%= "is_new: '#{params[:is_new]}'," unless params[:is_new].nil?%>
+                <%= "is_deprecated: '#{params[:is_deprecated]}'," unless params[:is_deprecated].nil?%>
+                <%= "is_modified: '#{params[:is_modified]}'," unless params[:is_modified].nil?%>
+                pending_rules: pending_rules
+              },
+              success: function(data) {
+                self.removeClass("loading");
+                select_comp.html(select_html);
+              }
+            });
+          } else if (!self.hasClass("loading")) {
+            self.parents("li.category").toggleClass("highlight");
+            content.toggle('fast')
+          }
+        }
+      });
+
+      $('.content > li.group > div.row > .message').live('click', function(event) {
+        var self            = $(this)
+        var sensor_id       = $("#rules").attr("data-sensor-sid");
+        var compiled_rules  =  $("#rules").hasClass("compiled_rules");
+        var pending_rules   = $("#rules").hasClass("pending_rules");
+        var group_id        = self.parents(".group").attr("data");
+        var category_id     = self.parents(".category").attr("data");
+        var content         = self.parent().next()
+        var filter_msg      = $('#msg').attr("value");
+
+        if (category_id>0 && sensor_id>=0 && group_id>0) {
+          if (!self.hasClass("loaded")) {
+            self.addClass("loaded");
+            self.addClass("loading");
+            self.parents("li.group").toggleClass("highlight");
+            var select_comp = self.parents(".row").children(".select");
+            var select_html = select_comp.html();
+            select_comp.html('<img src="/images/icons/loading.gif">');
+            
+            $.ajax({
+              url: "/sensors/" +sensor_id +"/update_rule_group",
+              data: {
+                category_id: category_id,
+                sensor_id: sensor_id,
+                group_id: group_id,
+                compiled_rules: compiled_rules,
+                msg: filter_msg,
+                <%= "dbversion_id: #{params[:dbversion_id]}," unless params[:dbversion_id].nil?%>
+                <%= "family_id: #{params[:family_id]}," unless params[:family_id].nil?%>
+                <%= "dbversion_id: #{params[:dbversion_id]}," unless params[:dbversion_id].nil?%>
+                <%= "action_id: #{params[:action_id]}," unless params[:action_id].nil?%>
+                <%= "favorite: #{params[:favorite]}," unless params[:favorite].nil?%>
+                <%= "cve: '#{params[:cve]}'," unless params[:cve].nil?%>
+                <%= "bugtraq: '#{params[:bugtraq]}'," unless params[:bugtraq].nil?%>
+                <%= "nessus: '#{params[:nessus]}'," unless params[:nessus].nil?%>
+                <%= "flowbit_state: '#{params[:flowbit_state]}'," unless params[:flowbit_state].nil?%>
+                <%= "flowbit_state_id: '#{params[:flowbit_state_id]}'," unless params[:flowbit_state_id].nil?%>
+                <%= "flowbit_id: '#{params[:flowbit_id]}'," unless params[:flowbit_id].nil?%>
+                <%= "policy_id: '#{params[:policy_id]}'," unless params[:policy_id].nil?%>
+                <%= "source_id: '#{params[:source_id]}'," unless params[:source_id].nil?%>
+                <%= "compilation_id: '#{params[:compilation_id]}'," unless params[:compilation_id].nil?%>
+                <%= "inherited: '#{params[:inherited]}'," unless params[:inherited].nil?%>
+                <%= "is_new: '#{params[:is_new]}'," unless params[:is_new].nil?%>
+                <%= "is_deprecated: '#{params[:is_deprecated]}'," unless params[:is_deprecated].nil?%>
+                <%= "is_modified: '#{params[:is_modified]}'," unless params[:is_modified].nil?%>
+                pending_rules: pending_rules
+              },
+              success: function(data){
+                self.removeClass("loading");
+                select_comp.html(select_html);
+              }
+            });
+          } else if (!self.hasClass("loading")) {
+            self.parents("li.group").toggleClass("highlight");
+            content.toggle('fast')
+          }
+        }
+      });
+
+      $('.content > li.family > div.row > .message').live('click', function(event) {
+        var self            = $(this)
+        var sensor_id       = $("#rules").attr("data-sensor-sid");
+        var compiled_rules  =  $("#rules").hasClass("compiled_rules");
+        var pending_rules   = $("#rules").hasClass("pending_rules");
+        var category_id     = self.parents(".category").attr("data");
+        var group_id        = self.parents(".group").attr("data");
+        var family_id       = self.parents(".family").attr("data");
+        var content         = self.parent().next()
+        var filter_msg      = $('#msg').attr("value");
+
+        if (category_id>0 && sensor_id>=0 && group_id>0) {
+          if (!self.hasClass("loaded")) {
+            self.addClass("loaded");
+            self.addClass("loading");
+            self.parents("li.family").toggleClass("highlight");
+            var select_comp = self.parents(".row").children(".select");
+            var select_html = select_comp.html();
+            select_comp.html('<img src="/images/icons/loading.gif">');
+
+            $.ajax({
+              url: "/sensors/" +sensor_id +"/update_rule_family",
+              data: {
+                category_id: category_id,
+                sensor_id: sensor_id,
+                group_id: group_id,
+                family_id: family_id,
+                compiled_rules: compiled_rules,
+                msg: filter_msg,
+                <%= "dbversion_id: #{params[:dbversion_id]}," unless params[:dbversion_id].nil?%>
+                <%= "action_id: #{params[:action_id]}," unless params[:action_id].nil?%>
+                <%= "favorite: #{params[:favorite]}," unless params[:favorite].nil?%>
+                <%= "cve: '#{params[:cve]}'," unless params[:cve].nil?%>
+                <%= "bugtraq: '#{params[:bugtraq]}'," unless params[:bugtraq].nil?%>
+                <%= "nessus: '#{params[:nessus]}'," unless params[:nessus].nil?%>
+                <%= "flowbit_state: '#{params[:flowbit_state]}'," unless params[:flowbit_state].nil?%>
+                <%= "flowbit_state_id: '#{params[:flowbit_state_id]}'," unless params[:flowbit_state_id].nil?%>
+                <%= "flowbit_id: '#{params[:flowbit_id]}'," unless params[:flowbit_id].nil?%>
+                <%= "policy_id: '#{params[:policy_id]}'," unless params[:policy_id].nil?%>
+                <%= "source_id: '#{params[:source_id]}'," unless params[:source_id].nil?%>
+                <%= "compilation_id: '#{params[:compilation_id]}'," unless params[:compilation_id].nil?%>
+                <%= "inherited: '#{params[:inherited]}'," unless params[:inherited].nil?%>
+                <%= "is_new: '#{params[:is_new]}'," unless params[:is_new].nil?%>
+                <%= "is_deprecated: '#{params[:is_deprecated]}'," unless params[:is_deprecated].nil?%>
+                <%= "is_modified: '#{params[:is_modified]}'," unless params[:is_modified].nil?%>
+                pending_rules: pending_rules
+              },
+              success: function(data){
+                self.removeClass("loading");
+                content.toggle('fast')
+                select_comp.html(select_html);
+              }
+            });
+          } else if (!self.hasClass("loading")) {
+            self.parents("li.family").toggleClass("highlight");
+            content.toggle('fast')
+          }
+        }
+      });
+    });
+  </script>
+
+<% end %>
+
+<% if !@sensor.nil? and @sensor.compiling and Snorby::Worker.running? %>
+  <% content_for :worker_info do %>
+    <%= render :partial => 'compiling' %>
+  <% end %>
+<% end %>
+
+<%- if @sensor.nil? %>
+  <%= title "Rules (#{@rules.count} rules)" do -%>
+    <%= render :partial => '/rules/filters', :locals => {:advanced_search_path => search_rules_path(:rule_type => @rulestype)+"&#{@filters}"} %>
+    <%= render :partial => 'search' %>
+  <%- end -%>
+<%- else %>
+  <%= title "#{truncate(@rulestype.gsub('_', ' ').split(" ").each{|word| word.capitalize!}.join(" "), :length => 30, :omission => '...')} for #{@sensor.sensor_name} #{((@compilation.nil? or @compilation.name.nil?) ? "" : (" - \"" +truncate(@compilation.name, :length => 30, :omission => '...') +"\""))}".html_safe, @rulestype.gsub('_', ' ').split(" ").each{|word| word.capitalize!}.join(" ") do -%>
+    <%= render :partial => '/rules/filters', :locals => {:advanced_search_path => "/sensors/#{@sensor.sid}/search?rule_type=#{@rulestype}"}  %>
+    <%= render :partial => 'search' %>
+    <%= render :partial => 'menu' %>
+  <%- end -%>
+<%- end -%>
+
+
+<div id="rules" class="boxit <%= @rulestype %> " data-sensor-sid=<%= @sensor.nil? ? 0 : @sensor.sid  %> >
+  <%= form_tag mass_update_rules_path do %>
+    <ul class="table categories">
+      <li class="header">
+        <div class="row">
+          <%- if @sensor.nil? %>
+            <div class="small">&nbsp;</div>
+          <%- else %>
+            <div class="small">
+              <%= check_box_tag 'rule-select-all', nil, false, :class => 'rule-select-all' %>
+            </div>
+            <div class="small important">&nbsp;</div>
+            <div class="action">Actions</div>
+          <%-end%>
+          <div class="message">Message</div>
+          <div class="nrules"></div>
+        </div>
+      </li>
+      <div class="content">
+        <%- @categories.each do |category| %>
+          <%= render :partial => 'rules/category', :locals => {:category => category, :expand => (@categories.size==1)} %>
+        <%- end %>
+      </div>
+    </ul>
+  <% end %>
+</div>
+
+<%= render :partial => 'rules/rules_menu' %>
+
+<% content_for :footer do %>
+  <script type="text/javascript">
+    <% if session[:rule_filter].size.to_i > 0 %>
+      $('#wrapper #content #title #title-menu-holder ul#title-menu li.filter').css('border', '1px solid red');
+    <% end %>
+  </script>
+<% end %>
+
+

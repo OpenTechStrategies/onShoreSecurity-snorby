@@ -1,0 +1,66 @@
+<%= title "Search Snmps" %>
+
+<%= stylesheet 'jquery' %>
+<%= stylesheet 'chosen' %>
+<%= javascript_include_tag 'old_daterangepicker' %>
+
+<% content_for :footer do %>
+
+  <script type="text/javascript">
+    $('.datepicker').daterangepicker({ 
+	 	      dateStart: 'Today',  
+	 	      dateEnd: 'Today', 
+	 	      earliestDate: 'Today'
+    });
+
+    $('.add_chosen').chosen({ allow_single_deselect: true });
+	</script>
+
+<% end %>
+
+<div id='search' class='boxit page grid_12'>
+	
+	<%= form_tag snmp_results_path, :method => :get, :class => 'validate' do %>
+	
+		<div id='search-box'>
+			
+			<div class='grid_4 alpha'>
+				<%= label_tag 'Select Sensor' %><br />
+        		<%= select_tag '[search][sid]', dropdown_select_tag(@sensors, :sid, true), :class => 'add_chosen' %>
+			</div>
+
+			<div class='grid_4 alpha'>
+				<%= label_tag 'Select Type' %><br />
+				<%= select_tag '[search][snmp_key]', select_options(Snmp.oids.map{|x| [x, Snorby::CONFIG_SNMP[:oids][x]["info"]]}, :include_blank => true), :class => 'add_chosen' %>
+			</div>
+
+			<div class='grid_4 alpha'>
+				<%= label_tag "Date Range" %><br /> 
+	 	        <%= text_field_tag '[search][timestamp]', params[:timestamp], :autocomplete=>:off, :placeholder => 'Date Range', :class => 'datepicker' %>
+			</div>
+			
+		</div>	
+	
+		<%= form_actions do %>
+
+			<%= button "Submit Search", :class => 'success' %>
+
+		<% end %>
+	
+	<% end %>
+	
+</div>
+
+<script type="text/javascript">
+
+  $(document).ready(function() {
+
+    $('select#_search_sid option').each(function(index, value){
+      if (index > 0){
+        var element = $('div#_search_sid_chzn ul.chzn-results li');
+        $(element[index - 1]).addClass($(value).attr('class'));
+      }
+    });
+
+  });
+</script>

@@ -1,0 +1,63 @@
+<%= snorby_box("Create Compilation", false) do %>
+
+  <% if Snorby::Worker.running? and !@sensor.compiling and @sensor.all_childs.select{|s| s.compiling}.size == 0 and @sensor.check_errors.blank? %>
+
+    <%= form_tag '/rules/create_compile', :method => :post, :class => 'basic-form validate', :id => 'compile_rules', :remote => true  do %>
+
+      <%= hidden_field_tag 'sensor_id', @sensor.sid %>
+
+      <% if @sensor.check_warnings.present? %>
+        <div id='note-box' class='error warning'>
+          <%= image_tag('icons/note-icon-white.png') %>
+          <ul>
+            <% @sensor.check_warnings.each do |warning| %>
+              <li>Warning: flowbits key <%= warning %> is checked but not ever set.</li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <p><%= label_tag :name %><br />
+        <%= text_field_tag 'compilation[name]', nil, :placeholder => 'Compilation Name', :class => 'required', :size => 50 %>
+      </p>
+
+      <%= snorby_box_footer do %>
+        <%= form_actions do %>
+          <%= submit_tag "Create", :class => 'success' %>
+          <%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+        <% end %>
+      <% end %>
+
+    <% end %>
+
+  <% else %>
+
+    <div id='note-box' class='error'>
+			<%= image_tag('icons/note-icon-white.png') %>
+      <% if !Snorby::Worker.running? %>
+        The worker is not currently running. It's imperative you start the worker immediately!
+        All backend calculations are performed asynchronously using the Worker.
+      <% elsif @sensor.compiling %>
+        The sensor is currently compiling. You must wait until the process end.
+      <% elsif @sensor.check_errors.present? %>
+        <ul>
+          <% @sensor.check_errors.each do |error| %>
+            <li><%= "The preprocessor #{error.capitalize} has to be enabled." %></li>
+          <% end %>
+        </ul>
+      <% else %>
+        A child sensor is compiling. You must wait until the child's compilation end.
+      <% end %>
+		</div>
+
+    <%= snorby_box_footer do %>
+      <%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+    <% end %>
+
+  <% end %>
+
+<% end %>
+
+<script type="text/javascript">
+  $('#compile_rules.validate').validate();
+</script>

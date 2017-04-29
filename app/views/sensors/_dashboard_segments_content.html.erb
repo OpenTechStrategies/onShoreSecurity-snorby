@@ -1,0 +1,7 @@
+<% javascript :footer, 'sparkline', 'highcharts' %>
+
+<div class='box-large round' style="border: white;">
+  <div class='box-large-inside' style="border: 0px;">
+    <%= render :partial => 'snmps/graph_segments.html.erb', :locals => {:node => @node} %>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<%= javascript_include_tag "tablednd" %>
+
+<%= title "Event Rules for #{@sensor.name}" -%>
+
+<%= render :partial => 'index_chart' %>
+<%= render :partial => 'index_limit' %>
+<%= render :partial => 'index_suppress' %>
+<%= render :partial => 'menu' if (can? :manage, @sensor) %>
+
+<% if can?(:manage, @sensor) %>
+  <script type="text/javascript">
+    $(document).ready(function()  {
+
+      $(".event_rules_list table tbody.event_filterings_content tr").hover(function() {
+        $(this.cells[0]).addClass('showDragHandle');
+        }, function() {
+            $(this.cells[0]).removeClass('showDragHandle');
+        }
+      );
+
+      $('.event_rules_list table tbody.event_filterings_content').tableDnD({
+        onDrop: function(table, row) {
+          var rows = table.rows;
+          order = "";
+
+          for (var i=0; i < rows.length; i++) {
+            order += rows[i].id+";";
+          }
+          $.ajax({
+            type: "POST",
+            url: "/event_filterings/order_auto",
+            data: {
+              positions: order,
+              sid: '<%= @sensor.sid %>'
+            }
+          });
+          var debugStr = "Row dropped was "+row.id+". New order: ";
+          for (var i=0; i<rows.length; i++) {
+              debugStr += rows[i].id+" ";
+          }
+        },
+        onDragStart: function(table, row) {
+          
+        }
+      });
+    });
+  </script>
+<% end %>

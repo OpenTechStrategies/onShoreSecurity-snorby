@@ -1,0 +1,72 @@
+<%= title "SNMP #{'for '+@sensor.sensor_name unless @sensor.nil?}" do %>
+
+  <%= drop_down_for('Add Tab', 'icons/tabs.png', 'tab') do %>
+    <% Snmp::AGGREGATED_COLUMNS.sort{|a1,a2| a1[1]<=>a2[1]}.to_a.each do |tab| %>
+      <dd class="drop-down-tab-item" data_column="<%= tab[0] %>" style="<%= ( @new_tabs.include?(tab) ? "" : "display:none;" ) %>" >
+        <%= link_to tab[1], add_snmp_tab_path(tab[0], :range => @range, :end_time => @end_time.to_i), :class => "snmp #{tab[0]}", :data_column => tab[0], :remote => true  %>
+      </dd>
+    <% end %>
+  <% end %>
+ 
+  <%= menu_item content_tag(:span, "--"), '#', 'icons/clock-counter.png', :id => "counter", :remote => false, :class => "widgets_counter" %>
+  
+  <%= drop_down_for('More Options', 'icons/grab.png', 'options') do %>
+    <%= drop_down_item "SNMP: Yesterday",  @sensor.nil? ? snmps_path(:range => :yesterday) : sensor_snmps_path(:range => :yesterday), nil, { :class => 'dashboard' } %>
+    <% if @sensor.present? %>
+      <%= drop_down_item "Export To PDF", sensor_snmps_path(:range => params[:range] == 'today' ? 'now' : params[:range],
+        :format => :pdf), nil, { :class => 'dashboard' } %>
+    <% else %>
+      <%= drop_down_item "Export To PDF", snmps_path(:range => params[:range] == 'today' ? 'now' : params[:range],
+        :format => :pdf), nil, { :class => 'dashboard' } %>
+    <% end %>
+    <%= drop_down_item "Enable Autoreload", nil, nil, :id => "disable-counter", :remote => true, :onclick => "clock_locked=!clock_locked; if (clock_locked) { $('#disable-counter').html('Enable Autoreload'); } else { $('#disable-counter').html('Disable Autoreload'); } return false;", :remote => false %>
+  <% end %>
+<% end %>
+
+<%= render :partial => 'dashboard_main' %>
+
+
+<% content_for :footer do %>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      Highcharts.setOptions({
+        global: {
+          useUTC: true
+        }
+      });
+
+      start_counter_snmp(<%= Setting.autoreload_time.value.to_i %>);
+      clock_locked = true;
+
+      $(".data_column.loading").each(function(index, value){
+        var id = $(value).attr('data_column');
+        $.ajax({
+          url: "/snmp_tabs/"+ id +"/add",
+          data: {
+            end_time: <%= @end_time.to_i %>,
+            range: "<%= @range %>"
+          }
+        });       
+      });
+
+      $('ul#box-menu').sortable({ 
+        axis: "x",
+        opacity: 0.6,
+        update: function(event, ui) {
+          if (!$(ui.item).hasClass('active')){
+            $(ui.item).css('top', '5px');
+          }
+          var tabs_array = $('ul#box-menu').sortable('toArray');
+
+          $.ajax({
+            url: "/snmp_tabs/reorder",
+            data: {
+              tabs: tabs_array
+            }
+          });
+        }
+      });
+      $("ul#box-menu").disableSelection();
+    });
+  </script>
+<% end %>

@@ -1,0 +1,19 @@
+<%= include_javascripts :snorby %>
+
+<%= snorby_box("Import rules", false) do %>
+	
+	<%= form_for @sensor, :url => import_file_sensor_rules_path(@sensor), :html => { :method => :put, :multipart => true, :class => 'basic-form validate' } do |f| %>
+
+		<%= f.label 'CSV' %><br/>
+		<%= f.file_field :csv_file %><br/>
+
+		<%= snorby_box_footer do %>
+			<%= form_actions do %>
+				<%= button "Import", :class => 'success' %>
+				<%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+			<% end %>
+		<% end %>
+
+	<% end %>
+
+<% end %>

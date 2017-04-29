@@ -1,0 +1,11 @@
+<div class='box-large round'>
+	
+  <div class='box-large-inside'>
+
+    <% @metrics.each_with_index do |metric, index| %>
+      <%= render :partial => 'graph_stat', :locals => {:stat => metric, :index => index}  %>
+    <% end %>
+
+  </div>
+
+</div>

@@ -1,0 +1,19 @@
+<%= error_messages_for(@source) %>
+<div id="form-holder">
+  <div class='grid_6'>
+    <p><%= f.label :name %><br />
+      <%= f.text_field :name, :placeholder => 'Source Name', :class => 'required alphanumeric' %>
+    </p>
+    <p><%= f.label :description %><br />
+      <%= f.text_field :description, :placeholder => 'Source Description' %>
+    </p>
+  </div>
+  <div class='grid_5'>
+    <p><%= f.label :url %><br />
+      <%= f.text_field :tgzurl, :placeholder => 'http://www.example.com/file_rules.tgz', :class => 'required url' %>
+    </p>
+    <p><%= f.label "MD5 url" %><br />
+      <%= f.text_field :md5url, :placeholder => 'http://www.example.com/file_rules.md5', :class => 'url' %>
+    </p>
+  </div>
+</div>

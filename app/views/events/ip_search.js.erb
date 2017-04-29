@@ -1,0 +1,4 @@
+$('#ips').hide();
+$('#ips-input-search').remove();
+$('div#content').append("<%= escape_javascript(render(:partial => 'by_ip', :locals => {:ip_type => @type_text, :column => @type.to_sym, :html_id => 'ips-input-search'})) %>");
+$('.search-loading').remove();

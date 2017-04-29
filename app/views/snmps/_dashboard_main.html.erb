@@ -1,0 +1,97 @@
+<div id='dashboard' class=''>
+  <div class='main grid_9'>
+    <div class='dashboard-menu'>
+      <ul>
+        <li class='<%= "active" if @range == 'last_6_hours' %> add_tipsy' title="<%= time_range_title(:last_6_hours) %>">
+          <%= link_to "Last 6", @sensor.nil? ? snmps_path(:range => :last_6_hours) : sensor_snmps_path(:range => :last_6_hours) %>
+        </li>
+
+        <li class='<%= "active" if @range == 'last_24' %> add_tipsy' title="<%= time_range_title(:last_24) %>">
+          <%= link_to "Last 24", @sensor.nil? ? snmps_path(:range => :last_24) : sensor_snmps_path(:range => :last_24) %>
+        </li>
+
+        <li class='<%= "active" if @range == 'last_week' %> add_tipsy' title="<%= time_range_title(:last_week) %>">
+          <%= link_to "Last Week", @sensor.nil? ? snmps_path(:range => :last_week) : sensor_snmps_path(:range => :last_week) %>
+        </li>
+
+        <li class='<%= "active" if @range == 'last_month' %> add_tipsy' title="<%= time_range_title(:last_month) %>">
+          <%= link_to "Last Month", @sensor.nil? ? snmps_path(:range => :last_month) : sensor_snmps_path(:range => :last_month) %>
+        </li>
+
+        <li class='<%= "active" if @range == 'last_quarter' %> add_tipsy' title="<%= time_range_title(:last_quarter) %>">
+          <%= link_to "Last Quarter", @sensor.nil? ? snmps_path(:range => :last_quarter) : sensor_snmps_path(:range => :last_quarter) %>
+        </li>
+
+        <li class='<%= "active" if @range == 'last_year' %> add_tipsy' title="<%= time_range_title(:last_year) %>">
+          <%= link_to "Last Year", @sensor.nil? ? snmps_path(:range => :last_year) : sensor_snmps_path(:range => :last_year) %>
+        </li>
+
+        <% unless %w(yesterday week last_week month last_month year quarter).include?(params[:range]) or @last_snmp.nil? %>
+          <li class='right'><i>Updated: <%= @last_snmp.timestamp.in_time_zone.strftime('%D %l:%M:%S %p') %></i></li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div id='box-holder'>
+      <%= render 'severity_dashboard.html.erb' %>
+    </div>
+
+    <div id="box-tabs">
+      <ul id="box-menu">
+        <% @tabs.each_with_index do |tab, index| %>
+          <% if (session[:snmp_tab].to_s == tab[:column].to_s) or @load_all %>
+            <%= render :partial => 'li_tab', :locals => { :tab => tab, :index => index } %>
+          <% elsif !tab[:name].nil? %>
+            <li class='data_column snmp loading' id='<%= tab[:column] %>' data_column='<%= tab[:column] %>' data_index='<%= index %>' >
+              <%= link_to tab[:name].pluralize, '#', :data_column => tab[:column], :data_index => index, :class => 'show_metric' %>
+              <%= link_to (image_tag 'icons/loading.gif', :width => '10px', :class => "loading-tab"), delete_snmp_tab_path(tab[:column], :range => @range, :end_time => @end_time.to_i),
+                :class => 'close-tab', :data_column => tab[:column], :remote => true %>
+            </li>
+          <% end %>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class='box-large round'> 
+      <div class='box-large-inside'>
+        <% @tabs.each_with_index do |tab, index| %>
+          <% if (tab[:column].to_s == session[:snmp_tab].to_s) or @load_all %>
+            <%= render :partial => 'graph_dashboard_individual', :locals => { :tab => tab, :active => (session[:snmp_tab].to_s == tab[:column].to_s) } %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+
+  <div class='secondary grid_3 alpha'>
+    <% @metrics.each_with_index do |metric, index| %>
+      <div class='dashboard-header'>
+        <span> Top 5 '<%= Snorby::CONFIG_SNMP[:oids].to_a[index][1]["label"] %>' Sensors </span>
+      </div>
+      <ul class="box-list">
+        <% metric.each do |sensor| %>
+          <li>
+            <%= Sensor.get(sensor[0]).name %>
+            <span> <%= sensor[1].round(2) %> </span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <div class='dashboard-header'>
+      <span>Last 5 Traps</span>
+    </div>
+
+    <ul class='box-list'>
+      <% @traps.each do |trap| %>
+        <li>
+          <%= link_to truncate(trap.trigger.nil? ? "unknown" : trap.trigger, :length => 25, :omission => '...'), trap_results_path(), :title => trap.message.gsub(/;\s*/, "\n") %>
+          <span>
+            <%= link_to trap.sensor.sensor_name, trap_results_path(:search => {:sid => "#{trap.sid}"}) %>
+          </span>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>

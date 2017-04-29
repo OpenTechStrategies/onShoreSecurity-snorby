@@ -1,0 +1,6 @@
+$('#sensor_<%=@sensor.sid%>').collapse()
+$('#sensor_<%=@sensor.sid%>').removeClass('collapsed expanded folder parent domain')
+$('#sensor_<%=@sensor.sid%>').appendBranchTo($('#sensor_1')[0])
+$('#sensor_<%=@sensor.sid%>').fadeOut();
+$('#sensor_<%=@sensor.sid%>').remove();
+$('#role_sensors').html("<%= escape_javascript(render(:partial => 'roles/role_sensors', :locals => {:role => @role}))%>")

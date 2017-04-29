@@ -1,0 +1,18 @@
+<%= snorby_box("Create Domain", false) do %>
+  <%= form_for @sensor, :html => { :class => 'validate', :id => 'new_sensor_form' } do |f|%>
+    <%= error_messages_for(@sensor) %>
+    <p><%= f.label :name %><br />
+      <%= f.text_field :name, :placeholder => 'Domain Name', :class => 'required alphanumeric', :style => "width: 400px;" %>
+    </p>
+    <%= snorby_box_footer do %>
+      <%= form_actions do %>
+        <%= f.submit "Create", :class => 'success' %>
+        <%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<script type="text/javascript">
+  $('#new_sensor_form.validate').validate();
+</script>

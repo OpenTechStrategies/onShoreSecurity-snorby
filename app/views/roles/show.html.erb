@@ -1,0 +1,114 @@
+<%= title "Role: #{@role.name}" -%>
+
+<%= stylesheet_link_tag "jquery.treeTable" %>
+<%= javascript_include_tag "jquery.treeTable" %>
+
+<div class="dashboard content role">
+  <div class="boxit">
+    <ul class="table categories">
+      <div class="content">
+        <li class="category boxit">
+          <div class="sec-title" id="title">
+            <div class="grid_6" id="title-header">General <i>( General configuration options, name and mode )</i></div>
+          </div>
+          <ul class="table">
+            <div class="content">
+              <li class="group">
+                <%= form_tag "/roles/#{@role.id}", :method => :put, :class => 'basic-form validate' do %>
+                  <div class="row info">
+                    <div class="grid_6">
+                      <p>
+                        <%= label_tag 'Name' %><br/>
+                        <%= text_field_tag '[role][name]', @role.name, :placeholder => 'Role Name', :class => 'required', :data=>@role.name %>
+                      </p>
+                      <%= form_actions 'snorbybox' do %>
+                        <%= button "Save", :class => 'success' %>
+                      <% end %>
+                    </div>
+                    <div class="grid_5">
+                      <p>
+                        <%= label_tag 'Mode' %>
+                        <i>(permissions for this role)</i><br/>
+                        <%= select_tag "[role][permission]", options_for_select(Role::PERMISSIONS, :selected => @role.permission) %>
+                      </p>
+                    </div>
+                    
+                  </div>
+                <% end %>
+              </li>
+            </div>
+          </ul>
+        </li>
+      </div>
+    </ul>
+  </div>
+
+  <div class="boxit">
+    <ul class="table categories">
+      <div class="content">
+        <li class="category boxit">
+          <%= sec_title "Users " + content_tag(:i, "( All users on this list will be included in the role )").html_safe, "title second" do -%>
+            <%= menu_item "Add", role_add_users_path(@role), 'icons/add.png', {:class => 'snorbybox', :target => '_blank'} %>
+          <%- end -%>
+          <ul class="table">
+            <div class="content">
+              <li class="group">
+                <div class="row">
+                  <table class="default" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <th class="first">Enabled</th>
+                      <th>Admin.</th>
+                      <th>Name</th>
+                      <th>E-mail</th>
+                      <th>Login Count</th>
+                      <th>Last Login IP</th>
+                      <th>Last Login Time</th>
+                      <th class="icons last"></th>
+                    </tr>
+                    <tbody id='role_users' class='users'>
+                      <%= render :partial => 'role_users', :locals => {:role => @role} %>
+                    </tbody>
+                  </table>
+                </div>
+              </li>
+            </div>
+          </ul>
+        </li>
+      </div>
+    </ul>
+  </div>
+
+  <div class="boxit">
+    <ul class="table categories">
+      <div class="content">
+        <li class="category boxit">
+          <%= sec_title "Sensors " + content_tag(:i, "( All sensors on this list will be included in the role )").html_safe, "title second" do -%>
+            <%= menu_item "Add", role_add_sensors_path(@role), 'icons/add.png', {:class => 'snorbybox', :target => '_blank'} %>
+          <%- end -%>
+          <ul class="table">
+            <div class="content">
+              <li class="group">
+                <div class="row">
+                  <table class="default" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <th class="first">Name</th>
+                      <th>Ip</th>
+                      <th>Last Check-in</th>
+                      <th>Sensors</th>
+                      <th>Rules</th>
+                      <th>Event %</th>
+                      <th class="icons last"></th>
+                    </tr>
+                    <tbody id='role_sensors' class='sensors'>
+                      <%= render :partial => 'role_sensors' %>
+                    </tbody>
+                  </table>
+                </div>
+              </li>
+            </div>
+          </ul>
+        </li>
+      </div>
+    </ul>
+  </div>
+</div>

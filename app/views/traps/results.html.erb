@@ -1,0 +1,5 @@
+<%= title "Search Results <i>#{pluralize(@traps.pager.total, 'trap')} found</i>".html_safe, 'Search Results' do %>
+	<%= menu_item "", search_traps_path, 'icons/lens.png', :title => "Advanced Search" %>
+<% end %>
+	
+<%= render :partial => 'traps/traps' %>

@@ -1,0 +1,101 @@
+<%= snorby_box("Prune Events", false) do %>
+
+  <% if Snorby::Worker.running? %>
+
+  	<div class="error_box"></div>
+
+  	<%= form_tag prune_events_path, :method => :post, :class => 'basic-form validate', :id => 'prune_form', :remote => true  do %>
+
+  		<div id="prune_events_options">
+  			<div class='grid_6' style='width:700px'>
+  				<div>
+  					<%= label_tag 'Select Sensor' %><br />
+  	  			<%= select_tag '[sid]', dropdown_select_tag(@sensors, :sid, true), :id => 'sel_sensor' %>
+  	  			<i>(If no sensor is selected, events for all of them will be pruned)</i>
+  	  		</div>  	  		
+  			</div>
+
+  			<div class='grid_5' style='width:350px'>  				
+          <%= label_tag "Start Date" %><br />
+          <%= text_field_tag '[timestamp_gte]', nil, :autocomplete=>:off, :placeholder => 'Start Date mm/dd/yyyy', :class => 'date', :id => 'start_date' %>  
+  			</div>
+        <div class='grid_5' style='width:350px'>
+          <%= label_tag "End Date" %><br />
+          <%= text_field_tag '[timestamp_lte]', nil, :autocomplete=>:off, :placeholder => 'End Date mm/dd/yyyy', :class => 'date required', :id => 'end_date' %>
+        </div>	
+  		</div>
+  		<div id="events_count" style="display: none;">
+  			<span></span>
+  		</div>
+  		<%= snorby_box_footer do %>
+  			<%= form_actions do %>
+      			<%= button "Prune", :class => 'success' %>
+      			<%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+      		<% end %>
+  		<% end %>
+
+  	<% end %>
+
+  <% else %>
+
+    <div id='note-box' class='error'>
+      <%= image_tag('icons/note-icon-white.png') %>
+      The worker is not currently running. It's imperative you start the worker immediately!
+      All backend calculations are performed asynchronously using the Worker.
+    </div>
+
+    <%= snorby_box_footer do %>
+      <%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+    <% end %>
+
+  <% end %>
+
+<% end %>
+
+<script type="text/javascript">
+  $('#prune_form.validate').validate({
+
+  	invalidHandler: function(form, validator) {
+      var errors_count = validator.numberOfInvalids();
+      var errors = validator.errorList;
+
+    	$("div.error_box").empty();
+    	$("div.error_box").hide();
+
+      if (errors_count){
+    		var message = "";
+    		for (var name in errors){
+    			message += errors[name].element.id + ': ' + errors[name].message + '<br />'; 
+    		}
+    		$("div.error_box").html(message);
+    		$("div.error_box").show();
+    	}
+    }
+  });
+
+  $('select, input').change(function(){
+  	var self = $(this);
+  	$("#events_count span").html('<img src="/images/icons/pager.gif">');
+    $("#events_count span").addClass("loading");
+    $("#events_count").show();
+
+    sensor_sid = $("#sel_sensor").val();
+    start_date = $("#start_date").val();
+    end_date	 = $("#end_date").val();
+
+    $.ajax({
+      url: "/events/update_events_count",
+      data: {
+      	sensor_sid: sensor_sid,
+      	start_date: start_date,
+      	end_date: end_date
+
+      },success: function(data){
+      	$("#events_count span").removeClass("loading");
+      	$("#events_count span").html(data);
+      }
+    });
+  });
+
+
+</script>

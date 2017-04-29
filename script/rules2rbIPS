@@ -1,0 +1,36 @@
+#!script/rails runner
+
+# Example of use:
+#   ./script/rules2rbIPS -D     -> execute it in verbose mode 
+#   ./script/rules2rbIPS -Dd path_to_rules_directory  -> execute it reading the rules from the directory
+
+require 'getopt/std'
+require 'yaml'
+require 'net/http'
+require 'tempfile'
+require 'digest/md5'
+
+verbose = true
+initial_tgz  = nil
+initial_name = nil
+
+opt = Getopt::Std.getopts("Di:n:")
+initial_tgz  = opt["i"]
+initial_name = opt["n"]
+
+if !initial_tgz.nil? and initial_name.nil?
+  Snorby::RulesUpdate.logit "ERROR: You must specify a valid name"
+elsif !initial_tgz.nil? and !initial_name.nil?
+  #Initialice database!!!
+  source = RuleSource.last(:name => initial_name)
+
+  if source.nil?
+    Snorby::RulesUpdate.logit "ERROR: The specified source name doesn't exist"
+  elsif !File.exists?(initial_tgz)
+    Snorby::RulesUpdate.logit "ERROR: The specified tgz file doesn't exist"
+  else
+    Snorby::RulesUpdate.start(verbose, initial_tgz, source)
+  end
+else
+  Snorby::RulesUpdate.start(verbose)
+end

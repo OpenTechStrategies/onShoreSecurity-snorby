@@ -1,0 +1,12 @@
+<div id='dashboard-sensor-load'>
+  <div class='dashboard-header'>
+    <span class="title"> LOAD </span>
+    <span class='loading'></span>
+    <span class="plus"><%= link_to "+", sensor_snmps_path(sensor) %></span>
+  </div>
+  <ul class='box-list'>
+    <li id='load'>Load<span><%= node["redBorder"]["uptime"]["1minute"]%>  <%= node["redBorder"]["uptime"]["5minute"]%>  <%= node["redBorder"]["uptime"]["15minute"]%></span></li>
+    <li id='memory'>Memory<span class="chart"><%= css_chart((100*(1-(node["memory"]["free"].to_f / node["memory"]["total"].to_f))).round(2)) %></span></li>
+    <li id='hd'>HD<span class="chart"><%= css_chart((node["redBorder"]["rootfs"]["kbused"].to_f / node["redBorder"]["rootfs"]["kbsize"].to_f * 100).round(0)) %></span></li>
+  </ul>
+</div>

@@ -1,0 +1,43 @@
+<div class='rule-data-holder'>
+  <div class='rule-data-holder-inside'>
+    <div id="rule-menu"></div>
+    <div id="event-menu">
+      <ul>
+        <% if @sensor.present? %>
+          <li><%= link_to "Limit Event Rules"  , filter_event_events_path(:sid => @sensor.sid, :sig_sid => @rule.rule_id, :sig_gid => @rule.gid), :class => (@limit_rules.present? ? 'snorbybox event-filter dark-button red-border' : 'snorbybox event-filter dark-button') %></li>
+          <li><%= link_to "Suppress Event Rules", filter_event_events_path(:sid => @sensor.sid, :sig_sid => @rule.rule_id, :sig_gid => @rule.gid , :suppress => true), :class => (@suppress_rules.present? ? 'snorbybox event-filter-suppress dark-button red-border' : 'snorbybox event-filter-suppress dark-button') %></li>
+        <% end %>
+      </ul>
+    </div>
+    <%= render :partial => 'signature'%>
+    <% unless @rule.protocol.nil? %>
+      <%= render :partial => 'l3l4'%>
+    <% end %>
+    <% if !@rule_references.nil? and !@rule_references.empty? %>
+      <%= render :partial => 'reference'%>
+    <% end %>
+    <% if !@rule_policies.nil? and !@rule_policies.empty? %>
+      <%= render :partial => 'policy'%>
+    <% end %>
+    <%- compilations = @last_rules.all(:rule_id => @rule.id, :order => [:compilation_id.asc]).map{|x| x.compilation}.uniq %>
+    <% if compilations.present? %>
+      <%= render :partial => 'inherited', :locals => {:compilations => compilations} %>
+    <% end %>
+    <% if !@rule_flowbits.nil? and !@rule_flowbits.empty? %>
+      <%= render :partial => 'flowbit'%>
+    <% end %>
+    <% if !@rule_compilations.nil? and !@rule_compilations.empty? %>
+      <%= render :partial => 'compilation'%>
+    <% end %>
+    <% if @sensor.present? %>
+      <% if @limit_rules.present? %>
+        <%= render :partial => 'limit_event_rules'%>
+      <% end %>
+      <% if @suppress_rules.present? %>
+        <%= render :partial => 'suppress_event_rules'%>
+      <% end %>
+    <% end %>
+    <%= render :partial => 'details', :locals => {:original_rule => @rule.rule, :rule => @rule, :severity => nil}%>
+    <%= render :partial => 'notes' if Setting.notes?%>
+  </div>
+</div>

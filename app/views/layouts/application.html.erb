@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+		<title><%= content_for?(:title) ? yield(:title) : "OnGuard SIM #{Snorby::VERSION}" %></title>
+		
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="OnGuard SIM" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+
+		<% @severities ||= Severity.all %>
+
+		<script type="text/javascript">
+			<% @severities.each do |sev| %>
+				var sev<%= sev.sig_id %>_bg_color = '<%= sev.bg_color %>';
+			<% end %>
+		</script>
+		
+	    
+		<%= csrf_meta_tag %>
+
+		<script src="//maps.google.com/maps/api/js?v=3.8&sensor=false&client=&key=&libraries=geometry&language=&hl=&region=" type="text/javascript"></script>
+		<script src="//cdn.rawgit.com/mahnunchik/markerclustererplus/master/dist/markerclusterer.min.js"></script>
+		<%= include_stylesheets :snorby, :media => 'all' %>
+		<%= include_javascripts :snorby %>
+
+		<%= javascript_include_tag 'highcharts.src.js'%>
+		<%= javascript_include_tag 'map.src.js'%>
+		<%= javascript_include_tag 'googlespreadsheet.src.js'%>
+		<%= javascript_include_tag 'jquery.blockUI.1.33.js'%>
+		<%= javascript_include_tag "jquery.ui.totop" %>
+		<%= javascript_include_tag "scrollto" %>
+
+		
+		<%= yield(:header) %>
+    
+		<style type="text/css">
+			<%- @severities.each do |sev| -%>
+				ul.table li div.small span.severity.sev<%= sev.sig_id %>,
+        span.severity.sev<%= sev.sig_id %>{
+					background-color: <%= sev.bg_color %>;
+					color: <%= sev.text_color %>;
+				}
+			<%- end -%>
+		</style>
+
+	</head>
+  
+	<body>
+		
+		<%= render :partial => 'layouts/header.html.erb' %>
+
+    <div id="wrapper">
+      <%= render :partial => 'layouts/content.html.erb' %>		
+    </div>
+
+		<%= render :partial => 'layouts/footer.html.erb' %>
+		
+		<%- flash.each do |type, message| -%>
+
+      <script type="text/javascript" charset="utf-8">
+				flash_message.push({type: "<%= type %>", message: "<%= message %>"}); flash();
+      </script>
+
+    <%- end -%>
+		
+		<%= yield(:footer) %>
+
+    <%= render :partial => 'layouts/notify' %>
+      
+    <script type="text/javascript" charset="utf-8">
+    	$().UItoTop({ easingType: 'linear',
+    				  scrollSpeed: 500 });
+
+      <% if Setting.event_notifications? %>
+        monitor_events(false);
+      <% else %>
+        if (window.location.pathname === "/events") {
+          monitor_events(true);
+        };
+      <% end %>
+    </script>  
+    
+  </body> 
+</html> 

@@ -1,0 +1,11 @@
+$('#title-menu-holder .drop-down-tab-item[data_column="<%=@column %>"]').show()
+
+<% if current_user.dashboardTabs.count < 10 %>
+  if(!$('ul#title-menu a#tab').hasClass('has_dropdown')) {
+    $('ul#title-menu a#tab').animate({opacity: 1}, 500);
+    $('ul#title-menu a#tab').addClass('has_dropdown');
+    $('ul#title-menu a#tab').addClass('right-more');
+    $('ul#title-menu a#tab').removeAttr('title');
+    $('ul#title-menu a#tab').removeAttr('onclick');
+  }
+<% end %>

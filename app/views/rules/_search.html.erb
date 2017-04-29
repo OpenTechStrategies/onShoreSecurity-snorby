@@ -1,0 +1,17 @@
+<% if @sensor.nil?
+  path = rules_path 
+else
+  path = sensor_rules_path(@sensor)
+end %>
+
+<li class="form">
+  
+  <%= form_tag path, :method => :get do %>
+    <%- params.each do |k,v| %>
+      <%= hidden_field_tag k, v if k!="controller" and k!="action"%>
+    <%- end %>
+    <%= hidden_field_tag 'sensor_id', @sensor.sid unless @sensor.nil? %>
+    <%= text_field_tag 'msg', @quick_search.present? ? @quick_search : nil, :placeholder => 'Filter Rules', :class => 'title-search-box right' %>
+    <%= button "Submit Search", :class => 'success' %>
+  <% end %>
+</li>

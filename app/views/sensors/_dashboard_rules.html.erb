@@ -1,0 +1,26 @@
+<div id='dashboard-sensor-rules'>
+  <div class='dashboard-header'>
+    <span class="title">Rules / Events</span>
+    <span class='loading'></span>
+    <span class="plus"><%= link_to "+", results_path(:add_search => {:column => :sensor, :value => sensor.sid, :operator => "is"}) %></span>
+  </div>
+  <ul class='box-list'>
+    <%- rules = sensor.last_compiled_rules %>
+    <li>Mode<span><%= sensor.chef_node["redBorder"]["snort"]["mode"] %></span></li>
+    <%- if rules.size>0 %>
+      <% RuleAction.all.each do |a| %>
+        <%-count = rules.all(:action=>a).size%>
+        <%- if count>0 %>
+          <li><%=a.name.capitalize%><span><%=count%>/<%=rules.size %></span></li>
+        <%-end%>
+      <%-end%>
+    <%-else%>
+      <li>Compiled Rules<span><%=rules.size %></span></li>
+    <%-end %>
+    <%- unless sensor.last_compilation.nil? %>
+      <li>Last Compilation<span><%=sensor.last_compilation.timestamp.to_formatted_s(:short) %></span></li>
+    <%-end %>
+    <li>Pending Rules<span><%=sensor.pending_rules.size %></span></li>
+    <li>Traps<span><%= @trap_count %></span></li>
+  </ul>
+</div>

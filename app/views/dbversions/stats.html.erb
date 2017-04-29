@@ -1,0 +1,91 @@
+<%= snorby_box("Versions", false) do %>
+
+	<div id='dbversions_graph' style="min-width: 750px"></div>
+
+<% end %>
+
+<script type="text/javascript">
+
+  chart = new Highcharts.Chart({
+
+      chart: {
+
+          renderTo: 'dbversions_graph',
+
+          type: 'column',
+
+          margin: [ 50, 50, 100, 80]
+
+      },
+      
+      credits: {
+          enabled: false
+      },
+
+      title: {
+
+          text: 'Rule\'s count by version'
+
+      },
+
+      xAxis: {
+
+          categories: <%= @axis.to_json.html_safe %>,
+
+          labels: {
+
+              rotation: -45,
+
+              align: 'right',
+
+              style: {
+
+                  fontSize: '13px',
+
+                  fontFamily: 'Verdana, sans-serif'
+
+              }
+
+          }
+
+      },
+
+      yAxis: {
+
+          min: 0,
+
+          title: {
+
+              text: 'Nº Rules'
+
+          }
+
+      },
+
+      legend: {
+
+          enabled: false
+
+      },
+
+      tooltip: {
+
+          formatter: function() {
+
+              return '<b> Version ' + this.x + '</b><br/>' + Highcharts.numberFormat(this.y, 0) + ' rules';
+
+          }
+
+      },
+
+          series: [{
+
+          name: 'Population',
+
+          data: <%= @data %>,
+
+      }]
+
+  });
+
+</script>

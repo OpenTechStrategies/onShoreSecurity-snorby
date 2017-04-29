@@ -1,0 +1,110 @@
+<% content_for :footer do %>
+
+	<script type="text/javascript">
+    $('#sev1-graph').sparkline([<%= @high_bar.join(',') %>], {
+    	<% if @range == 'last_month' %>
+    		barWidth: 5,
+      <% else %> 
+      	barWidth: 6,
+      <% end %> 
+      height: 40,
+      type: 'bar', 
+      barColor: sev1_bg_color 
+     });
+    
+    $('#sev2-graph').sparkline([<%= @medium_bar.join(',') %>], {
+    	<% if @range == 'last_month' %>
+    		barWidth: 5,
+      <% else %> 
+      	barWidth: 6,
+      <% end %> 
+      height: 40,
+      type: 'bar', 
+      barColor: sev2_bg_color
+    });
+
+    $('#sev3-graph').sparkline([<%= @low_bar.join(',') %>], { 
+    	<% if @range == 'last_month' %>
+    		barWidth: 5,
+      <% else %> 
+      	barWidth: 6,
+      <% end %> 
+      height: 40,
+      type: 'bar', 
+      barColor: sev3_bg_color 
+    });
+	</script>
+
+<% end %>
+
+<div class='box grid_3 alpha shadow round' data-url='<%= results_path(:search => {"0" => {:column => :severity, :value => 1, :operator => "is", :enabled => true}, "1" => {:column => :end_time, :value => @end_time.to_i, :operator => "lte", :enabled => true}, "2" => {:column => :start_time, :value => @start_time.to_i, :operator => "gte", :enabled => true}}) %>'>
+	
+	<div class='content shadow-in'>
+		<div class='data'>
+			
+			<div id='box-count'>
+				<%= @high_bar.sum %>
+			</div>
+			
+			<div id="box-title">
+				High Severity
+			</div>
+			
+			<div class='box-graph' id='sev1-graph'></div>
+			
+		</div>
+	</div>
+	
+	<div class='footer'>
+	<span><%= number_with_delimiter @high_bar.sum %> / <%= number_with_delimiter @event_count %></span> 
+	</div>
+	
+</div>
+
+<div class='box grid_3 alpha shadow round' data-url='<%= results_path(:search => {"0" => {:column => :severity, :value => 2, :operator => "is", :enabled => true}, "1" => {:column => :end_time, :value => @end_time.to_i, :operator => "lte", :enabled => true}, "2" => {:column => :start_time, :value => @start_time.to_i, :operator => "gte", :enabled => true}}) %>'>
+	
+	<div class='content shadow-in'>
+		<div class='data'>
+			
+			<div id='box-count'>
+				<%= @medium_bar.sum %>
+			</div>
+			
+			<div id="box-title">
+				Medium Severity
+			</div>
+			
+			<div class='box-graph' id='sev2-graph'></div>
+			
+		</div>
+	</div>
+	
+	<div class='footer'>
+	<span><%= number_with_delimiter @medium_bar.sum %> / <%= number_with_delimiter @event_count %></span> 
+	</div>
+	
+</div>
+
+<div class='box grid_3 alpha shadow round' data-url='<%= results_path(:search => {"0" => {:column => :severity, :value => 3, :operator => "is", :enabled => true}, "1" => {:column => :end_time, :value => @end_time.to_i, :operator => "lte", :enabled => true}, "2" => {:column => :start_time, :value => @start_time.to_i, :operator => "gte", :enabled => true}}) %>'>
+	
+	<div class='content shadow-in'>
+		<div class='data'>
+			
+			<div id='box-count'>
+				<%= @low_bar.sum %>
+			</div>
+			
+			<div id="box-title">
+				Low Severity
+			</div>
+			
+			<div class='box-graph' id='sev3-graph'></div>
+			
+		</div>
+	</div>
+	
+	<div class='footer'>
+	<span><%= number_with_delimiter @low_bar.sum %> / <%= number_with_delimiter @event_count %></span> 
+	</div>
+	
+</div>

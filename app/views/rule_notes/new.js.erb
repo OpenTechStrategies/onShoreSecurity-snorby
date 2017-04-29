@@ -1,0 +1,7 @@
+$('div#notes_<%= @rule.id %>').prepend("<%= escape_javascript(render(:partial => 'rule_notes/add_note')) %>");
+
+$('button.add_new_note-working').removeClass('add_new_note-working').addClass('add_new_rule_note');
+
+Snorby.helpers.remove_click_events(false);
+
+$('button').removeClass('loading');

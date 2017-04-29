@@ -1,0 +1,33 @@
+<%= stylesheet 'jquery' %>
+<%= javascript :footer, 'daterangepicker' %>
+
+<% content_for :footer do %>
+
+  <script type="text/javascript">
+
+    var rule = new SearchEvent(<%= Snorby::Search.json %>);
+    
+    rule.searchUI({
+      cssClass: "submit-search",
+      buttonTitle: "Submit Filter"
+    }, function() {
+      <% if @filter.blank? %>
+        rule.add();rule.add();
+      <% else %>
+        var data = <%= @filter.to_json.html_safe %>;
+        rule.build(data);
+        rule.add();rule.add();
+      <% end %>
+      
+    });
+
+  </script>
+
+<% end %>
+
+<div id="advanced_filter">
+  <%= title "Advanced Events Filter" do %>
+    <%= menu_item "Save Current Filter", new_saved_event_filter_path, 'icons/add.png', :class => "snorbybox", :target => "_blank", :widgets => @comes_from_widgets, :snmps => @comes_from_snmps %>
+    <%= menu_item "View Saved Filters", saved_event_filters_path %>
+  <% end %>
+</div>

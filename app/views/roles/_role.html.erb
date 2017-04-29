@@ -1,0 +1,12 @@
+<tr id='role_<%= role.id %>' class='role'>
+  <td class='name'><%= role.name %></td>
+  <td class='name'><%= role.permission %> </td>
+  <td class='name'> 
+    <span title="<%= role.sensors.all(:order => [:name.asc]).map{|s| s.name}.join(", ") %>" class='add_tipsy'><%= truncate(role.sensors.all(:order => [:name.asc]).map{|s| s.name}.join(", "), :length => 50, :omission => '...' ) %></span>
+  </td>
+  <td class='users_count' >
+    <span title="<%= role.users.map{|s| s.name}.join(", ") %>" class='add_tipsy'><%= role.users.size %></span>
+  </td>
+  <td class='icons'><%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), role_path(role) %></td>
+  <td class='icons last'><%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), role_path(role), :method => :delete, :confirm => "Are you sure you want to remove this role?" %></td>
+</tr>

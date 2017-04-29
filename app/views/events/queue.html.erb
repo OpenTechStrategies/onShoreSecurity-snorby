@@ -1,0 +1,9 @@
+<%= title "My Event Queue <i>(<span class='queue-count'>#{current_user.favorites_count}</span> <span class='queue-count-with-text'>#{pluralize(current_user.favorites_count, 'event').gsub(/^\d+\s/, " ")}</span> in queue)</i>".html_safe, 'My Event Queue' do%>
+
+  <%= menu_item "Hotkeys", hotkey_events_path, 'events/keyboard.png', :class => 'snorbybox' %>
+	<%= render :partial => 'events/menu' %>
+<% end %>
+
+<%= render :partial => 'events/events' %>
+
+<%= render :partial => 'events/hotkeys' %>

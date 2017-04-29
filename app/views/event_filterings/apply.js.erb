@@ -1,0 +1,10 @@
+$.unblockUI();
+
+<% if @sensor.present? %>
+	<% if @sensor.virtual_sensor? %>
+		flash_message.push({type: 'success', message: 'Event Rules applied to <%= @sensor.name %>'}); 
+  <% else %>
+  	flash_message.push({type: 'success', message: 'Event Rules applied to all sensors inside <%= @sensor.name %>'}); 
+	<% end %>  
+	flash();
+<% end %>

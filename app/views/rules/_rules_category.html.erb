@@ -1,0 +1,4 @@
+<% @groups.each do |group| %>
+  <%= render :partial => 'rules/group', :locals => {:category => @category, :group => group, :expand => (@groups.size==1)} %>
+<% end %>
+

@@ -1,0 +1,13 @@
+<% if inherited==1 %>
+  <span title="Inherited Rule" class='add_tipsy round inherited'>
+    <%= image_tag("icons/inheritedc.png", :size => '16x16') %>
+  </span>
+<% elsif inherited==2 %>
+  <span title="With Inherited Rules" class='add_tipsy round inherited'>
+    <%= image_tag("icons/inheritedc.png", :size => '16x16') %>
+  </span>
+<% else %>
+  <span class='round inherited opacity'>
+    <%= image_tag("icons/inherited.png", :size => '16x16') %>
+  </span>
+<% end %>

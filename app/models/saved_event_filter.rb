@@ -1,0 +1,2 @@
+class SavedEventFilter < SavedFilter
+end

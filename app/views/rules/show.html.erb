@@ -1,0 +1,19 @@
+<%= snorby_box("Rule Information", false) do %>
+  <% unless @rule.nil? %>
+    <strong>Signature:</strong> <%= @rule.msg %>
+    <br/>
+    <div class="rule-data" style=''>
+      <pre>alert<%= " #{@rule.protocol} #{@rule.source_addr} #{@rule.source_port} -> #{@rule.target_addr} #{@rule.target_port}" unless @rule.protocol.nil?%><%=" (#{@rule.rule})" %></pre>
+    </div>
+    <br/>
+  <% else %>
+    <div class="rule-data" style=''>
+      <pre>No rule found for this event.</pre>
+    </div>
+  <% end %>
+  <%= snorby_box_footer do %>
+    <%= form_actions do %>
+      <%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+    <% end %>
+  <% end %>
+<% end %>

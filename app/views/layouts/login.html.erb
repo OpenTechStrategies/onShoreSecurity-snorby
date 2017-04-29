@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<%= render :partial => 'layouts/version.html.erb' %>
+
+<html class='login'>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+		<title><%= content_for?(:title) ? yield(:title) : "OnGuard SIM #{Snorby::VERSION}" %></title>
+		
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="OnGuard SIM" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+
+		<%= csrf_meta_tag %>
+		
+		<%= include_stylesheets :snorby, :media => 'all' %>
+		<%= include_javascripts :snorby %>
+
+  </head>
+  
+	<body class='login'>
+
+    <div id="login">
+      <div id="wrapper">
+        <div id="login-logo"></div>
+        <%= render :partial => 'layouts/content.html.erb' %>
+      </div>
+    </div>
+		
+		<%- flash.each do |type, message| -%>
+
+      <script type="text/javascript" charset="utf-8">
+				flash_message.push({type: "<%= type %>", message: "<%= message %>"}); flash();
+      </script>
+
+    <%- end -%>
+		
+  </body> 
+</html> 

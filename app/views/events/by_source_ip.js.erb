@@ -1,0 +1,5 @@
+$('div#ips').replaceWith("<%= escape_javascript(render(:partial => 'by_ip', :locals => { :ip_type => 'Source IP', :column => :ip_src, :ips => @ips })) %>");
+$('div.content, tbody.content').fadeTo(500, 1);
+Snorby.helpers.remove_click_events(false);
+$.scrollTo('#header', 500);
+flash();

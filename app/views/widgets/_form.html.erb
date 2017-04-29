@@ -1,0 +1,29 @@
+
+<%= error_messages_for(@widget) %>
+
+<div id="form-holder">
+  <div class="grid_5">
+    <p class='form-order'>
+      <%= label_tag 'Name' %><br />
+      <%= text_field_tag "[widget][name]", (@widget.name.nil? ? "" : @widget.name), :class => 'required large', :placeholder => 'Widget Name', :autocomplete => :off %>
+    </p>
+    <p class='form-order'>
+      <%= label_tag 'Description' %><br />
+      <%= text_field_tag "[widget][description]", (@widget.description.nil? ? "" : @widget.description), :class => 'large', :placeholder => 'Widget Description (Optional)', :autocomplete => :off %>
+    </p>
+  </div>
+  <div class="grid_5 alpha">
+    <p class='form-order'>
+      <%= label_tag 'Attribute' %><br />
+      <%= select_tag "[widget][column]", options_for_select(Event::AGGREGATED_COLUMNS.to_a.map{|x| [x[1], x[0]]}.sort{|a1,a2| a1[0]<=>a2[0]}, @widget.column), :id => "widget-column-form" %>
+    </p>
+    <p class='form-order'>
+      <%= label_tag 'Graph Type' %><br />
+      <%= select_tag "[widget][property][range]", options_for_select( [ ["Last 24", "last_24"],["Last Week", "last_week"],["Last Month", "last_month"],["Las Quarter", "last_quarter"],["Last Year", "last_years"] ], @widget.range), :id => "widget-column-form" %>
+    </p>
+  </div>
+</div>
+<%= form_actions do %>
+  <%= button "Save Widget", :class => 'success' %>
+  <%= button "Cancel", :class => 'warning cancel' %>
+<% end %>

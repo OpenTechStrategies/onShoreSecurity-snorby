@@ -1,0 +1,56 @@
+<ul class='table'>  
+  <li class='header'>
+   <div class='row <%= 'geoip' if geoip? %> <%= 'sessions' if @session_view %>'>
+    <div class='small'>
+      <%= check_box_tag 'event-select-all', nil, false, :class => 'event-select-all' %>
+    </div>
+
+    <div class='small important'>&nbsp;</div>
+
+    <div class='small'>
+      <%= sortable(:sig_priority, 'Sev.')%>
+    </div>
+
+    <div class='domain'>
+      <span title='Events by Domain' class="add_tipsy plus"><%= link_to "+", sensors_path %></span>
+      <%= sortable(:domain, 'Domain')%>
+    </div>
+
+    <div class='sensor'>
+      <span title='Events by Sensor' class="add_tipsy plus"><%= link_to "+", by_sensor_events_path %></span>
+      <%= sortable(:sid, 'Sensor')%>
+    </div>
+
+    <div class='address'>
+      <span title='Events by Source IP' class="add_tipsy plus"><%= link_to "+", by_source_ip_events_path %></span>
+      <%= sortable(:ip_src, 'Source IP')%>
+    </div>
+
+    <div class='address'>
+      <span title='Events by Destination IP' class="add_tipsy plus"><%= link_to "+", by_destination_ip_events_path %></span>
+      <%= sortable(:ip_dst, 'Destination IP')%>
+    </div>
+
+    <div class='signature'>
+      <span title='Events by Signature' class="add_tipsy plus"><%= link_to "+", signatures_path %></span>
+      <%= sortable((@session_view ? :signature : :sig_name), 'Event Signature')%>
+    </div>
+
+    <div class='timestamp'>
+      <%= sortable(:timestamp, 'Timestamp')%>
+    </div>
+
+    <% if @session_view %>
+      <div class='session-count'>
+        <%= sortable(:number_of_events, 'Sessions')%>
+      </div>
+    <% end %>
+
+        </div>
+    </li>
+
+    <div class='content'>
+  <%= render @events %>
+    </div>
+
+</ul>

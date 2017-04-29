@@ -1,0 +1,2 @@
+
+$("#table-chart-<%= @column %>").append("<%= escape_javascript(render(:partial => '/page/table_any_chart', :locals => {:table_metrics => @table_metrics, :long_data => false } )) %>");

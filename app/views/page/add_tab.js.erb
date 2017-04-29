@@ -1,0 +1,63 @@
+var visible = $('div.box-large-inside div[data_column="<%= @tab[:column] %>"].dashboard-graph').is(':visible');
+var content = $('div.box-large-inside div[data_column="<%= @tab[:column] %>"]');
+
+if (content.length == 0) {
+  $('div.box-large-inside').append("<%= escape_javascript(render(:partial => 'graph_dashboard_individual', :locals => {:tab => @tab, :index => 100, :prepend_id => "", :active => false, :enable_title => false})) %>")
+} else {
+  content.replaceWith("<%= escape_javascript(render(:partial => 'graph_dashboard_individual', :locals => {:tab => @tab, :index => 100, :prepend_id => "", :active => false, :enable_title => false})) %>");
+}
+
+$('ul#box-menu li[data_column="<%= @tab[:column] %>"]').replaceWith("<%= escape_javascript(render(:partial => 'li_tab', :locals => {:tab => @tab, :index => 100 })) %>");
+
+if (visible){
+  $('div.box-large-inside div[data_column="<%= @tab[:column] %>"].dashboard-graph').show();
+  $('ul#box-menu li[data_column="<%= @tab[:column] %>"]').addClass('active');
+
+  chart_aux =  window["<%= @tab[:column] %>-graph"];
+  window["<%= @tab[:column] %>-graph"] = new Highcharts.Chart(chart_aux.options);
+}
+
+<% if current_user.dashboardTabs.count >= 10 %>
+  $('ul#title-menu a#tab').animate({opacity: 0.4}, 500).removeClass('has_dropdown').removeClass('right-more').attr('title', 'max tabs open').attr('onclick', "return false;");
+<% end %>
+
+<% if @tab[:column].to_sym == :MAP %>
+
+  $('.gmaps4rails_map').show();
+
+  Gmaps.map  = new Gmaps4RailsGoogle();
+  
+  Gmaps.load_map = function() {
+    Gmaps.map.map_options.id = "map"
+    Gmaps.map.map_options.auto_adjust = true;
+    Gmaps.map.map_options.raw = {streetViewControl: false, panControl: false, zoomControlOptions: {style: google.maps.ZoomControlStyle.SMALL }};
+    Gmaps.map.initialize();
+    Gmaps.map.markers = <%= @map_data.to_json.html_safe %>;
+    Gmaps.map.markers_conf.do_clustering = true;
+    Gmaps.map.markers_conf.custom_infowindow_class = "maps-boxText";
+    Gmaps.map.infobox = function(boxText) {
+      return {
+        content: boxText,
+        disableAutoPan: false,
+        maxWidth: 0,
+        pixelOffset: new google.maps.Size(-140, 0),
+        zIndex: null,
+        boxStyle: { 
+          opacity: 0.85,
+          width: "220px"
+        },
+        closeBoxMargin: "10px 2px 2px 2px",
+        closeBoxPATH: 'icons/close.gif',
+        infoBoxClearance: new google.maps.Size(1, 1),
+        isHidden: false,
+        pane: "floatPane",
+        enableEventPropagation: false
+      }
+    };
+    Gmaps.map.create_markers();
+    Gmaps.map.adjustMapToBounds();    
+    Gmaps.map.callback();;
+  };
+  Gmaps.load_map();
+
+<% end %>

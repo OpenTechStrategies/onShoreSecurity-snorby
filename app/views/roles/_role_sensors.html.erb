@@ -1,0 +1,12 @@
+<%= render :partial => 'sensors/sensor', :locals => {:sensor=> Sensor.root} %>
+<%= render @role.sensors.all(:order => [:name.asc]), :locals => {:role => @role} %>
+
+<script type="text/javascript">
+  $('li.sensor-options').parent().remove();
+  var role_id = <%= @role.id %>;
+  $('#role_sensors a').each(function(index, value){
+    var sensor = $(value).parents('tr').attr('data-sensor-id');
+    $(value).attr('href', '/roles/'+role_id+'/delete_sensor/'+sensor);
+    $(value).attr('data-remote', true);
+  });
+</script>

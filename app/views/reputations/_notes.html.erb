@@ -1,0 +1,25 @@
+<div class='section-title'>Notes</div>
+
+<div id='notes_<%= @reputation.id %>' class='notes'>
+
+	<% if @notes.blank? %>
+		<strong class='no-notes'>
+			It currently has zero notes - You can add a note by clicking the button below.<br />
+			<br />
+		</strong>
+	<% else %>
+		<% @notes.each do |note| %>
+			<%= render :partial => 'reputations/note', :locals => {:note => note} %>
+		<% end %>
+	<% end %>
+	
+	<div id='new_main_note' class='fake_form' data-object-id='<%= @reputation.id %>'>
+		<%= text_area_tag :body, {}, :style => 'display:none;' %>
+		
+		<%= form_actions do %>
+			<%= button "Add A Note", :class => 'add_new_main_note', :data_class => 'reputation' %>
+		<% end %>
+		
+	</div>
+	
+</div>

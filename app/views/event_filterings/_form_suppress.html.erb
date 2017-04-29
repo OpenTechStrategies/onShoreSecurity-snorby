@@ -1,0 +1,37 @@
+<%= form_for(@event_filtering) do |f|%>
+  <%= error_messages_for(@event_filtering) %>
+  <div id='snorbybox-form-full' class='clearfix'>
+    <div class="grid_6" style='width:600px'>
+      <% unless @rules.nil? %>
+        <%= label_tag 'Signature' %><br />
+        <%= select_tag "[signature]", options_for_select(@rules), :class => 'signature-event-filter' %>
+      <% else %>
+        <%= label_tag "signature", "Signature: <strong>#{@event_filtering.signature_name}</strong>".html_safe %>
+      <% end %>
+    </div>
+    <div class="grid_6" style='width:175px'>
+      <br />
+      <%= f.radio_button :tracked_type, "by_src", :checked => @event_filtering.tracked_type != "by_dst" %> <%= label_tag "by_src", "By Source".html_safe %><br />
+      <%= f.radio_button :tracked_type, "by_dst", :checked => @event_filtering.tracked_type == "by_dst" %> <%= label_tag "by_dst", "By Destination".html_safe %><br />
+    </div>
+    <div class="grid_5">
+      <%= label_tag "ip", "Ip / Network" %><br />
+      <%= f.text_field :tracked_ip, :class => 'required' %>
+    </div>
+  </div>
+  <%= hidden_field_tag '[event_filtering][sid]', @sensor.sid %><br />
+  <%= hidden_field_tag '[event_filtering][filtering_type]', "suppress" %>
+
+  <% if @event_filtering.id.present? %>
+    <div class="main-notes">
+      <%= render :partial => 'event_filterings/notes' %>
+    </div>
+  <% end %>
+
+  <%= snorby_box_footer do %>
+    <%= form_actions do %>
+      <%= f.submit "Save", :class => 'success' %>
+      <%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+    <% end %>
+  <% end %>
+<% end %>

@@ -1,0 +1,48 @@
+<%= javascript_include_tag "infobox.min" %>
+<div id="snorby-box" >
+  <div id="box-title">Locate IP: <%= @ip %></div>
+  <div id="box-content">
+    <div id='MAP-graph' class="dashboard-graph" data_column="MAP">
+      <%= gmaps({:map_options  => {  :id => "map_snorby"}}) %>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function()  {
+    Gmaps.map  = new Gmaps4RailsGoogle();
+    Gmaps.load_map = function() {
+      Gmaps.map.map_options.id = "map_snorby"
+      Gmaps.map.map_options.auto_zoom = false;
+      Gmaps.map.map_options.zoom = 6;
+      Gmaps.map.map_options.raw = {streetViewControl: false, panControl: false, zoomControlOptions: {style: google.maps.ZoomControlStyle.SMALL }};
+      Gmaps.map.initialize();
+      Gmaps.map.markers = <%= @map_data.to_json.html_safe %>;
+      Gmaps.map.markers_conf.do_clustering = true;
+      Gmaps.map.markers_conf.custom_infowindow_class = "maps-boxText";
+      Gmaps.map.infobox = function(boxText) {
+        return {
+          content: boxText,
+          disableAutoPan: false,
+          maxWidth: 0,
+          pixelOffset: new google.maps.Size(-140, 0),
+          zIndex: null,
+          boxStyle: { 
+            opacity: 0.85,
+            width: "220px"
+          },
+          closeBoxMargin: "10px 2px 2px 2px",
+          closeBoxPATH: 'icons/close.gif',
+          infoBoxClearance: new google.maps.Size(1, 1),
+          isHidden: false,
+          pane: "floatPane",
+          enableEventPropagation: false
+        }
+      };
+      Gmaps.map.create_markers();
+      Gmaps.map.adjustMapToBounds();    
+      Gmaps.map.callback();;
+    };
+  });
+
+</script>

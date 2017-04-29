@@ -1,0 +1,5 @@
+<%= title "Listing Events by Source IP", "Listing Events by Source IP", false do -%>
+	<input id="ip-search" autocomplete="off" class='title-search-box right' placeholder="Filter Source IPs" name="search" type="text" data_type="src_ips" />
+<%- end -%>
+
+<%= render :partial => 'by_ip', :locals => {:ip_type => 'Source IP', :column => :ip_src} %>

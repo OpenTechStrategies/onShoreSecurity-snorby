@@ -1,0 +1,39 @@
+<% can_edit = (current_user.id == saved_event_filter.user.id) %>
+<tr data-id="<%= saved_event_filter.id %>">
+
+  <% if can_edit %>
+    <td class='first' data-user='<%= saved_event_filter.user.id %>' style='width:50px;'>
+      <%= check_box_tag :public, 1, saved_event_filter.public %>
+    </td>
+  <% else %>
+    <td class='first' style='width:50px;'>
+      <%= check_box_tag :public, 1, saved_event_filter.public, :disabled => :disabled %>
+    </td>
+  <% end %>
+
+  <td class='click' style='width:430px;'>
+    <%= truncate(saved_event_filter.title, :length => 40, :omission => '...') %>
+  </td>
+
+  <td class='click' style='width:160px;'>
+    <%= image_tag(saved_event_filter.user.gravatar ? get_gravatar_uri(saved_event_filter.user.email) : saved_event_filter.user.avatar.url(:small), :size => '16x16', :class => 'avatar-small') %> <%= saved_event_filter.user.name %>
+  </td>
+
+  <td class='click'>
+    <%= display_time(saved_event_filter.created_at, true) %>
+  </td>
+
+  <% if can_edit %>
+    <td><%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), view_saved_event_filter_path(saved_event_filter), :class => "saved-filter-edit" %></td>
+
+    <td class='last'>
+      <%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), saved_event_filter_path(saved_event_filter), :method => :delete, :confirm => 'Are you sure you want to remove this saved filter?' %>
+    </td>
+  <% else %>
+
+    <td><%= image_tag('icons/lock.png', :size => '16x16', :class => 'locked') %></td>
+    <td class='last'><%= image_tag('icons/lock.png', :size => '16x16', :class => 'locked') %></td>
+
+  <% end %>
+
+</tr>

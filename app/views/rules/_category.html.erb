@@ -1,0 +1,32 @@
+<%- rules = @rules.all(:category4 => category) %>
+<%- rules_count = rules.count %>
+<% if rules_count > 0 %>
+  <li id='category-<%= category.id %>' data='<%= category.id %>' class="category <%= (expand ? "highlight" : "") %>">
+    <div class="row">
+      <%- if @sensor.nil?  %>
+        <div class="select small">&nbsp;</div>
+      <%- else %>
+        <div class="select small"><%= check_box_tag 'category-selector', nil, false, :class => "check_box_#{category.id}" %></div>
+        <div class='important big'>
+          <div class='create-favorite enabled'></div>
+          <% unless @sensor.virtual_sensor %>
+            <div class='allow-overwrite enabled'></div>
+          <% end %>
+        </div>
+        <div class="action click">
+          <%= render :partial => 'action', :locals => {:action => nil, :mactions => nil, :locked => false} %>
+        </div>
+      <%- end %>
+      <div class="message click <%= (expand ? "loaded" : "") %>">
+        <strong><%= category.name.upcase %></strong>
+        <%= category.description.nil? ? "" : " - #{category.description}" %>
+      </div>
+      <div class="nrules"><span class="active"><%= (@last_rules_rules & rules).count %></span> / <span class="total"><%= rules_count %></span></div>
+    </div>
+    <ul class="table groups" <%= (expand ? "" : "style='display:none';") %>>
+      <div class="content">
+        <%= render(:partial => 'rules/rules_category') if expand %>
+      </div>
+    </ul>
+  </li>
+<% end %>

@@ -1,0 +1,6 @@
+<li class="form">
+  <%= form_tag results_path, :method => :get, :class => 'validate' do %>
+    <%= text_field_tag '[quick_search][text]', @quick_search.present? ? @quick_search : nil, :placeholder => 'Filter Events', :class => 'title-search-box right'  %>
+    <%= button "Submit Search", :class => 'success' %>
+  <% end %>
+</li>

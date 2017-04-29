@@ -1,0 +1,19 @@
+<tr>
+  <td class='first'><%= classification.id %></td>
+  <td><%= classification.name %></td>
+  <td><%= number_with_delimiter classification.events_count %></td>
+	
+  <td class='chart'><%= css_chart(classification.event_percentage, false, true) %></td>
+  
+  <td class="icons">
+    <%= link_to "View", results_path(:add_search => {:column => :classification, :value => "#{classification.id}", :operator => "is"}), :title => classification.name %>
+  </td>
+	
+  <% if classification.locked %>
+    <td class="icons"><%= image_tag('icons/lock.png', :size => '16x16') %></td>
+    <td class='icons last'><%= image_tag('icons/lock.png', :size => '16x16') %></td>
+  <% else %>
+    <td class="icons"><%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), edit_classification_path(classification) %></td>
+    <td class='icons last'><%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), classification_path(classification), :method => :delete, :confirm => 'Are you sure you want to remove this classification?' %></td>
+  <% end %>
+</tr>

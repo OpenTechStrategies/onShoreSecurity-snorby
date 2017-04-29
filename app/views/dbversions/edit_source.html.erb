@@ -1,0 +1,15 @@
+<%= snorby_box("Edit Source", false) do %>
+  <%= form_for @source, :url => "/rule_source/#{@source.id}",  :html => { :method => :put, :class => 'validate', :id => 'new_source_form' } do |f|%>
+    <%= render :partial => 'form', :locals => {:f => f} %>
+    <%= snorby_box_footer do %>
+      <%= form_actions do %>
+        <%= f.submit "Update", :class => 'success' %>
+        <%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+    <% end %>
+<% end %>
+  <% end %>
+<% end %>
+
+<script type="text/javascript">
+  $('#new_source_form.validate').validate();
+</script>

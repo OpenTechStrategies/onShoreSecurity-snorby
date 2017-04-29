@@ -1,0 +1,48 @@
+<% unless @sensor.nil? %>
+  <%= drop_down_for("Filters: #{filter_count(session[:rule_filter])}", 'icons/filter.gif', 'filter') do %>
+    <% session[:rule_filter].each do |k, v| %>
+      <% v.each do |key, value| %>
+        <dd>
+          <span><%= Snorby::SearchRule::COLUMN_NAME[k.to_sym] %></span>
+          <span class="icons"><%= link_to image_tag('icons/filter_remove.gif', :size => '16x16'), del_rule_filter_path(@sensor.sid, :column => k.to_sym, :value => key), :class => "block-ui-but" %></span>
+          <span class="value" title="<%= Snorby::SearchRule.data_column(k, key.to_s) %>"><%= operator(value[:operator]) %> <%= truncate(Snorby::SearchRule.data_column(k, key.to_s), :length => 20, :omission => '...') %></span>
+        </dd>
+      <% end %>
+    <% end %>
+    <% if filter_count(session[:rule_filter]) > 1 %>
+      <dd >
+        <span style="font-weight: bold">All filters</span>
+        <span class="icons"><%= link_to image_tag('icons/filter_remove.gif', :size => '16x16'), del_rule_filter_path(@sensor.sid, :value => :all), :class => "block-ui-but" %></span>
+      </dd>
+    <% end %>
+    <dd class="<%= (filter_count(session[:rule_filter]) > 0 ) ? "separator" : "" %>">
+      <span><%= link_to "Advanced Filter", advanced_search_path, :style => "font-weight: bold", :class => "clean_all" %></span>
+    </dd>
+    <% unless @filters.nil? %>
+      <% @filters.each_with_index do |saved_filter, i| %>
+        <dd class="<%= (i==0) ? "separator" : "" %>">
+          <span><%= truncate(saved_filter.title, :length => 30, :omission => '...') %></span>
+          <span class="icons"><%= link_to image_tag('icons/filter_add.gif', :size => '16x16'), "#", :class => "search-rule-filter block-ui-but", :data => "#{saved_filter.id}" %></span>
+        </dd>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+
+
+<script type="text/javascript" charset="utf-8">
+  $(function() {
+    $('#filter .search-rule-filter').click(function(e) {
+      e.preventDefault();
+      var id = $(this).attr('data');
+
+      if (id>0) {
+        $('#title-menu .filter .drop-down-menu').hide();
+        blockWebUI();
+        apply_rule_filter(id, <%= current_user.id %>, false, <%= @sensor.nil? ? 0 : @sensor.sid %>);
+      }
+
+      return false;
+    });
+  });
+</script>

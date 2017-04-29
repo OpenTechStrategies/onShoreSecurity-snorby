@@ -1,0 +1,26 @@
+<% javascript :footer, 'sparkline', 'highcharts' %>
+
+<div id="box-tabs">
+  <ul id="box-menu">
+    <% @tabs.each_with_index do |tab, index| %>
+      <% if session[:tab].to_s == tab[:column].to_s %>      
+        <%= render :partial => 'page/li_tab', :locals => { :tab => tab, :index => index } %>
+      <% else %>
+        <li class='data_column loading' id='<%= tab[:column] %>' data_column='<%= tab[:column] %>' data_index='<%= index %>' >
+          <%= link_to tab[:name].pluralize, '#', :data_column => tab[:column], :data_index => index, :class => 'show_metric' %>
+          <%= link_to (image_tag 'icons/loading.gif', :width => '10px', :class => "loading-tab"), delete_dashboard_tab_path(tab[:column], :range => @range, :end_time => @end_time.to_i),
+                :class => 'close-tab', :data_column => tab[:column], :remote => true %>
+        </li>
+      <% end %>
+    <% end %>
+  </ul>
+</div>
+<div class='box-large round'> 
+  <div class='box-large-inside'>
+    <% @tabs.each_with_index do |tab, index| %>
+      <% if tab[:column].to_s == session[:tab].to_s %>
+        <%= render :partial => 'page/graph_dashboard_individual', :locals => { :tab => tab, :index => 100, :prepend_id => "", :active => true, :enable_title => false} %>
+      <% end %>
+    <% end %>   
+  </div> 
+</div>

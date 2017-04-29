@@ -1,0 +1,11 @@
+<% if params[:title] %>
+	<%= title "#{truncate(h(params[:title]))} <i>#{pluralize(@snmps.pager.total, 'snmp')} found</i>".html_safe, "#{h(params[:title])}" do %>
+		<%= menu_item "", search_snmps_path, 'icons/lens.png', :title => "Advanced Search" %>
+	<% end %>
+<% else %>
+	<%= title "Search Results <i>#{pluralize(@snmps.pager.total, 'snmp')} found</i>".html_safe, 'Search Results' do %>
+		<%= menu_item "", search_snmps_path, 'icons/lens.png', :title => "Advanced Search" %>
+	<% end %>
+<% end %>
+	
+<%= render :partial => 'snmps/snmps' %>

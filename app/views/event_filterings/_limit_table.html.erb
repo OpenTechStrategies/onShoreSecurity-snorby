@@ -1,0 +1,82 @@
+<tr>
+  <th class="first"></th>
+  <th class="content">Signature</th>
+  <th class="content">Count</th>
+  <th class="content">Seconds</th>
+  <th class="content">Tracked Type</th>
+  <th class="content">Inherited</th>
+  <th class="icons"></th>                   
+  <th class="icons"></th>
+  <% if current_user.admin %>
+    <th class="icons last">Destroy</th>
+  <% end %>
+</tr>
+<%- flag = false %>
+<tbody class='event_filterings_content'>
+  <% @limit_rules.each do |ef| %>
+    <%- if ef.sensor.sid==@sensor.sid %>
+      <%- flag = true %>
+      <tr class='<%= "selected" if @event_filtering and @event_filtering.id == ef.id %>'  id='<%= ef.id %>' position='<%= ef.position %>' >
+        <td class='dragHandle first'></td>
+        <td>
+          <span title="<%= ef.signature_name %>" class="add_tipsy"><%= truncate(ef.signature_name, :length => 60) %></span>
+        </td>
+        <td><%= ef.count %></td>
+        <td><%= ef.seconds %></td>
+        <td><%= ef.tracked_type %></td>
+        <td></td>
+        <td class="notes">
+          <% if ef.notes.count > 0 %>
+            <span title="It has <%= pluralize(ef.notes.count, 'note') %>" class='add_tipsy round notes-count'><%= image_tag("icons/notes.png", :size => '16x16') %></span>
+          <% end %>
+        </td>
+        <td class="icons">
+          <% if can?(:manage, ef.sensor) or current_user.admin %>
+            <%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), edit_event_filtering_path(:id => ef.id), {:class => 'snorbybox', :target => '_blank'} %>
+          <% else %>
+            <%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), '#', :class => 'notallowed' %>
+          <% end %>
+        </td>
+        <% if current_user.admin %>
+          <td class='icons last'>
+            <%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), event_filtering_path(ef, :sensor_view_sid => @sensor.sid), :method => :delete, :confirm => "Are you sure you want to remove this event filter rule?", :disabled => true %>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>    
+  <% end %>
+</tbody>
+<% @limit_rules.each do |ef| %>
+  <%- if ef.sensor.sid!=@sensor.sid %>
+    <tr class=" <%= flag ? "first_parent" : "" %>" id='<%= ef.id %>'>
+      <td class='dragHandle first'></td>
+      <td>
+        <span title="<%= ef.signature_name %>" class="add_tipsy"><%= truncate(ef.signature_name, :length => 60) %></span>
+      </td>
+      <td><%= ef.count %></td>
+      <td><%= ef.seconds %></td>
+      <td><%= ef.tracked_type %></td>
+      <td class='parent'>
+        <%= link_to ef.sensor.name, event_filterings_path(:sid => ef.sensor.sid) %>
+      </td>
+      <td class="notes">
+        <% if ef.notes.count > 0 %>
+          <span title="It has <%= pluralize(ef.notes.count, 'note') %>" class='add_tipsy round notes-count'><%= image_tag("icons/notes.png", :size => '16x16') %></span>
+        <% end %>
+      </td>
+      <td class="icons">
+        <% if can?(:manage, ef.sensor) or current_user.admin %>
+          <%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), edit_event_filtering_path(:id => ef.id), {:class => 'snorbybox', :target => '_blank'} %>
+        <% else %>
+          <%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), '#', :class => 'notallowed' %>
+        <% end %>
+      </td>
+      <% if current_user.admin %>
+        <td class='icons last'>
+          <%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), event_filtering_path(ef, :sensor_view_sid => @sensor.sid), :method => :delete, :confirm => "Are you sure you want to remove this event rule?", :disabled => true %>
+        </td>
+      <% end %>
+    </tr>
+    <%- flag = false %>
+  <% end %>    
+<% end %>

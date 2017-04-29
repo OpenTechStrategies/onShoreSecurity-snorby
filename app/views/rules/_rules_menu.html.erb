@@ -1,0 +1,33 @@
+<%- unless @sensor.nil? %>
+  <div id="rules-menu">
+    <span <%= "title='Rule configuration' class='add_tipsy'" unless @rulestype == 'rules' %> >
+      <%= link_to 'Config' , sensor_rules_path, :disabled => (@rulestype == 'rules' and @compilation.nil?), :class => 'dark-button' %>
+    </span>
+    <span <%= "title='Show active rules' class='add_tipsy'" unless @rulestype == 'compiled_rules' %>>
+      <%= link_to 'Active' , active_rules_sensor_rules_path, :disabled => @rulestype == 'compiled_rules', :class => 'dark-button' %>
+    </span>
+    <span <%= "title='Show pending rules' class='add_tipsy'" unless @rulestype == 'pending_rules' %> >
+      <%= link_to 'Pending', pending_rules_sensor_rules_path, :disabled => @rulestype == 'pending_rules', :class => 'dark-button' %>
+    </span>
+    <span title='Compile current rules' class='add_tipsy' >
+      <%= link_to 'Compile', compile_rules_sensor_rules_path, :class => 'snorbybox dark-button', :target => '_blank' %>
+    </span>
+    <span title='Discard pending rules' class='add_tipsy' >
+      <%= link_to 'Revert', discard_pending_rules_sensor_rules_path, :onclick => "return false;", :class => 'dark-button discard-rules-button' %>
+    </span>
+    <span title='Reset sensor rules' class='add_tipsy' >
+      <%= link_to 'Reset', reset_rules_sensor_rules_path, :onclick => "return false;", :class => 'dark-button reset-rules-button' %>
+    </span>
+    <span title='View all related compilations' class='add_tipsy' >
+      <%= link_to 'Compilations', compilations_sensor_rules_path, :class => 'snorbybox dark-button', :target => '_blank' %>
+    </span>
+  </div>
+<%- end %>
+
+<script type="text/javascript">
+
+  $('a[disabled=disabled]').click(function(e){
+    e.preventDefault();
+  });
+
+</script>

@@ -1,0 +1,88 @@
+<% javascript :footer, 'sparkline', 'highcharts', 'highstock', 'exporting', 'jquery.ui.sortable', 'jquery.ui.core', 'jquery.ui.mouse' %>
+
+<%= title "Dashboard" do %>
+  <%= drop_down_for('Add Tab', 'icons/tabs.png', 'tab') do %>
+    <% Event::AGGREGATED_COLUMNS.sort{|a1,a2| a1[1]<=>a2[1]}.to_a.each do |tab| %>
+      <dd class="drop-down-tab-item" data_column="<%= tab[0] %>" style="<%= ( @new_tabs.include?(tab) ? "" : "display:none;" ) %>" >
+        <%= link_to tab[1], add_dashboard_tab_path(tab[0], :range => @range, :end_time => @end_time.to_i), :class => "dashboard #{tab[0]}", :data_column => tab[0], :remote => true  %>
+      </dd>
+    <% end %>
+  <% end %>
+	<%= menu_item content_tag(:span, "--"), '#', 'icons/clock-counter.png', :id => "counter", :remote => false, :class => "widgets_counter" %>
+	<%= drop_down_for('More Options', 'icons/grab.png', 'options') do %>
+		<%= drop_down_item "Events: Yesterday", dashboard_path(:range => :yesterday), nil, { :class => 'dashboard' } if (@range != "yesterday" and @range != "today" and @range != "before_1_yesterday" and @range != "before_2_yesterday" and @range != "before_3_yesterday" and @range != "before_4_yesterday") %> 
+    <%= drop_down_item "Events: Today"    , dashboard_path(:range => :today), nil, { :class => 'dashboard' } if (@range != "yesterday" and @range != "today" and @range != "before_1_yesterday" and @range != "before_2_yesterday" and @range != "before_3_yesterday" and @range != "before_4_yesterday") %> 
+
+    <%= drop_down_item "Events: Day Before", dashboard_path(:range => :before_1_yesterday), nil, { :class => 'dashboard' } if @range == "yesterday" %> 
+
+    <%= drop_down_item "Events: Day Before", dashboard_path(:range => :before_2_yesterday), nil, { :class => 'dashboard' } if @range == "before_1_yesterday" %> 
+    <%= drop_down_item "Events: Day After" , dashboard_path(:range => :yesterday)         , nil, { :class => 'dashboard' } if @range == "before_1_yesterday" %> 
+
+    <%= drop_down_item "Events: Day Before", dashboard_path(:range => :before_3_yesterday), nil, { :class => 'dashboard' } if @range == "before_2_yesterday" %> 
+    <%= drop_down_item "Events: Day After" , dashboard_path(:range => :before_1_yesterday), nil, { :class => 'dashboard' } if @range == "before_2_yesterday" %> 
+
+    <%= drop_down_item "Events: Day Before", dashboard_path(:range => :before_4_yesterday), nil, { :class => 'dashboard' } if @range == "before_3_yesterday" %> 
+    <%= drop_down_item "Events: Day After" , dashboard_path(:range => :before_2_yesterday), nil, { :class => 'dashboard' } if @range == "before_3_yesterday" %> 
+
+    <%= drop_down_item "Events: Day After" , dashboard_path(:range => :before_3_yesterday), nil, { :class => 'dashboard' } if @range == "before_4_yesterday" %> 
+
+    <%= drop_down_item "Export To PDF", dashboard_path(:range => params[:range] == 'today' ? 'now' : params[:range], :format => :pdf), nil, { :class => 'dashboard' } %>
+		<%= drop_down_item "Force Cache Update", force_cache_path, nil, {:class => 'force-cache-update'} if Snorby::Worker.running? %>
+		<%= drop_down_item "Enable Autoreload", nil, nil, :id => "disable-counter", :remote => true, :onclick => "clock_locked=!clock_locked; if (clock_locked) { $('#disable-counter').html('Enable Autoreload'); $('.dashboard-menu li.caching').remove() } else { $('#disable-counter').html('Disable Autoreload'); } return false;", :remote => false %>		
+	<% end %>
+<% end %>
+
+<%= render :partial => 'dashboard_main' %>
+
+<% content_for :footer do %>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      Highcharts.setOptions({
+        global: {
+          useUTC: true
+        }
+      });
+
+      start_counter_dashboard(<%= Setting.autoreload_time.value.to_i %>);
+      clock_locked = true;
+
+      var TZ_COOKIE_NAME = 'tzoffset';
+      var options = {
+        path: '/',
+        expires: 10
+      };
+      var timezone = jstz.determine();
+      jQuery.cookie(TZ_COOKIE_NAME, timezone.name(), options);
+
+      $(".data_column.loading").each(function(index, value){
+        var id = $(value).attr('data_column');
+        $.ajax({
+          url: "/dashboard_tabs/"+ id +"/add",
+	        data: {
+            end_time: <%= @end_time.to_i %>,
+            range: "<%= @range %>"
+          }
+        });	      
+      });
+
+      $('ul#box-menu').sortable({ 
+        axis: "x",
+        opacity: 0.6,
+        update: function(event, ui) {
+          if (!$(ui.item).hasClass('active')){
+            $(ui.item).css('top', '5px');
+          }
+          var tabs_array = $('ul#box-menu').sortable('toArray');
+
+          $.ajax({
+            url: "/dashboard_tabs/reorder",
+            data: {
+              tabs: tabs_array
+            }
+          });
+        }
+      });
+      $("ul#box-menu").disableSelection();
+    });
+  </script>
+<% end %>

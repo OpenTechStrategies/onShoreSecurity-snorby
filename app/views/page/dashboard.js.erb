@@ -1,0 +1,6 @@
+
+$('div#dashboard').replaceWith("<%= escape_javascript(render(:partial => 'dashboard_main')) %>");
+
+Snorby.helpers.remove_click_events(false);
+Snorby.helpers.recheck_selected_events();
+flash();

@@ -1,0 +1,10 @@
+<div class='box-large round'>	
+  <div class='box-large-inside'>		
+    <%= render :partial => 'graph_event.html.erb' unless @sensor_metrics.nil? %>
+    <%= render :partial => 'graph_severity.html.erb' %>		
+    <%= render :partial => 'graph_protocol.html.erb' unless @tcp.nil? %>		
+    <%= render :partial => 'graph_signature.html.erb' unless @signature_metrics.nil? %>		
+    <%= render :partial => 'graph_source_ips.html.erb' unless @src_metrics.nil? %>		
+    <%= render :partial => 'graph_destination_ips.html.erb' unless @dst_metrics.nil? %>
+  </div>
+</div>

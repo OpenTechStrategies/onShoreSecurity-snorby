@@ -1,0 +1,3 @@
+<% @sensor_rules.each do |sr| %>
+<%= "#{sr.action.name} (#{sr.rule.rule})".html_safe %>
+<% end %>

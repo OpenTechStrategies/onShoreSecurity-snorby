@@ -1,0 +1,1 @@
+$('table.trap_servers').html("<%= escape_javascript(render(:partial => 'trap_servers', :locals => {:trap_servers => @sensor.role_value(["redBorder", "snmp", "trap_servers"])}))%>")

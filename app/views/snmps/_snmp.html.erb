@@ -1,0 +1,23 @@
+<li id='snmp_<%= snmp.id %>' class='snmp' data-snmp-id='<%= snmp.id %>' data-snmp-sid='<%= snmp.sid %>'>    
+  <div class='row'>
+    <div class='select small'><%= check_box_tag 'snmp-selector', nil, false, :class => "check_box_#{snmp.id}" %></div>
+    <div class='click address'>
+      <span title='<%=h snmp.sensor.sensor_name %>' class='add_tipsy'><%= truncate(snmp.sensor.sensor_name, :length => 17, :omission => '...') %></span>
+    </div>
+    <div class='click oid'>
+      <span title='<%=h snmp.snmp_key %>' class='add_tipsy'><%= truncate(snmp.snmp_key, :length => 30) %></span>
+    </div>
+    <div class='click value'>
+      <span title='<%=h Snorby::CONFIG_SNMP[:oids][snmp.snmp_key]["info"] %>' class='add_tipsy'>
+        <%= Snorby::CONFIG_SNMP[:oids][snmp.snmp_key]["info"] %>
+      </span>
+    </div>
+    <div class='click value'>
+      <span title='<%=h snmp.value %>' class='add_tipsy'><%= snmp.value %></span>
+    </div>
+    <div class='click timestamp'>
+      <b title='Snmp ID: <%= snmp.id %> %> &nbsp; <%= snmp.timestamp.in_time_zone.strftime('%A, %b %d, %Y at %I:%M:%S %p') %>' class='add_tipsy'><%= snmp.pretty_time %></b>
+    </div>
+  </div>
+  <div style='display:none;' class='event-data' data='false'></div>
+</li>

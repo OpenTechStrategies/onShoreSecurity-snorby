@@ -1,0 +1,3 @@
+<% @sensor_rules.each do |sr| %>
+<%= "#{sr.action.name} ".html_safe%><%=" #{sr.rule.protocol} #{sr.rule.source_addr} #{sr.rule.source_port} -> #{sr.rule.target_addr} #{sr.rule.target_port}".html_safe unless sr.rule.protocol.nil? %><%=" (#{sr.rule.rule})".html_safe %>
+<% end %>

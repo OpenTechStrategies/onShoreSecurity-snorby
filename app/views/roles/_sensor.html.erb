@@ -1,0 +1,22 @@
+<tr id='sensor_<%= sensor.sid %>' class='sensor <%= "child-of-sensor_#{sensor.parent.sid}" unless sensor.parent.nil? %> <%= sensor.domain ? " domain" : "" %> <%= sensor.domain && !sensor.virtual_sensor ? "folder parent" : "" %>' data-sensor-id='<%= sensor.sid %>' style=<%= sensor.is_root? ? "display:none;" : "" %> >
+  <td class='name' data-sensor-id='<%= sensor.sid %>'><%= sensor.name %></td>
+  <td class='ip' data-sensor-id='<%= sensor.sid %>' ><%= sensor.ipdir %> </td>
+  <td>
+    <span title="<%= sensor.virtual_sensors.map{|s| s.name}.join(", ")%>" class='add_tipsy'><%= sensor.virtual_sensors.size %></span>
+  </td>
+  <% if sensor.last %>
+    <td class="last_event_time">
+      <span title='<%= sensor.last.timestamp.strftime('%A, %b %d, %Y at %I:%M:%S %p') %>' class='add_tipsy'><%= sensor.last_pretty_time %></span>
+    </td>
+  <% else %>
+    <td class='last_event_time'>N/A</td>
+  <% end %>
+
+  <td class='event_count'><%= sensor.events_count %></td>
+
+  <td class='chart'>
+    <%= css_chart(sensor.event_percentage) %>
+  </td>
+  
+  <td class='icons last'><%= link_to image_tag("/images/icons/plus.png", :size => '16x16'), {:controller=>"roles", :action=>"add_sensor", :id=>@role.id, :sensor_sid => sensor.sid}, :remote=>true, :onClick => "$(this).find('img').attr('src', '/images/icons/pager.gif');" %></td>
+</tr>

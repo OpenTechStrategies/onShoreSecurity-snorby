@@ -1,0 +1,20 @@
+<%= title "Listing Roles" do -%>
+  <%= menu_item "Add Role", new_role_path, 'icons/add.png', {:class => 'snorbybox', :target => '_blank'} %>
+<%- end -%>
+
+<div id="sensors" class='boxit'>
+  <table class="default" id="rolesTable" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <th>Name</th>
+      <th>Permission</th>
+      <th>Sensors</th>
+      <th>Users</th>
+      <th class="icons">Edit</th>
+      <th class="icons last">Destroy</th>
+    </tr>
+    <tbody class='sensors'>
+      <%= render @roles %>
+    </tbody>
+  </table>
+
+</div>

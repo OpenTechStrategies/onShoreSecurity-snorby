@@ -1,0 +1,58 @@
+<div id=<%= defined?(html_id) ? html_id : "ips" %> class='grid_12 page boxit'>
+
+	<table class='default' border="0" cellspacing="0" cellpadding="0">
+
+		<tr>		
+      <th><%= ip_type %></th>
+      <th>Event Count</th>
+      <th></th>
+      <th></th>
+		</tr>
+
+		<tbody class='ips content'>
+			<% @ips[:collection].each do |ip| %>
+      
+        <% geoip = Snorby::Geoip.lookup(ip[0]) %>
+      
+        <tr>
+          <td>
+            <span class='click country_flag add_tipsy_html' original-title='<img class="flag" src="/images/flags/<%= geoip[:country_code2].downcase  %>.png"> <%= geoip[:country_name] %>'><%= geoip[:country_code2] %></span>
+            <%= ip[0] %>
+          </td>
+
+          <td class='chart-large add_tipsy' title="<%= ip[1] %> of <%= pluralize(@total_event_count, "event") %>">
+            <% percentage = "%.2f" % ((ip[1].to_f / @total_event_count.to_f) * 100).round(2) %>
+            <%= css_chart(percentage, true) %>
+          </td>
+
+          <td style="width:45px;padding-right:6px;padding-left:0px;">
+            <li class="ip-options" data-ip='<%= ip[0].gsub("\.", "_") %>'><%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), '#' %></li>
+            <dl id="ip-menu-<%= ip[0].gsub("\.", "_") %>" data-ip="<%= ip[0].gsub("\.", "_") %>" class='ip-menu round shadow push-down' style='display:none;'>
+              <div class="arrow"></div>
+              <dd><%= link_to 'Basic Source Lookup', "/events/lookup?address=#{ip[0]}", :class => 'snorbybox' %></dd>
+
+              <% @lookups.each do |lookup| %>
+                <dd>
+                <%= link_to lookup.title, 
+                  lookup.build(:ip => ip[0]),
+                  :target => '_blank' %>
+                </dd>
+              <% end %>
+
+            </dl>
+          </td>
+          
+          <td class='last' style="width:45px;padding-right:6px;padding-left:0px;">
+            <%= link_to "View", results_path(:add_search => { :column => column == :ip_src ? "source_ip" : "destination_ip", :value => ip[0], :operator => "is" }) %>
+          </td>
+        </tr>
+
+      <% end %>
+		</tbody>
+
+	</table>
+  
+  <%#= pager_ip(@ips, request.fullpath) %>
+  <%= Snorby::PagerIP.new(@ips, request.fullpath).to_html.html_safe %>
+
+</div>

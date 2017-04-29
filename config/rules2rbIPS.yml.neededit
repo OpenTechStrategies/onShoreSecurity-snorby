@@ -1,0 +1,61 @@
+verbose: true
+cache_dir: "/var/www/<CLIENT>/snortrules/cache"
+so_rules_dir: "/var/www/CLIENT/snortrules/so_rules"
+gen_msg_dir: "/var/www/CLIENT/snortrules/gen_msg"
+category1_groups:
+  - 
+    name: "web-activex"
+    regexp: "^activex$"
+  -
+    name: "attack-responses"
+    regexp: "^attack-response$"
+  -
+    name: "botnet-cnc"
+    regexp: "^botcc$"
+  -
+    name: "spamhaus"
+    regexp: "^drop$"
+  -
+    name: "icmp"
+    regexp: "^icmp"
+
+category3_groups:
+  - 
+    name: "facebook"
+    regexp: "facebook"
+  - 
+    name: "mail"
+    regexp: "imap|pop3"
+  - 
+    name: "ibm lotus"
+    regexp: "ibm lotus"
+ 
+category4_groups:
+  - 
+    name: "email"
+    regexp: "imap|pop|smtp"
+  - 
+    name: "web"
+    regexp: "^web-|^web_|activex|^file-identify$"
+  - 
+    name: "services"
+    regexp: "^dns$|^ftp$|^finger$|netbios|^nntp$|^scada$|^scada_special$|^snmp$|telnet|tftp|^voip$|^x11$|^icmp|^rpc$|rservices"
+  - 
+    name: "policy"
+    regexp: "^chat|^p2p|multimedia|^policy$|content-replace|games|inappropriate"
+  - 
+    name: "attacks"
+    regexp: "attack|backdoor|bad-traffic|botnet-cnc|botcc|exploit|shellcode|spyware-put|specific-threats|virus|scan|^misc$|^info$|phishing|^drop$|spamhaus|malware|trojan|^worm$|^tor$|^rbn$|^rbn-malvertisers$|user_agents|^ciarmy$|compromised|^current_events$|dshield"
+  - 
+    name: "special"
+    regexp: "blacklist|deleted|^local$"
+  - 
+    name: "sql"
+    regexp: "sql|mysql|oracle"
+  - 
+    name: "dos"
+    regexp: "^dos$|^ddos$"
+  - 
+    name: "preprocessors"
+    regexp: "^preprocessor$|^decoder$|^sensitive-data$"
+

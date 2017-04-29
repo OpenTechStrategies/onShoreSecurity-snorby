@@ -1,0 +1,45 @@
+
+$(".portlet[data=<%= @widget.id %>]").find(".portlet-content").html("<%= escape_javascript(render(:partial => 'widget_content.html', :locals => {:metric => @tab, :widget => @widget, :table_loaded => false } )) %>");
+$(".portlet[data=<%= @widget.id %>]").removeClass("loading");
+
+
+<% if @widget.column.to_sym == :MAP %>
+
+  $(".portlet[data=<%= @widget.id %>]").find(".gmaps4rails_map:first").show();
+
+  Gmaps.map<%= @widget.id  %>  = new Gmaps4RailsGoogle();
+  
+  Gmaps.load_map<%= @widget.id  %> = function() {
+    Gmaps.map<%= @widget.id  %>.map_options.auto_adjust = true;
+    Gmaps.map<%= @widget.id  %>.map_options.raw = {streetViewControl: false, panControl: false, zoomControlOptions: {style: google.maps.ZoomControlStyle.SMALL }};    
+    Gmaps.map<%= @widget.id  %>.map_options.id = "portlet_<%= @widget.id %>_map"
+    Gmaps.map<%= @widget.id  %>.initialize();
+    Gmaps.map<%= @widget.id  %>.markers = <%= @map_data.to_json.html_safe %>;
+    Gmaps.map<%= @widget.id  %>.markers_conf.do_clustering = true;
+    Gmaps.map<%= @widget.id  %>.markers_conf.custom_infowindow_class = "maps-boxText";
+    Gmaps.map<%= @widget.id  %>.infobox = function(boxText) {
+      return {
+        content: boxText,
+        disableAutoPan: false,
+        maxWidth: 0,
+        pixelOffset: new google.maps.Size(-140, 0),
+        zIndex: null,
+        boxStyle: { 
+          opacity: 0.85,
+          width: "220px"
+        },
+        closeBoxMargin: "10px 2px 2px 2px",
+        closeBoxPATH: 'icons/close.gif',
+        infoBoxClearance: new google.maps.Size(1, 1),
+        isHidden: false,
+        pane: "floatPane",
+        enableEventPropagation: false
+      }
+    };
+    Gmaps.map<%= @widget.id  %>.create_markers();
+    Gmaps.map<%= @widget.id  %>.adjustMapToBounds();
+    Gmaps.map<%= @widget.id  %>.callback();
+  };
+  Gmaps.load_map<%= @widget.id  %>();
+
+<% end %>

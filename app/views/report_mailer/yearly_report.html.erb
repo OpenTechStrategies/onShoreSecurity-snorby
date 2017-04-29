@@ -1,0 +1,14 @@
+All,<br />
+
+<p>
+	<% if Setting.company? %>
+		<%= Setting.find(:company) %> yearly report via OnGuard SIM.<br />
+	<% else %>
+		Yearly report via OnGuard SIM.<br />
+	<% end %>
+</p>
+
+<p>
+----------------------------------------<br />
+This is a yearly email from OnGuard SIM.  You received this email because you requested the report to be sent to you.  You will receive the next report next year.<br />
+</p>

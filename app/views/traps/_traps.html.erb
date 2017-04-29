@@ -1,0 +1,21 @@
+<div id="traps" class='grid_12 boxit' data-action='<%= params[:action] %>' data-page='<%= params[:page].to_i %>'>
+  <ul class='table traps'>
+    <li class='header'>
+      <div class='row'>
+        <div class='sensor'>Sensor</div>
+        <div class='port'>Port</div>
+        <div class='protocol'>Protocol</div>
+        <div class='trigger'>Trigger</div>
+        <div class='trap_message'>Message</div>
+        <div class='timestamp'>
+          <%= sortable(:timestamp, 'Timestamp')%>
+        </div>
+      </div>
+    </li>
+
+    <div class='content'>
+      <%= render @traps %>
+    </div>
+  </ul>
+  <%= pager(@traps, request.fullpath) %>
+</div>

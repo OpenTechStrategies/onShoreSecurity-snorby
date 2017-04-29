@@ -1,0 +1,213 @@
+<% extend ApplicationHelper %>
+
+<% content_for :pdf_header do %>
+	<br />
+	<i><%= @start_time.strftime('%A, %B %d, %Y %I:%M %p') %> - <%= @end_time.strftime('%A, %B %d, %Y %I:%M %p') %></i>
+<% end %>
+
+<% content_for :footer do %>
+
+	<script type="text/javascript">
+
+          <% @metrics.each_with_index do |metric, index| %>
+
+            chart_<%= index %>  = new Highcharts.Chart({
+              chart: {
+                renderTo: 'metric-graph_<%= index %>',
+                defaultSeriesType: 'spline',
+                marginRight: 80,
+                marginLeft: 80,
+                marginTop: 50,
+                marginBottom: 50,
+                borderColor: 'transparent',
+                borderWidth: 0,
+                backgroundColor: '#fff'
+              },
+              credits: {
+                enabled: false
+              },
+              title: {
+                text: '<%= Snorby::CONFIG_SNMP[:oids].to_a[index][1]["text"] %>',
+                x: -20 //center
+              },
+              plotOptions: { series: { enableMouseTracking: false, shadow: false, animation: false } },
+              xAxis: {
+                categories: [<%= @axis %>],
+                title: {
+                  margin: 10,
+                    <% if @range == 'last_6_hours' %>
+                      text: 'Last 6 Hours'
+                    <% elsif (@range == 'year' || @range == 'quarter') %>
+                      text: 'Month of Year'
+                    <% elsif (@range == 'month' || @range == 'last_month') %>
+                      text: 'Date of Month'
+                    <% elsif (@range == 'week' || @range == 'last_week') %>
+                      text: 'Date Of Week'
+                    <% else %>
+                      text: 'Hour of Day'
+                    <% end %>
+                }
+              },
+              yAxis: {
+                title: {
+                  text: '<%= Snorby::CONFIG_SNMP[:oids].to_a[index][1]["unit"] %> Average'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                  }]
+              },
+              tooltip: {
+                formatter: function() {
+                  return '<b>'+ this.series.name +'</b><br/>'+ this.y + '%';
+                }
+              },
+              legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                x: 0,
+                y: 0,
+                borderWidth: 0,
+                borderRadius: 0,
+                borderColor: '#ddd',
+                backgroundColor: '#fff'
+              },
+              series: <%= metric.to_json.html_safe %>
+            });
+
+          <% end %>
+		
+          chart_s = new Highcharts.Chart({
+            chart: {
+              renderTo: 'severity-graph',
+              defaultSeriesType: 'spline',
+              marginRight: 80,
+              marginLeft: 80,
+              marginTop: 50,
+              marginBottom: 50,
+              borderColor: 'transparent',
+              borderWidth: 0,
+              backgroundColor: '#fff'
+            },
+            credits: {
+              enabled: false
+            },
+            title: {
+              text: 'Severity Count vs Time',
+              x: -20 //center
+            },
+            plotOptions: { series: { enableMouseTracking: false, shadow: false, animation: false } },
+            xAxis: {
+              categories: [<%= @axis %>],
+              title: {
+                margin: 10,
+                  <% if (@range == 'year' || @range == 'quarter') %>
+                  text: 'Month of Year'
+                  <% elsif (@range == 'month' || @range == 'last_month') %>
+                  text: 'Date of Month'
+                  <% elsif (@range == 'week' || @range == 'last_week') %>
+                  text: 'Date Of Week'
+                  <% else %>
+                  text: 'Hour of Day'
+                  <% end %>
+              }
+            },
+            yAxis: {
+              title: {
+                text: 'Severity Count'
+              },
+              plotLines: [{
+                  value: 0,
+                  width: 1,
+                  color: '#808080'
+                }]
+            },
+            tooltip: {
+              formatter: function() {
+                return '<b>'+ this.series.name +'</b><br/>'+ this.y + ' Events';
+              }
+            },
+            legend: {
+              layout: 'vertical',
+              align: 'right',
+              verticalAlign: 'top',
+              x: 0,
+              y: 0,
+              borderWidth: 0,
+              borderRadius: 0,
+              borderColor: '#ddd',
+              backgroundColor: '#fff'
+            },
+            series: [{
+                name: 'High Severity',
+                color: sev1_bg_color,
+                data: [<%= @high_snmp.join(', ') %>]
+              },{
+                name: 'Medium Severity',
+                color: sev2_bg_color,
+                data: [<%= @medium_snmp.join(', ') %>]
+              },{
+                name: 'Low Severity',
+                color: sev3_bg_color,
+                data: [<%= @low_snmp.join(', ') %>]
+              }]
+          });
+		
+          $('#sev1-graph').sparkline([<%= @high_snmp.join(',') %>], {
+              barWidth: 6, height: 40, type: 'bar', barColor: sev1_bg_color
+           });
+
+          $('#sev2-graph').sparkline([<%= @medium_snmp.join(',') %>], {
+            barWidth: 6, height: 40, type: 'bar', barColor: sev2_bg_color
+          });
+
+          $('#sev3-graph').sparkline([<%= @low_snmp.join(',') %>], {
+            barWidth: 6, height: 40, type: 'bar', barColor: sev3_bg_color
+          });
+		
+	</script>
+
+<% end %>
+
+<div class='table-holder'>
+	<h2>Sensors</h2>
+	<table border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<th>Name</th>
+			<th>Snmp Events Count</th>
+		</tr>
+		<% @snmp.group_by(&:sid).map {|k, v| [Sensor.get(k).name, v.length]}.each do |hash| %>
+		<tr>
+			<td><%= hash[0] %></td>
+			<td style='width:100px'><%= hash[1] %></td>
+		</tr>
+		<% end %>
+	</table>	
+</div>
+
+<% @metrics.each_with_index do |metric, index| %>
+  <div id='metric-graph_<%= index %>' class='dashboard-graph'></div>
+<% end %>
+
+<div class='table-holder'>
+  <h2>Severities</h2>
+  <table border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <th>High Severity (<%= @high_snmp.sum %>)</th>
+      <th>Medium Severity (<%= @medium_snmp.sum %>)</th>
+      <th>Low Severity (<%= @low_snmp.sum %>)</th>
+      <th>Total</th>
+    </tr>
+    <tr>
+      <td style='width:200px'><div id="sev1-graph" style='float:left;'></div></td>
+      <td style='width:200px'><div id="sev2-graph" style='float:left;'></div></td>
+      <td style='width:200px'><div id="sev3-graph" style='float:left;'></div></td>
+      <td style='width:100px'><%= @snmp_count %></td>
+    </tr>
+  </table>
+
+  <div id='severity-graph' style='' class='dashboard-graph'></div>
+
+</div>

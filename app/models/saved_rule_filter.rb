@@ -1,0 +1,2 @@
+class SavedRuleFilter < SavedFilter
+end

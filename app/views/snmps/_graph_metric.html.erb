@@ -1,0 +1,98 @@
+<% if metric.empty? %>
+  <div id='metric-graph_<%= label %>' style="<%= active ? "" : 'display:none;' %>" class='dashboard-graph snmp no-pie-data' data_column="<%= label %>" ></div>
+<% else %>
+  <div id='metric-graph_<%= label %>' style="<%= active ? "" : 'display:none;' %>" class='dashboard-graph snmp' data_column="<%= label %>" ></div>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      window["<%= label %>-graph"] = new Highcharts.Chart({
+        chart: {
+          renderTo: 'metric-graph_<%= label %>',
+          defaultSeriesType: 'spline',
+          marginTop: 50,
+          marginRight: 10,
+          zoomType: 'x'
+        },
+        exporting: {
+          enabled: false
+        },
+        credits: {
+          enabled: false
+        },
+        title: {
+          text: null
+        },
+        xAxis: {
+          categories: <%= @axis.to_json.html_safe %>,
+          title: {
+            margin: 10,
+            <% if (@range == 'year' || @range == 'quarter' || @range == 'last_year') %>
+              text: 'Month of Year'
+            <% elsif (@range == 'last_6_hours') %>
+              text: 'Last 6 Hours'
+            <% elsif (@range == 'last_quarter') %>
+              text: 'Day of Year'
+            <% elsif (@range == 'month' || @range == 'last_month') %>
+              text: 'Date of Month'
+            <% elsif (@range == 'week' || @range == 'last_week') %>
+              text: 'Date Of Week'
+            <% elsif @range == 'last_24' %>
+              text: 'Last 24 Hours'
+            <% else %>
+              text: 'Last 6 Hours'
+            <% end %>
+          },
+          <% if @range == 'last_quarter' %>
+            labels: {
+              step: 15
+            }
+          <% elsif ['last_year', 'last_6_hours', 'last_month', 'last_24'].include? @range %>
+            labels: {
+              step: 2
+            }
+          <% end %>
+        },
+        yAxis: {
+          title: {
+            text: '<%= unit %>'
+          },
+          plotLines: [{
+              value: 0,
+              width: 1,
+              color: '#808080'
+            }],
+          min: 0
+        },
+        tooltip: {
+          shared: true,
+          crosshairs: true
+        },
+        legend: {
+          layout: 'vertical',
+          align: 'right',
+          verticalAlign: 'top',
+          floating: true,
+          x: 0,
+          y: 0,
+          borderWidth: 0,
+          borderRadius: 0,
+          borderColor: '#ddd',
+          backgroundColor: '#fff'
+        },
+        plotOptions: {
+          series: {
+            marker: {
+              enabled: false,
+              states: {
+                hover: {
+                  enabled: true
+                }
+              }
+            }
+          }
+        },
+        series: <%= metric.to_json.html_safe %>
+      });
+    });
+  </script>
+
+<% end %>

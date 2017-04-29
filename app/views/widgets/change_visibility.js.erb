@@ -1,0 +1,5 @@
+
+
+<% if @widget.column.to_sym == :MAP and !@minimized %>
+  Gmaps.load_map<%= @widget.id  %>();
+<% end %>

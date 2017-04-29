@@ -1,0 +1,24 @@
+<div id="sensors" class='.portlet-content'>
+  	<table id="sensorTable" class='default table-chart' border="0" cellspacing="0" cellpadding="0">
+    	<tr>
+      	<th class='first name'>Name</th>
+      	<th class="event_num">Events
+      	<th class='chart last'>Event %</th>
+    	</tr>
+    	<tbody class='sensors'>
+	    	<% @table_metrics.each do |info| %>
+	    		<% percentage = ( !info[1].nil? and !@total_events.to_i.zero? ) ? (info[1].to_f*100/@total_events.to_f) : 0.0 %>
+	    		<tr>
+					<td class='first name'>
+						<span class='add_tipsy' title='<%= info[0] %>'>
+							<%= truncate(info[0], :length => 30, :omission => '...') %></td>
+						</span>
+					<td class="event_num"><%= info[1] %></td>			  
+					<td class='chart last'>
+						<%= css_chart(percentage.round(2), false, true) %> 
+					</td>
+				</tr>
+	    	<% end %>      	
+	    </tbody>
+  	</table>
+</div>

@@ -1,0 +1,47 @@
+<div id="snmps" class='grid_12 boxit' data-action='<%= params[:action] %>' data-page='<%= params[:page].to_i %>'>
+    
+	<%= form_tag mass_update_snmps_path do %>
+    
+		<%= hidden_field_tag :selected_snmps, [] %>
+    
+		<ul class='table'>
+            
+			<li class='header'>
+				<div class='row'>
+					<div class='small'>
+						<%= check_box_tag 'snmp-select-all', nil, false, :class => 'event-select-all' %>
+					</div>
+                    
+					<div class='address'>
+						<%= sortable(:sid, 'Sensor')%>
+					</div>
+                    
+					<div class='oid'>
+						Oid            
+					</div>
+                    
+					<div class='value'>
+						Name            
+					</div>
+                    
+					<div class='value'>
+						Value
+					</div>
+                    
+					<div class='timestamp'>
+						<%= sortable(:timestamp, 'Timestamp')%>
+					</div>
+				</div>
+			</li>
+            
+			<div class='content'>
+				<%= render @snmps %>
+			</div>
+            
+		</ul>
+    
+	<% end %>
+    
+    <%= pager(@snmps, request.fullpath) %>
+    
+</div>

@@ -1,0 +1,8 @@
+<% active = (session[:snmp_tab].to_s == tab[:column].to_s) %>
+
+<%- unless tab[:name].nil? %>
+	<li class='data_column snmp <%= "active" if active %>' id='<%= tab[:column] %>' data_column='<%= tab[:column] %>' data_index='<%= index %>' >
+	  <%= link_to tab[:name].pluralize, change_snmp_tab_path(tab[:column]), :remote => true, :data_column => tab[:column], :data_index => index, :class => 'show_metric' %>
+	  <%= link_to (image_tag 'icons/close.gif', :class => 'close-tab'), delete_snmp_tab_path(tab[:column], :range => @range, :end_time => @end_time.to_i), :class => 'close-tab', :data_column => tab[:column], :remote => true %>
+	</li>
+<% end %>	

@@ -1,0 +1,88 @@
+<%= javascript_include_tag "tablednd" %>
+
+
+<%= title "Auto Classifications" do -%>
+	
+	<%= menu_item "Add Auto Classification", new_auto_classifications_path, 'icons/add.png', {:class => 'snorbybox', :target => '_blank'} %>
+	
+<%- end -%>
+
+<div id="auto_classifications" class="boxit">
+
+	<table class='default' border="0" cellspacing="0" cellpadding="0">
+
+		<tr>
+			<th class="first"></th>
+		  <th>ID</th>
+		  <th>Sensor</th>
+		  <th>Source IP</th>
+		  <th>Destination IP</th>
+		  <th>Signature</th>
+		  <th>Classification</th>
+		  <th class="icons">Edit</th>
+		  <th class="icons last">Remove</th>
+		</tr>
+		<tbody class='auto_classifications'>
+		  <% @auto_classifications.each do |a_class| %>
+		  	<tr id='<%= a_class.id %>' position='<%= a_class.position %>' >
+		  		<td class="dragHandle first"> </td>
+		  		<td><%= a_class.id %></td>
+		  		<td>
+		  			<% if a_class.sensor %>
+		  				<%= a_class.sensor.name %>
+		  			<% end %>
+		  		</td>
+		  		<td>
+		  			<%= a_class.ip_src %>
+		  		</td>
+		  		<td>
+		  			<%= a_class.ip_dst %>
+		  		</td>
+		  		<td>
+		  			<% if a_class.signature %>
+		  				<%= a_class.signature.name %>
+		  			<% end %>
+		  		</td>
+		  		<td><%= a_class.classification.name %></td>
+		  		<td class='icons'><%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), {:controller=>"classifications", :action=>"edit_auto", :id => a_class.id}, {:class => 'snorbybox', :target => '_blank'} %></td>
+		  		<td class='icons last'><%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), {:controller=>"classifications", :action=>"destroy_auto", :id => a_class.id}, :method => :delete, :confirm => "Are you sure?" %></td>
+		  	</tr>
+		  <% end %>
+		</tbody>
+
+	</table>
+
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function()  {
+
+		$("#auto_classifications table tbody.auto_classifications tr").hover(function() {
+    	$(this.cells[0]).addClass('showDragHandle');
+    	}, function() {
+          $(this.cells[0]).removeClass('showDragHandle');
+    	}
+    );
+
+		$('#auto_classifications table').tableDnD({
+			onDrop: function(table, row) {
+
+				var rows = table.rows;
+				order = "";
+
+				for (var i=1; i < rows.length; i++) {
+          order += rows[i].id+";";
+        }
+
+        $.ajax({
+        	type: "POST",
+      		url: "/classifications/order_auto",
+      		data: {
+      			positions: order
+		      }
+    		});
+
+			}
+		});
+	});
+</script>

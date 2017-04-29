@@ -1,0 +1,10 @@
+<% if @suppress_rules.blank? %>
+	$('a#fancybox-close').click();
+    $('a.event-filter').addClass('red-border');
+    flash_message.push({type: 'success', message: 'Changes must be applied on the Event Rules section'});flash();
+    $('div.limit-events-table').replaceWith("<%= escape_javascript(render(:partial => 'rules/limit_event_rules', :locals => {:limit_rules => @limit_rules})) %>");
+<% else %>
+	$('tbody.suppress-events').replaceWith("<%= escape_javascript(render(:partial => 'suppress_events_list.html.erb', :locals => { :suppress_rules => @suppress_rules})) %>");
+	$('a.event-filter-suppress').addClass('red-border');
+	$('div.suppress-events-table').replaceWith("<%= escape_javascript(render(:partial => 'rules/suppress_event_rules', :locals => { :suppress_rules => @suppress_rules})) %>");
+<% end %>

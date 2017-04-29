@@ -1,0 +1,42 @@
+<%= form_for(@reputation, :html => { :id => "new_reputation_form" , :class => 'validate' }) do |f| %>
+  <%= error_messages_for(@reputation) %>
+  <div id='form-holder'>    
+    <div class='grid_6'>      
+      <p>
+        <%= label_tag 'Action' %>
+        <i>(actions for this country/network)</i><br/>
+        <%= f.select :action_id, options_for_select(@actions_list, @reputation.action.nil? ? 1 : @reputation.action.id) %>
+       </p>
+      <%= f.text_field :type_id, :placeholder => @reputation.type_id, :class => 'required hidden' %>
+    </div>
+    <div class='grid_5'>      
+      <% if @reputation.type_id == 1%>   
+        <%= label_tag 'IP/Network' %><br />     
+        <%= f.text_field :value, :placeholder => 'Value', :class => 'required' , :style => "width: 400px;"%>
+      <% else %>
+        <%= label_tag 'Country' %><br />   
+        <%= f.select :country_id, options_for_select(@countries_list, @reputation.country.nil? ? "" : @reputation.country.code_name) %>
+      <% end %>
+      </p>       
+      <%= f.text_field :sensor_sid, :placeholder => @reputation.sensor_sid, :class => 'required hidden' %>
+    </div>
+  </div>
+
+  <% if @reputation.id.present? %>
+    <div class="main-notes">
+      <%= render :partial => 'reputations/notes' %>
+    </div>
+  <% end %>
+
+  <%= snorby_box_footer do %>
+    <%= form_actions do %>
+      <%= f.submit "Save", :class => 'success' %>
+      <%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+    <% end %>
+  <% end %>
+<% end %>
+
+
+<script type="text/javascript">
+  $('#new_reputation_form.validate').validate();
+</script>

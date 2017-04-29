@@ -1,0 +1,68 @@
+<%= title "Info #{@sensor.sensor_name}".html_safe, "Info #{@sensor.sensor_name}" do%>
+  <%= drop_down_for('Add Tab', 'icons/tabs.png', 'tab') do %>
+    <% Event::AGGREGATED_COLUMNS.sort{|a1,a2| a1[1]<=>a2[1]}.to_a.each do |tab| %>
+      <dd class="drop-down-tab-item" data_column="<%= tab[0] %>" style="<%= ( @new_tabs.include?(tab) ? "" : "display:none;" ) %>" >
+        <%= link_to tab[1], add_dashboard_tab_path(tab[0], :range => @range, :end_time => @end_time.to_i), :class => "dashboard #{tab[0]}", :data_column => tab[0], :remote => true  %>
+      </dd>
+    <% end %>
+  <% end %>
+<% end %>
+<div id='dashboard' class="sensor" data=<%= @sensor.sid  %>>
+  <div class='main grid_9'>
+    <%= render :partial => 'dashboard_switch' %>
+    <div id="sensor-content">
+      <div id='dashboard-sensor-info-content' class="dashboard content protected">
+        <%= render :partial => 'dashboard_info_content' %>
+      </div>
+      <div id='dashboard-sensor-load-content' class="dashboard content protected" style="display: none;">
+        <%#= render :partial => 'dashboard_load_content' %>
+      </div>
+      <div id='dashboard-sensor-other-content' class="dashboard content protected" style="display:none"></div>
+    </div>
+  </div>
+  <div class='secondary grid_3 alpha'>
+    <%= render :partial => 'dashboard_info'     , :locals => {:sensor => @sensor, :node => @node} %>
+    <%= render :partial => 'dashboard_rules'    , :locals => {:sensor => @sensor, :node => @node} %>
+    <%= render :partial => 'dashboard_load'     , :locals => {:sensor => @sensor, :node => @node} %>
+    <%= render :partial => 'dashboard_hardware' , :locals => {:sensor => @sensor, :node => @node} %>
+    <%= render :partial => 'dashboard_segments' , :locals => {:sensor => @sensor, :node => @node} %>
+  </div>
+</div>
+
+<% content_for :footer do %>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $(".data_column.loading").each(function(index, value){
+        var id = $(value).attr('data_column');
+        $.ajax({
+          url: "/dashboard_tabs/"+ id +"/add",
+          data: {
+            end_time: <%= @end_time.to_i %>,
+            range: "<%= @range %>"
+          }
+        });       
+      });
+
+      $('ul#box-menu').sortable({ 
+        axis: "x",
+        opacity: 0.6,
+        update: function(event, ui) {
+          if (!$(ui.item).hasClass('active')){
+            $(ui.item).css('top', '5px');
+          }
+          var tabs_array = $('ul#box-menu').sortable('toArray');
+
+          $.ajax({
+            url: "/dashboard_tabs/reorder",
+            data: {
+              tabs: tabs_array
+            }
+          });
+        }
+      });
+      $("ul#box-menu").disableSelection();
+    });
+  </script>
+<% end %>
+
+

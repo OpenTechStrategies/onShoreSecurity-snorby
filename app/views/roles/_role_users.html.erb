@@ -1,0 +1,14 @@
+<%= render role.users.all(:order => [:name.asc]) %>
+
+<script type="text/javascript">
+  $('input#enabled, input#admin').attr("disabled", true);
+  $('tbody.users tr td.icons.config').remove();
+  $('tbody.users td.last').addClass('icons');
+
+  var role_id = <%= role.id %>;
+  $('#role_users a').each(function(index, value){
+    var user = $(value).parents('tr').attr('data-user-id');
+    $(value).attr('href', '/roles/'+role_id+'/delete_user/'+user);
+    $(value).attr('data-remote', true);
+  });
+</script>

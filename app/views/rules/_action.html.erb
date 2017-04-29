@@ -1,0 +1,33 @@
+<%-unless action.present?
+  cl=""
+  if @sensor.nil?
+    action="alert"
+  else
+    if mactions.nil?
+      action="action"
+      cl="noaction"
+    elsif mactions.size==0
+      action="action"
+      cl="noaction"
+    elsif mactions.size==1
+      action = mactions.first.name
+    else
+      action="mixed"
+    end
+  end
+end -%>
+<dl class="rule_actions">
+  <dd class="<%= action %><%= (locked ? " locked" : "") %> <%= cl %>">
+    <span><%= action %></span>
+  </dd>
+</dl>
+<%- unless @sensor.nil? %>
+  <dl class='rule_actions-menu <%= action %>' style='display:none;'>
+    <div class="arrow"></div>
+    <% @actions.each do |a| %>
+      <dd class="rule_action-button" data="<%= a.id %>">
+        <%= link_to a.name, '#' %>
+      </dd>
+    <%end%>
+  </dl>
+<%- end %>

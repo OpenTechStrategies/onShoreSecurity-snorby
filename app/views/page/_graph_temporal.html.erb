@@ -1,0 +1,64 @@
+<script type="text/javascript">
+		$(document).ready(function() {
+			window["<%= id %>"] = new Highcharts.StockChart({
+          chart: {
+          		renderTo: '<%= id %>',
+		         	type: 'spline',
+              zoomType: 'x',
+              resetZoomEnabled: true,
+          },
+          credits: {
+            enabled: false
+          },
+          legend: {
+            maxHeight: 40,
+            enabled: true
+          },
+          navigator: {
+            enabled: false
+          },
+          scrollbar: {
+            enabled: false
+          },
+          plotOptions: {
+            area: {
+              stacking: 'normal'
+            }
+          },
+          rangeSelector: {
+            enabled: false
+          },
+
+          title: {
+            enabled: false,
+            text: ''
+          },
+
+          exporting: {
+            enabled: false
+          },
+
+          xAxis: {
+            events: {
+              setExtremes: function(e){                
+                if (e.dataMax==e.max && e.dataMin==e.min) {
+                  $('#filter_zoom').hide();
+                } else {
+                  $('#filter_zoom').attr('data-max', e.max);
+                  $('#filter_zoom').attr('data-min', e.min);
+                  $('#filter_zoom').show();
+                }
+              }
+            }
+          },
+          yAxis: {
+            endOnTick: false,
+            minRange: 0,
+            min: 0,
+            showLastLabel: true
+          },
+
+          series: <%= data.to_json.html_safe %>
+      });			
+		});
+</script>

@@ -1,0 +1,23 @@
+<%= snorby_box("Compilations", false) do %>
+
+  <%= stylesheet 'chosen' %>
+
+  <% if Snorby::Worker.running? %>
+
+    <%= render :partial => 'compilations' %>
+
+  <% else %>
+
+      <div id='note-box' class='error'>
+        <%= image_tag('icons/note-icon-white.png') %>
+        The worker is not currently running. It's imperative you start the worker immediately!
+        All backend calculations are performed asynchronously using the Worker.
+      </div>
+
+  <% end %>
+
+  <%= snorby_box_footer do %>
+    <%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+  <% end %>
+
+<% end %>

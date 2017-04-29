@@ -1,0 +1,38 @@
+<div class='section-title plus'>UDP Header Information</div>
+
+<div class='proto plus'>
+
+  <table class='ip-header' border='0' cellspacing='0' cellpadding='0'>
+    <tr>
+      <th class='first'><span title="Source port (16 bits) - identifies the sending port" class='add_tipsy'>Src Port</span></th>
+      <th><span title="Destination port (16 bits) - identifies the receiving port" class='add_tipsy'>Dst Port</span></th>
+      <th><span title="Packet Length (16 bits) - UDP Packet Length" class='add_tipsy'>Len</span></th>
+      <th class='last'><span title="Checksum (16 bits) – The 16-bit checksum field is used for error-checking of the header and data." class='add_tipsy'>Csum</span></th>
+    </tr>
+    <tbody>
+      <tr>
+        <td class='first' style='position: relative;'>
+          <a href="#" class='ip-button has-event-menu' onclick="return false;">  
+            <%= @event.udp.udp_sport %>
+          </a>
+          <dl class='event-sub-menu round shadow push-down' style="display:none;">
+            <dd><%= link_to "Search by UDP Source Port" , results_path(:add_search => { :column => "udp_source_port", :value => @event.udp.udp_sport, :operator => "is" }) %></dd>
+            <dd><%= link_to "Discard by UDP Source Port", results_path(:add_search => { :column => "udp_source_port", :value => @event.udp.udp_sport, :operator => "is_not" }) %></dd>
+          </dl>
+        </td>
+        <td style='position: relative;'>
+          <a href="#" class='ip-button has-event-menu' onclick="return false;">  
+            <%= @event.udp.udp_dport %>
+          </a>
+          <dl class='event-sub-menu round shadow push-down' style="display:none;">
+            <dd><%= link_to "Search by UDP Destination Port" , results_path(:add_search => { :column => "udp_destination_port", :value => @event.udp.udp_dport, :operator => "is" }) %></dd>
+            <dd><%= link_to "Discard by UDP Destination Port", results_path(:add_search => { :column => "udp_destination_port", :value => @event.udp.udp_dport, :operator => "is_not" }) %></dd>
+          </dl>
+        </td>
+        <td><%= @event.udp.udp_len %></td>
+        <td class='last'><%= @event.udp.udp_csum %></td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

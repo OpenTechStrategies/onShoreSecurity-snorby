@@ -1,0 +1,28 @@
+<div id='new_note_box' class='event-note round'>
+	
+	<div class='note-avatar-holder'>
+    <%= image_tag(current_user.gravatar ? get_gravatar_uri(current_user.email) : current_user.avatar.url(:small), :size => '32x32') %> 
+	</div>
+	
+	<div class='username'>
+		<span><%= current_user %></span> 
+		<i><%= time_ago_in_words(Time.now) %></i>
+		
+	</div>
+	
+	<div class='note-body'>
+		
+		<div id='new_main_note' class='fake_form' data-object-id='<%= @reputation.id %>'>
+		
+			<%= text_area_tag :body %>
+
+			<%= form_actions do %>
+				<%= button "Save Note", :class => 'submit_new_main_note', :data_class => 'reputation' %>
+				<%= button "Cancel", :class => 'warning cancel-note' %>
+			<% end %>
+		
+		</div>
+		
+	</div>
+	
+</div>

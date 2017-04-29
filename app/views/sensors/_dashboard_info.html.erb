@@ -1,0 +1,19 @@
+<div id='dashboard-sensor-info'>
+  <div class='dashboard-header'>
+    <span class="title">INFO</span>
+  </div>
+  <ul class='box-list'>
+    <% if !node["redBorder"]["ipmi"].nil? and !node["redBorder"]["ipmi"]["lan"].nil? %>
+      <li id='ip'>Management IP<span><%= node["ipaddress"]%></span></li>
+      <li id='macaddress'>Mgt Mac Address<span><%= node["macaddress"].upcase %></span></li>
+      <li id='ip'>IPMI IP<span><%= node["redBorder"]["ipmi"]["lan"]["ipaddress"] %></span></li>
+      <li id='ip'>IPMI Mac Address<span><%= node["redBorder"]["ipmi"]["lan"]["macaddress"].upcase %></span></li>
+    <% else %>
+      <li id='ip'>IP<span><%= node["ipaddress"]%></span></li>
+      <li id='macaddress'>Mac Address<span><%= node["macaddress"].upcase %></span></li>
+    <% end %>
+    <li id='rbVersion'>redBorder version<span><%=node["redBorder"]["rpms"]["sensor"] %></span></li>
+    <li id='uptime'>Uptime<span><%=node["uptime"].gsub(/.?[0-9]{2} seconds?/,"") %></span></li>
+  </ul>
+</div>
+

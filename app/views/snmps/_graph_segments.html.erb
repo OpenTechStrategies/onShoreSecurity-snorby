@@ -1,0 +1,146 @@
+<% javascript :footer, 'sparkline', 'highcharts' %>
+
+<div class="boxit">
+  <ul class="table categories" style='border:5px solid white;'>
+    <div class="content protected">
+      <li class="category highlight boxit">
+        <div class="sec-title" id="title">
+          <%= sec_title "Segments".html_safe, "title second" -%>
+        </div>
+        <ul class="table">
+          <div class="content protected">
+            <li class="group">
+              <div class="row">
+                <table class="default" id="cpuTable" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <th class='first'>Processor</th>
+                    <th>Interfaces</th>
+                    <th>Bypass</th>
+                    <th>MTU</th>
+                  </tr>
+                  <tbody class='cpus'>
+                    <% node[:redBorder][:segments].each do |key, segment|  %>
+                      <%= render :partial => 'dashboard_hardware_content_segment', :locals =>{:node => node, :segment => segment, :name => key} %>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </li>
+          </div>
+        </ul>
+      </li>
+      <li class="category boxit">
+        <div id='segments-graph' class='dashboard-graph <%= @segments_metrics.blank? ? "no-pie-data" : "" %>'></div>
+      </li>
+    </div>
+  </ul>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function()  {
+    $('.segment').mouseenter(function() {
+      $(".box-holder span.interface").removeClass("selected");
+      var interfaces = $(this).find(".interfaces").html().split(", ");
+      for (i=0; i<interfaces.length; i++) {
+        $(".box-holder span.iface-" +interfaces[i]).addClass("selected")
+      }
+    });
+    $('.segment').mouseleave(function() {
+      $(".box-holder span.interface").removeClass("selected");
+    });
+  });
+</script>
+
+<% if !@segments_metrics.blank? %>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      chart = new Highcharts.Chart({
+            chart: {
+          renderTo: 'segments-graph',
+          defaultSeriesType: 'spline',
+          marginRight: 80,
+          marginLeft: 80,
+          marginTop: 50,
+          marginBottom: 50,
+          zoomType: 'x',
+          width: 722,
+          height: 400
+        },
+        exporting: {
+          enabled: false
+        },
+        credits: {
+          enabled: false
+        },
+        title: {
+          text: 'Throughput vs Time by Segments',
+          x: -20 //center
+        },
+        xAxis: {
+          categories: <%= @axis.to_json.html_safe %>,
+          title: {
+            margin: 10,
+            <% if @range == 'last_6_hours' %>
+              text: 'Last 6 Hours'
+            <% elsif (@range == 'year' || @range == 'quarter') %>
+              text: 'Month of Year'
+            <% elsif (@range == 'month' || @range == 'last_month') %>
+              text: 'Date of Month'
+            <% elsif (@range == 'week' || @range == 'last_week') %>
+              text: 'Date Of Week'
+            <% else %>
+              text: 'Hour of Day'
+            <% end %>
+          },
+          <% if @range == 'last_6_hours' || @range.blank? %>
+              labels: {
+                      step: 2
+              }
+          <% end %>
+        },
+        yAxis: {
+          title: {
+            text: 'Mbps'
+          },
+          plotLines: [{
+              value: 0,
+              width: 1,
+              color: '#808080'
+            }],
+          min: 0
+        },
+        tooltip: {
+          shared: true,
+          crosshairs: true
+        },
+        legend: {
+          layout: 'vertical',
+          align: 'right',
+          verticalAlign: 'top',
+          x: 0,
+          y: 0,
+          borderWidth: 0,
+          borderRadius: 0,
+          borderColor: '#ddd',
+          backgroundColor: '#fff'
+        },
+        plotOptions: {
+            series: {
+              marker: {
+                enabled: false,
+                states: {
+                  hover: {
+                    enabled: true
+                  }
+                }
+              }
+            }
+          },
+        series: <%= @segments_metrics.to_json.html_safe %>
+      });
+    });
+
+  </script>
+
+<% end %>

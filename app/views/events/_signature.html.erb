@@ -1,0 +1,64 @@
+<div class='section-title plus'>Signature Information</div>
+
+<div class='signature-table plus'>
+  <table class='ip-header' border='0' cellspacing='0' cellpadding='0'>
+    <tr>
+      <th class='first'><span title="The gid keyword (generator id) is used to identify what part of Snort generates the event when a particular rule fires. For example gid 1 is associated with the rules subsystem and various gids over 100 are designated for specific preprocessors and the decoder." class='add_tipsy'>Generator ID</span></th>
+      <th><span title="The sid keyword is used to uniquely identify Snort rules. This information allows output plugins to identify rules easily." class='add_tipsy'>Signature ID</span></th>
+      <th><span title="The rev keyword is used to uniquely identify revisions of Snort rules. Revisions, along with Snort rule id's, allow signatures and descriptions to be refined and replaced with updated information." class='add_tipsy'>Signature Revision</span></th>
+      <% total_event_count ||= Event.count %>
+      <th>Activity (<%= @event.signature.event_percentage(true, total_event_count) %>)</th>
+      <th>&nbsp;</th>
+      <th class='last'></th>
+    </tr>
+    <tbody>
+      <tr>
+        <td class='first' style='position: relative;'>
+          <% if @event.signature.sig_gid %>
+            <a href="#" class='ip-button has-event-menu' onclick="return false;">  
+              <%= @event.signature.sig_gid %>
+              <%= clippy(@event.signature.sig_gid, '#FFFFFF', "signature_gid-#{@event.id}") %>
+            </a>
+            <dl class='event-sub-menu round shadow push-down' style="display:none;">
+              <dd><%= link_to "Search by gid" , results_path(:add_search => { :column => "sig_gid", :value => @event.signature.sig_gid, :operator => "is" }) %></dd>
+              <dd><%= link_to "Discard by gid", results_path(:add_search => { :column => "sig_gid", :value => @event.signature.sig_gid, :operator => "is_not" }) %></dd>
+            </dl>
+          <% else %>
+            N/A
+          <% end %>
+        </td>
+        <td style='position: relative;'>
+          <% if @event.signature.sig_sid %>
+            <a href="#" class='ip-button has-event-menu' onclick="return false;">  
+              <%= @event.signature.sig_sid %>
+              <%= clippy(@event.signature.sig_sid, '#FFFFFF', "signature_sid-#{@event.id}") %>
+            </a>
+            <dl class='event-sub-menu round shadow push-down' style="display:none;">
+              <dd><%= link_to "Search by sid" , results_path(:add_search => { :column => "sig_sid", :value => @event.signature.sig_sid, :operator => "is" }) %></dd>
+              <dd><%= link_to "Discard by sid", results_path(:add_search => { :column => "sig_sid", :value => @event.signature.sig_sid, :operator => "is_not" }) %></dd>
+            </dl>
+          <% else %>
+            N/A
+          <% end %>
+        </td>
+        <td><%= @event.signature.sig_rev || 'N/A' %></td>
+
+        <td class='search-by-signature add_tipsy'
+            title="View all '<%= @event.signature.name%>' events."
+            data-url="/results?search[signature_name]=<%= @event.signature.name %>">
+              <%= css_chart(@event.signature.event_percentage(false, total_event_count), false, true) %>
+        </td>
+
+        <td style='width:190px;' class=''>
+          <%= link_to "Query Signature Database",
+            @event.signature_url, :target => '_blank' %>
+        </td>
+
+        <td style='width:90px;' class='last'>
+          <%= link_to "View Rule", rule_path(:gid=> @event.signature.sig_gid, :id => @event.signature.sig_sid, :rev => @event.signature.sig_rev), :class => 'snorbybox', :target => '_blank' %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

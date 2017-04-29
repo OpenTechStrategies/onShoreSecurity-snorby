@@ -1,0 +1,73 @@
+<div class='box-holder'>
+  <table>
+    <tbody>
+      <tr>
+        <% 5.times do %>
+          <td></td>
+        <% end %>
+        <% @node[:redBorder][:segments].sort.each do |x| %>
+          <td colspan="2" style="text-align:center;">
+            <span class="segment-title">
+              <%= x[0] %>
+            </span>
+          </td>
+        <% end %>
+        <% (6 - @node[:redBorder][:segments].size).times do %>
+          <td colspan="2"></td>
+        <% end %>
+      </tr>
+      <tr>
+        <% 5.times do %>
+          <td></td>
+        <% end %>
+
+        <% @node[:redBorder][:segments].sort.each do |x| %>
+          <% if x[1]["bypass"] %>
+            <% x[1][:interfaces].sort.each do |y| %>
+              <td class="tdiface">
+                <span title="<%= y[0]  %> (<%= x[0] %>) <%= y[1][:type]=="fibre" ? "- fibre " : "" %>- bypass" class='add_tipsy interface iface-<%= y[0] %>'>
+                  <% if y[1][:type] == "fibre" %>
+                    <%= image_tag('fiber-orange-up.gif', :alt=> "bypass") %>
+                  <% else %>
+                    <%= image_tag('rj-orange-up-18x15.gif', :alt=> "bypass") %>
+                  <% end %>
+                </span>
+              </td>
+            <% end %>
+          <% else %>
+            <% x[1][:interfaces].sort.each do |y| %>
+              <% if y[1][:status] == 'up' %>
+                <td class="tdiface">
+                  <span title="<%= y[0] %> (<%= x[0] %>) <%= y[1][:type]=="fibre" ? "- fibre " : "" %>- up" class='add_tipsy interface iface-<%= y[0] %>'>
+                    <% if y[1][:type] == "fibre" %>
+                      <%= image_tag('fiber-green-up.gif', :alt=> "up") %>
+                    <% else %>
+                      <%= image_tag('rj-green-up-18x15.gif', :alt=> "up") %>
+                    <% end %>
+                  </span>
+                </td>
+              <% else %>
+                <td class="tdiface">
+                  <span title="<%= y[0] %> (<%= x[0] %>) <%= y[1][:type]=="fibre" ? "- fibre " : "" %>- down" class='add_tipsy interface iface-<%= y[0] %>'>
+                    <% if y[1][:type] == "fibre" %>
+                      <%= image_tag('fiber-red-up.gif', :alt=> "down") %>
+                    <% else %>
+                      <%= image_tag('rj-red-up-18x15.gif', :alt=> "down") %>
+                    <% end %>
+                  </span>
+                </td>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <% (6 - @node[:redBorder][:segments].size).times do %>
+          <td></td>
+          <td></td>
+        <% end %>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <img class="background-image" src="/images/frontal.png" alt="" />
+</div>

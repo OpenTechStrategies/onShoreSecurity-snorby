@@ -1,0 +1,30 @@
+<% extend ApplicationHelper %>
+<% content_for :pdf_header do %>
+	<br />
+	<i>Listing Last 100 Events</i>
+<% end %>
+
+<div class='table-holder no-break'>
+	<table border="0" cellspacing="0" cellpadding="0" id='events_table'>
+		<tr>
+			<th>Sev.</th>
+			<th>Domain</th>
+			<th>Sensor</th>
+			<th>Source IP</th>
+			<th>Destination IP</th>
+			<th>Event Signature</th>
+			<th>Timestamp</th>
+		</tr>
+		<% @events.each do |event| %>		
+			<tr style=" font-size:8px;">
+				<td><span class='sev<%=event.signature.severity_id%>'><%= event.signature.severity_id || 0 %></span></td>
+				<td><%= truncate(event.sensor.parent_domain.is_root? ? "---" : event.sensor.parent_domain.name, :length => 17, :omission => '...') %></td>
+				<td><%= truncate(event.sensor.sensor_name, :length => 17, :omission => '...') %></td>
+				<td><span class='country_flag'><%= event.ip.present? ? event.ip.geoip[:source][:country_code2] : '' %></span><%= event.ip.present? ? event.ip.ip_src : 'N/A' %></td>
+				<td><span class='country_flag'><%= event.ip.present? ? event.ip.geoip[:destination][:country_code2] : '' %></span><%= event.ip.present? ? event.ip.ip_dst : 'N/A' %></td>
+				<td><%= truncate(event.signature.name, :length => (geoip? ? 48 : 55), :omission => '...') %></td>
+				<td><%= event.pretty_time %></td>
+			</tr>				
+		<% end %>
+	</table>
+</div>

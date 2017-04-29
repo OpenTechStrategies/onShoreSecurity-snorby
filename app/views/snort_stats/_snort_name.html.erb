@@ -1,0 +1,8 @@
+<tr>
+	<td class='first'><%= check_box_tag 'enable', snort_name.enable, snort_name.enable, {:data_snort_name_id => snort_name.id} %></td>
+	<td><%= snort_name.id %></td>
+	<td><%= snort_name.name %></td>
+	<td class='edit-snort-text-name' data-snort-name-id='<%= snort_name.id %>'><%= snort_name.text_name %></td>
+	<td class='last edit-snort-measure-unit' data-snort-name-id='<%= snort_name.id %>'><%= snort_name.measure_unit %></td>
+	
+</tr>

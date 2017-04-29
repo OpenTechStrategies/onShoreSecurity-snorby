@@ -1,0 +1,28 @@
+<%= title "Please log in to continue..." -%>
+
+<div id='signin' class='grid_12 page boxit'>
+
+  <%= form_for(resource, :as => resource_name, :url => session_path(resource_name), :html => {:class => 'validate'}) do |f| %>
+    <p>
+      <% if Snorby::CONFIG[:authentication_mode] == "ldap" %>
+        <%= f.label :email %><br />
+        <%= f.text_field :email, :placeholder => 'example@example.com', :autocomplete => :off, :class => 'required email' %>
+      <% else %>
+        <%= f.label :email %><br />
+        <%= f.text_field :email, :placeholder => 'example@example.com', :autocomplete => :off, :class => 'required email' %>
+      <% end %>
+    </p>
+    <p>
+      <%= f.label :password %><br />
+      <%= f.password_field :password, :placeholder => 'P@ssw0rd', :autocomplete => :off, :class => 'required password' %>
+    </p>
+
+    <%= form_actions do %>
+      <% if devise_mapping.rememberable? -%>
+        <p><%= f.check_box :remember_me %> <%= f.label :remember_me %></p>
+      <% end -%>
+      <%= button "Welcome, Sign In", :class => 'success' %>
+      <%= button "Forgot Password?", :class => 'warning forgot-my-password' %>
+    <% end %>
+  <% end %>
+</div>

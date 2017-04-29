@@ -1,0 +1,6 @@
+<%= title "Logs <i>(#{number_with_delimiter(@logs.pager.total)} entries)</i>".html_safe, 'Logs' do -%>
+  <%= render :partial => 'search' %>
+  <%= menu_item "", search_logs_path, 'icons/lens.png', :title => "Advanced Search" %>
+<%- end -%>
+
+<%= render :partial => 'logs' %>

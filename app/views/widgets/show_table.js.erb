@@ -1,0 +1,2 @@
+
+$(".portlet[data=<%= @widget.id %>]").find(".portlet-content").append("<%= escape_javascript(render(:partial => '/page/table_any_chart', :locals => {:table_metrics => @table_metrics, :widget => @widget, :long_data => false } )) %>");

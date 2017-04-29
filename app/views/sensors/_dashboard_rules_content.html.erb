@@ -1,0 +1,51 @@
+<div class="content" style='border: none;'>
+  <div id="events" class='grid_12 boxit'>
+    <ul class="table last-10-events-info" style='border: 5px solid white;'> 
+      <li class="category highlight boxit">
+        <div class="sec-title" id="title">
+          <%= sec_title "Last 10 Events".html_safe -%>
+        </div>      
+        <ul class="table">
+          <li class='header'>
+            <div class='row'>
+              <div class='small'>Sev</div>
+              <div class='address'>Source IP</div>
+              <div class='address'>Destination IP</div>
+              <div class='signature'>Event Signature</div>
+              <div class='timestamp'>Timestamp</div>
+            </div>
+          </li>        
+          <div class='content'>
+            <%= render @events %>
+          </div>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <%- if !@traps.nil? && !@traps.blank? %>
+    <div id="traps" class='grid_12 boxit'>
+      <ul class="table last-5-traps-info" style='border: 5px solid white;'>
+        <li class="category highlight boxit">
+          <div class="sec-title" id="title">
+            <%= sec_title "Last 5 Traps".html_safe -%>
+          </div>        
+          <ul class='table'>
+            <li class='header'>
+              <div class='row'>
+                <div class='port'>Port</div>
+                <div class='protocol'>Protocol</div>
+                <div class='trigger'>Trigger</div>
+                <div class='trap_message'>Message</div>
+                <div class='timestamp'>Timestamp</div>
+              </div>
+            </li>
+            <div class='content'>
+              <%= render @traps %>
+            </div>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  <%- end %>
+</div>

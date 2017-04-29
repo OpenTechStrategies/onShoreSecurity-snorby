@@ -1,0 +1,5 @@
+$('div#compilations').replaceWith("<%= escape_javascript(render(:partial => 'compilations', :locals => { :compilations => @compilations })) %>");
+
+Snorby.helpers.remove_click_events(false);
+Snorby.helpers.recheck_selected_events();
+flash();

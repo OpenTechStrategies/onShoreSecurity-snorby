@@ -1,0 +1,5 @@
+<%- if flowbits.present? %>
+  <span title="flowbits: <%= flowbits.map{|x| x.name}.join(", ") %> " class='add_tipsy round flowbits'><%= image_tag("icons/flowbit.png", :size => '16x16') %></span>
+<% else %>
+  <span class='round flowbits opacity'><%= image_tag("icons/flowbit.png", :size => '16x16') %></span>
+<%end%>

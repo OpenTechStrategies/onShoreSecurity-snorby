@@ -1,0 +1,18 @@
+<%- unless @sensor.nil? %>
+  <div id="reputation-actions-menu">
+    <button id='applyfw' title='<%= @sensor.virtual_sensor? ? "Apply this Black/White Lists to #{@sensor.name}" : "Apply this Black/White Lists to all the sensors included at the domain #{@sensor.name}" %>' class="success default add_tipsy longbut" >
+      <span>Apply</span>
+    </button>
+  </div>
+<%- end %>
+
+<script type="text/javascript">
+
+  $("#applyfw").click(function() {
+    if (confirm("Are you sure you want to apply this Black/White Lists?")) {
+      blockWebUI();
+      $.post("/reputations/apply", {sensor_sid: <%= @sensor.sid %>})
+    }
+  });
+
+</script>

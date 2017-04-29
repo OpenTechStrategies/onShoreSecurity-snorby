@@ -1,0 +1,81 @@
+<%- rules = @rules.all(:category3 => family) %>
+<%- rules_count = rules.count %>
+<%- if rules_count==1 %>
+  <%= render :partial => 'rule', :locals => {:rule => rules.first, :action => @sensor.nil? ? "alert" : @sensor.action_str_for_rule(rules.first, @last_rules) } %>
+<%- elsif rules_count>1 %>
+  <%- de = rules.map{|x| x.default_enabled}.uniq if @show_disabled_rules %>
+  <%- sensor_rules       = @last_rules.all(:rule_id=>rules.map{|x| x.id}) %>
+  <%- sensor_rules_count = sensor_rules.rules.count %>
+  <%- sensor_rules_inherited = sensor_rules.map{|x| x.inherited}.uniq %>
+  <%- sensor_rules_allow_ow  = sensor_rules.map{|x| x.allow_overwrite}.uniq %>
+
+  <li id='family-<%= @category.id %>-<%= @group.id %>-<%= family.id%>' data='<%= family.id %>' class="family">
+    <div class="row">
+      <%- if @sensor.nil?  %>
+        <div class="select small">&nbsp;</div>
+      <%- else %>
+        <%- locked = false %>
+        <div class="select small"><%= check_box_tag 'family-selector', nil, false, :class => "check_box_#{@category.id}_#{@group.id}_#{family.id}" %></div>
+        <div class='important big'>
+          <% if rules.favorites.count == rules_count %>
+            <div class='destroy-favorite enabled'></div>
+          <% else %>
+            <div class='create-favorite enabled'></div>
+          <% end %>          
+          <% if sensor_rules_allow_ow.count == 0 %>
+            <div class='allow-overwrite disabled blank'></div>
+          <% else %>
+            <% if @sensor.virtual_sensor %>
+              <% if sensor_rules_allow_ow.size == 1 %>
+                <% if sensor_rules_allow_ow[0] %>
+                  <div title="locked" class='allow-overwrite disabled'></div>
+                <% else %>
+                  <%- locked = true %>
+                  <div title="locked" class='not-allow-overwrite disabled'></div>
+                <%  end %>
+              <% else %>
+                <div title="locked" class='allow-overwrite disabled'></div>
+              <% end %>
+            <% else %>
+              <% if sensor_rules_allow_ow.size == 1 %>
+                <% if sensor_rules_allow_ow[0] %>
+                  <div class='allow-overwrite enabled'></div>
+                <% else %>
+                  <%- locked = true %>
+                  <div title="locked" class='not-allow-overwrite enabled'></div>
+                <%  end %>
+              <% else %>
+                <div class='allow-overwrite enabled'></div>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+        <div class="action click">
+          <%- if sensor_rules_count>=rules_count %>
+            <%= render :partial => 'action', :locals => {:mactions => sensor_rules.action, :action => nil, :locked => locked} %>
+          <%- elsif sensor_rules_count>0 %>
+            <%= render :partial => 'action', :locals => {:action => "mixed", :mactions => nil, :locked => locked} %>
+          <%- else %>
+            <%= render :partial => 'action', :locals => {:mactions => sensor_rules.action, :action => nil, :locked => locked} %>
+          <%- end %>
+        </div>
+      <%- end %>
+      <%- if rules_count>1 %>
+        <div class="message click"><%= family.name.upcase %> ...</div>
+      <%- else %>
+        <div class="message click" data='<%= rules.first.id %>'><%= rules.first.short_msg %></div>
+      <%- end %>
+      <div class="timestamp">
+        <%= render :partial => 'note_tipsy'           , :locals => {:notes => rules.notes }       %>
+        <%= render :partial => 'policy_tipsy'         , :locals => {:policies => rules.policies } %>
+        <%= render :partial => 'flowbit_tipsy'        , :locals => {:flowbits => rules.flowbits } %>
+        <%= render :partial => 'inherited_tipsy'      , :locals => { :inherited => sensor_rules_inherited.size==1 ? (sensor_rules_inherited.first ? 1 : 0) : sensor_rules_inherited.size} %>
+        <%= render :partial => 'default_enabled_tipsy', :locals => {:enabled => !(de.size==1 ? !de.first : true) } if @show_disabled_rules %>
+      </div>
+      <div class="nrules"><span class="active"><%= sensor_rules_count %></span> / <span class="total"><%= rules_count %></span> </div>
+    </div>
+    <ul class="table rules" style='display:none;'>
+      <div class="content"></div>
+    </ul>
+  </li>
+<%- end %>

@@ -1,0 +1,15 @@
+<li id='trap_<%= trap.id %>' class='trap' data-trap-id='<%= trap.id %>' >    
+  <div class='row'>
+    <div class='click sensor'><%= trap.sensor.sensor_name %></div>
+    <div class='click port'><%= trap.port %></div>
+    <div class='click protocol'><%= trap.protocol %> </div>
+    <div class='click trigger'><%= trap.trigger.nil? ? "unknown" : trap.trigger %></div>
+    <div class='click trap_message' title='<%=h trap.message.gsub(/;\s*/, "\n")%>'>
+      <span><%= trap.message %></span>
+    </div>
+    <div class='click timestamp'>
+      <b title='Trap ID: <%= trap.id %> &nbsp; <%= trap.timestamp.in_time_zone.strftime('%A, %b %d, %Y at %I:%M:%S %p') %>' class='add_tipsy'><%= trap.pretty_time %></b>
+    </div>
+  </div>
+  <div style='display:none;' class='event-data' data='false'></div>
+</li>

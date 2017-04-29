@@ -1,0 +1,4 @@
+$('div.box-holder').html("<%= escape_javascript(render(:partial => 'dashboard_switch', :locals => { :node => @node }))%>");
+$('img.<%=@segment%>').remove();
+$('input[type="checkbox"][name="bypass"][class="<%=@segment%>"]').show();
+$('div.box-holder').fadeTo(500, 1);

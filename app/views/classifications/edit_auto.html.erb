@@ -1,0 +1,72 @@
+<%= snorby_box("Edit Auto Classification", false) do %>
+
+  <div class="error_box"></div>
+
+  <%= form_tag update_auto_classifications_path, :method => :post, :class => 'basic-form validate', :id => 'edit_auto_classification_form' do |f|%>
+
+    <div id="auto_classification_options">
+      <div class='grid_6' style='width:400px'>
+
+        <%= hidden_field_tag :id, @auto_classification.id %>
+
+        <div>
+          <%= label_tag "Classification" %><br/>
+          <%= select_tag '[auto_class][classification_id]', options_from_collection_for_select(Classification.all(:order => [:name.asc]), :id, :name, @auto_classification.classification_id), { :id => 'classification' } %>
+        </div>
+        <div>
+          <%= label_tag "", "Sensor <i>(optional - Blank = All)</i>".html_safe %><br />
+          <%= select_tag '[auto_class][sid]', options_from_collection_for_select(Sensor.all(:domain => true, :sid.not => 1, :order => [:name.asc]), :sid, :name, @auto_classification.sid), { :include_blank => true, :id => 'sel_sensor' } %>
+        </div>
+        <div>
+          <%= label_tag "Source IP" %><br />
+          <%= text_field_tag '[auto_class][ip_src]', @auto_classification.ip_src, :autocomplete=>:off, :class => 'ipaddr', :id => 'source_ip' %>
+        </div>
+      </div>
+      <div class='grid_5' style='width:300px'>
+        <div></div>
+        <div>
+          <%= label_tag "signature" %>
+          <% if @signature %>
+            <%= select_tag :signature_id,  select_options(Signature.all.sort{|s1, s2| s1.name.downcase <=> s2.name.downcase}.map{|x| [x.sig_id, truncate(x.name, :length => 40)]}, :include_blank => true, :selected => @signature.sig_id), :id => 'signature' %>
+          <% else %>
+            <%= select_tag :signature_id,  select_options(Signature.all.sort{|s1, s2| s1.name.downcase <=> s2.name.downcase}.map{|x| [x.sig_id, truncate(x.name, :length => 40)]}, :include_blank => true), :id => 'signature' %>
+          <% end %>
+        </div>
+        <div>
+          <%= label_tag "Destination IP" %><br />
+          <%= text_field_tag '[auto_class][ip_dst]', @auto_classification.ip_dst, :autocomplete=>:off, :class => 'ipaddr', :id => 'destination_ip' %>
+        </div>
+      </div>
+    </div>
+    <%= snorby_box_footer do %>
+      <%= form_actions do %>
+        <%= button "Update", :class => 'success' %>
+        <%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+<% end %>
+
+<script type="text/javascript">
+  $('#edit_auto_classification_form.validate').validate({
+
+    invalidHandler: function(form, validator) {
+      var errors_count = validator.numberOfInvalids();
+      var errors = validator.errorList;
+
+      $("div.error_box").empty();
+      $("div.error_box").hide();
+
+      if (errors_count){
+        var message = "";
+        for (var name in errors){
+          message += errors[name].element.id + ': ' + errors[name].message + '<br />'; 
+        }
+        $("div.error_box").html(message);
+        $("div.error_box").show();
+      }
+    }
+  });
+
+</script>

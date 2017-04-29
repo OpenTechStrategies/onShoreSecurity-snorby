@@ -1,0 +1,29 @@
+<div id='note_<%= note.id %>' class='event-note round'>
+	
+	<div class='note-avatar-holder'>
+	  <%= image_tag(note.user.gravatar ? get_gravatar_uri(note.user.email) : note.user.avatar.url(:small), :size => '32x32') %>			
+	</div>
+	
+	<% if current_user.admin %>
+		
+		<div class='note-options'>
+			<%= link_to "Destroy Note", '#', :class => 'destroy-main-note', :"data-note-id" => note.id, :data_class => 'event_filtering' %>
+		</div>
+		
+	<% end %>
+	
+	<div class='username'>
+		
+		<span><%= note.user %></span> 
+		
+		<i><%= display_time(note.created_at) %></i>
+		
+	</div>
+	
+	<div class='note-body'>
+		
+		<%= RedCloth.new(format_note_body(note.body), [:filter_styles]).to_html.html_safe %>
+		
+	</div>
+	
+</div>

@@ -1,0 +1,65 @@
+<div class="section-title plus">More Rule Information</div>
+<div class='rule-info plus'>
+  <% unless rule.nil? %>
+    <table class="rule-1" border='0' cellspacing='0' cellpadding='0'>
+      <tr>
+        <th class="first small">Rule Option</th>
+        <th>Value</th>
+        <th class="last">Modifiers</th>
+      </tr>
+      <tbody>
+        <%- fields = [] %>
+        <% original_rule.split(';').each do |x| %>
+          <% y = x.split(':'); y[0].strip! %>
+          <% unless y[0].empty? %>
+            <% if Rule::MODIFIER[y[0].to_sym].nil? %>
+              <%- fields << [y[0], y[1], []] %>            
+            <% else %>
+              <%- fields.last[2] << "<span title='#{Rule::MODIFIER[y[0].to_sym]}' class='add_tipsy'>#{x}</span>" %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <tr>
+          <td class="first small">
+            <strong>
+              severity
+            </strong>
+          </td>
+          <%- severity = rule.severity if severity.nil? %>
+          <td>
+            <span class='severity-example' style='background-color:<%= severity.bg_color %>;color:<%= severity.text_color %>'><%= severity.sig_id %></span>
+            <i class='add_tipsy' title='<%= severity.name %>'> (<%=severity.name%>)</i>
+          </td>
+          <td class="last"></td>
+        </tr>
+        <% fields.each do |x| %>
+          <% append_class= (x[0]=="http_uri" or  x[0]=="http_header") ? "section" : ""  %>
+          <tr>
+            <td class="first small <%=append_class %>">
+              <span title='<%= Rule::HELP[x[0].to_sym]  %>' class="add_tipsy">
+                <strong>
+                  <%= x[0] %>
+                </strong>
+              </span>
+            </td>
+            <td class="<%=append_class %>" style="position: relative;">
+              <% if x[0] == "msg" %>
+                <a href='#' class='ip-button has-event-menu' onclick="return false;">
+                  <%= x[1].gsub('"', '') %>
+                  <%= clippy(x[1].gsub('"', ''), '#FFFFFF', "signature-#{rule.id}") %>
+                </a>
+                <dl class='event-sub-menu round shadow push-down' style='display:none;'>
+                  <dd><%= link_to "Search by gid: #{rule.gid} and sid: #{rule.rule_id}", results_path(:add_search => [{ :column => "sig_sid", :value => rule.rule_id, :operator => "is" }, { :column => "sig_gid", :value => rule.gid, :operator => "is" }]) %></dd>
+                  <dd><%= link_to "Discard by sid: #{rule.rule_id}", results_path(:add_search => [{ :column => "sig_sid", :value => rule.rule_id, :operator => "is_not" }]) %></dd>
+                </dl>
+              <% else %>
+                <%= x[1] %>
+              <% end %>
+            </td>
+            <td class="last <%=append_class %>"><%= x[2].join(';').html_safe %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

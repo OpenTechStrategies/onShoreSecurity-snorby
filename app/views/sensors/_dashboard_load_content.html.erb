@@ -1,0 +1,22 @@
+<div id="box-tabs">
+  <ul id="box-menu">
+    <% Snorby::CONFIG_SNMP[:oids].to_a.each_with_index do |metric, index| %>
+      <li class='<%= index == 0 ? "active" : "" %> data_column snmp' id='<%= metric[1]["label"] %>' data_column='<%= metric[1]["label"] %>' data_index='<%= index %>' >
+        <%= link_to metric[1]["label"].pluralize, '#', :data_column => metric[1]["label"], :data_index => index, :class => 'show_metric' %>
+      </li>
+    <% end %>
+    <li class='data_column snmp' id="SEVERITIES" data_column="SEVERITIES" data_index="4">
+      <%= link_to "Severities", '#', :data_column => "SEVERITIES", :data_index => 4, :class => 'show_metric' %>
+    </li>
+  </ul>
+</div>
+
+<div class='box-large round'>
+  <div class='box-large-inside'>
+    <%= render :partial => 'snmps/graph_metric', :locals => {:active => true, :metric => @cpu_metric, :label => "CPU", :unit => Snorby::CONFIG_SNMP[:oids]["1.3.6.1.4.1.2021.11.11.0"]["unit"]} %>
+    <%= render :partial => 'snmps/graph_metric', :locals => {:active => false, :metric => @memory_metric, :label => "Memory", :unit => Snorby::CONFIG_SNMP[:oids]["1.3.6.1.4.1.39483.1.2.2.4.1.2.9.115.104.101.108.108.116.101.115.116.1"]["unit"]} %>
+    <%= render :partial => 'snmps/graph_metric', :locals => {:active => false, :metric => @load_metric, :label => "Load", :unit => Snorby::CONFIG_SNMP[:oids]["1.3.6.1.4.1.2021.10.1.3.2"]["unit"]} %>
+    <%= render :partial => 'snmps/graph_metric', :locals => {:active => false, :metric => @hdd_metric, :label => "HDD", :unit => Snorby::CONFIG_SNMP[:oids]["1.3.6.1.4.1.2021.9.1.9.1"]["unit"]} %>
+    <%= render :partial => 'snmps/graph_severity', :locals => {:active => false} %>
+  </div>
+</div>

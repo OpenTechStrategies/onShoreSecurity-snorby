@@ -1,0 +1,53 @@
+<div class="section-title plus">Rule Hierarchy</div>
+<div class="rule-info plus">
+  <table class="rule-1" border='0' cellspacing='0' cellpadding='0'>
+    <tr>
+      <th class="first">Sensor</th>
+      <th>Action</th>
+      <th>Inherited</th>
+      <th>Pending</th>
+      <th>Compilation Name</th>
+      <th>User</th>
+      <th class="last">Time</th>
+    </tr>
+    <tbody>
+      <%- flag = true %>
+      <% @sensor.parents.reverse.each do |x| %>
+        <%- compilations.each do |compilation| %>
+          <%#- srall = SensorRule.all(:rule => @rule, :compilation=>compilation, :sensor => x) %>
+          <%- if compilation.nil? %>
+            <%- sr = SensorRule.first(:rule => @rule, :compilation => nil, :sensor => x) %>
+          <%- else %>
+            <%- sr = SensorRule.first(:rule => @rule, :compilation_id.lte => compilation.id, :sensor => x, :order=>[:compilation_id.desc]) %>
+          <% end %>
+          <%- if sr.present? %>
+            <%- if !(@sensor == x and sr.inherited) %>
+              <tr>
+                <td><strong><%= x.name %></strong></td>
+                <td><%= sr.action.nil? ? "unknown" : sr.action.name%></td>
+                <td><%= sr.inherited ? "\u2713" : "\u2717" %></td>
+                <% if sr.compilation.nil? %>
+                  <td>\u2713%></td>
+                  <td>&nbsp;</td>
+                  <td>&nbsp;</td>
+                  <td class="last">&nbsp;</td>
+                <%- else %>
+                  <td><%=  "\u2717" %></td>
+                  <td>
+                    <span title='<%= sr.compilation.name %>' class='add_tipsy'>
+                      <%= sr.compilation.name.nil? ? "unknown" : truncate(sr.compilation.name, :length => 25, :omission => '...')%>
+                    </span>
+                  </td>
+                  <td class='name'><%= image_tag(sr.compilation.user.gravatar ? get_gravatar_uri(sr.compilation.user.email) : sr.compilation.user.avatar.url(:small), :size => '16x16', :class => 'avatar-small') %> <%= sr.compilation.user.name %></td>
+                  <td class="last">
+                    <span title='<%= sr.compilation.timestamp.strftime('%A, %b %d, %Y at %I:%M:%S %p') unless sr.compilation.nil? %>' class='add_tipsy'><%= sr.compilation.pretty_timestamp unless sr.compilation.nil? %></span>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </tbody>
+  </table>
+</div>

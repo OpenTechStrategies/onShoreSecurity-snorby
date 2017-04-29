@@ -1,0 +1,7 @@
+<%- [col_widgets[0], col_widgets[1] ].each_with_index do |widgets, column| %>
+  <div class='portlet-column ui-sortable' data='<%= column %>' >
+    <%- widgets.each do |widget| %>
+      <%= render :partial => 'widget', :locals => {:widget => widget} %>
+    <%- end %>
+  </div>
+<%- end %>

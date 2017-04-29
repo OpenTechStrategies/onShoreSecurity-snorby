@@ -1,0 +1,35 @@
+<%= stylesheet 'jquery' %>
+<%= javascript :footer, 'daterangepicker' %>
+
+<% content_for :footer do %>
+
+  <script type="text/javascript">
+
+    var rule = new SearchRule(<%= Snorby::SearchRule.json %>, <%= @sensor_id %>, '<%= @rulestype %>');
+    
+    rule.searchUI({
+      cssClass: "submit-search",
+      buttonTitle: "Submit Filter"
+    }, function() {
+      <% if @filter.blank? %>
+        rule.add();rule.add();
+      <% else %>
+        var data = <%= @filter.to_json.html_safe %>;
+        rule.build(data);
+        rule.add();rule.add();
+      <% end %>
+      
+    });
+
+  </script>
+
+<% end %>
+
+<div id="advanced_filter">
+  <% unless @sensor.nil? %>
+    <%= title "Advanced Filter for #{@rulestype}" do %>
+      <%= menu_item "Save Current Filter", new_sensor_saved_rule_filter_path(:sensor_id => @sensor.sid), 'icons/add.png', :class => "snorbybox", :target => "_blank" %>
+      <%= menu_item "View Saved Filters", sensor_saved_rule_filters_path(:sensor_id => @sensor.sid) %>
+    <% end %>
+  <% end %>
+</div>

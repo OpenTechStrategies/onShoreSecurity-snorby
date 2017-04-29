@@ -1,0 +1,9 @@
+<div class='box-large round'>
+  <div class='box-large-inside'>
+  	  <%= render :partial => 'graph_metric', :locals => {:metric => @cpu_metric, :label => "CPU"} unless @cpu_metric.nil? %>
+    	<%= render :partial => 'graph_metric', :locals => {:metric => @memory_metric, :label => "Memory"} unless @memory_metric.nil? %>
+    	<%= render :partial => 'graph_metric', :locals => {:metric => @load_metric, :label => "Load"} unless @load_metric.nil? %>
+    	<%= render :partial => 'graph_metric', :locals => {:metric => @hdd_metric, :label => "HDD"} unless @hdd_metric.nil? %>    	
+    	<%= render :partial => 'graph_severity'%>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<%- unless mem_info.nil? %>
+  <tr>
+    <td><%=mem_type%></td>
+    <td><%=(mem_info[:total].to_f/1024/1024).to_f.round(2)%> GB</td>
+    <td><%=((mem_info[:total].to_f-mem_info[:free].to_f)/1024/1024).to_f.round(2)%> GB</td>
+    <td><%=(mem_info[:free].to_f/1024/1024).to_f.round(2)%> GB</td>
+    <td><%=(mem_info[:buffers].to_f/1024/1024).to_f.round(2)%> GB</td>
+    <td><%=(mem_info[:cached].to_f/1024/1024).to_f.round(2)%> GB</td>
+  </tr>
+<%- end %>

@@ -1,0 +1,31 @@
+<%= snorby_box("Add Trap Server", false) do %>
+
+  <%= form_tag sensor_add_trap_path(@sensor), :id => 'new_trap_form', :method => :put, :remote => true, :class => 'basic-form validate' do %>
+    <div class="grid_6">
+      <p>
+        <%= label_tag 'Ip' %>
+        <br />
+        <%= text_field_tag '[trap][ip]', nil, :class => 'required ipaddr' %>
+      </p>
+
+    </div>
+
+    <div class="grid_5">
+      <p>
+        <%= label_tag 'Community' %>
+        <br />
+        <%= text_field_tag '[trap][community]', nil, :class => 'required' %>
+      </p>
+    </div>
+    <%= form_actions "snorbybox" do %>
+      <%= button "Save", :class => 'success' %>
+      <%= button "Cancel", :class => 'cancel-snorbybox warning' %>
+    <% end %>
+
+  <% end %>
+
+<% end %>
+
+<script type="text/javascript">
+  $('#new_trap_form.validate').validate();
+</script>

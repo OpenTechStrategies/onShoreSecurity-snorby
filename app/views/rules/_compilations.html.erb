@@ -1,0 +1,30 @@
+<div id="compilations" class="boxit" data-action='<%= params[:action] %>' data-page='<%= params[:page].to_i%>' >
+  <table class='default' border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <th class="first">ID</th>
+      <th>Timestamp</th>
+      <th>Name</th>
+      <th>User</th>
+      <th>Rules</th>
+      <th class="icons last"></th>
+    </tr>
+    <tbody class="compilations content">
+      <% @compilations.each do |compilation| %>
+        <tr id='<%= compilation.id %>'>
+          <td class="first"><%= compilation.id %></td>
+          <td><%= short_time compilation.timestamp %></td>
+          <td><%= compilation.name %></td>
+          <td><%= image_tag(compilation.user.gravatar ? get_gravatar_uri(compilation.user.email) : compilation.user.avatar.url(:small), :size => '16x16', :class => 'avatar-small') %><%= compilation.user.name %></td>
+          <% if compilation.id == @sensor.last_compilation.id %>
+            <td class="icons"></td>
+            <td class="icons last"></td>
+          <% else %>
+            <td class="icons"><%= link_to 'View', sensor_rules_path(@sensor, :compilation_id => compilation.id) %></td>
+            <td class="icons last"><%= link_to 'Rollback', rollback_rules_path('[sensor][sid]' => @sensor.sid, :compilation => compilation.id), :method => :post, :confirm => "Are you sure to perform the rollback?", :style => 'margin-right: 10px;' %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <%= pager(@compilations, request.fullpath) %>
+</div>

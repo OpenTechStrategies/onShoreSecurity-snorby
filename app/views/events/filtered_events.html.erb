@@ -1,0 +1,70 @@
+<%= javascript_include_tag "tablednd" %>
+<%= snorby_box("Limited/Suppressed Events", false) do %>
+  <div id="filtered_events" class="boxit">
+    <table class='default' border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <th class="dragHandle first"></th>
+        <th>Signature</th>
+        <th>Type</th>
+        <th>Count</th>
+        <th>Seconds</th>
+        <th>Tracked Type</th>
+        <th>Tracked IP</th>
+        <th class="icons last">Remove</th>
+      </tr>
+      <tbody class="filtered_events">
+        <% @suppress_rules.each do |f_event| %>
+          <tr id='<%= f_event.id %>'>
+            <td class="dragHandle first"></td>
+            <td>
+              <span title="<%= f_event.signature_name %>" class="add_tipsy"><%= truncate(f_event.signature_name, :length => 40) %></span>
+            </td>
+            <td><%= f_event.filtering_type.capitalize %></td>
+            <td><%= f_event.filtering_type == 'suppress' ? '' : f_event.count %></td>
+            <td><%= f_event.filtering_type == 'suppress' ? '' : f_event.seconds %></td>
+            <td><%= f_event.tracked_type %></td>
+            <td>
+              <span title="<%= f_event.tracked_ip %>" class="add_tipsy"><%= truncate(f_event.tracked_ip, :length => 30) %></span>
+            </td>
+            <td class="icons last">
+              <%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), delete_filter_event_events_path(:id => f_event.id), :method => :delete, :confirm => "Are you sure you want to remove this filter?", :remote => true, :onClick => "$(this).find('img').attr('src', '/images/icons/pager.gif');" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+
+<script type="text/javascript">
+  $(document).ready(function()  {
+
+    $(".boxit table tbody.filtered_events tr").hover(function() {
+      $(this.cells[0]).addClass('showDragHandle');
+      }, function() {
+          $(this.cells[0]).removeClass('showDragHandle');
+      }
+    );
+
+    $('.boxit table tbody.filtered_events').tableDnD({
+      onDrop: function(table, row) {
+        var rows = table.rows;
+        order = "";
+
+        for (var i=1; i < rows.length; i++) {
+          order += rows[i].id+";";
+        }
+        $.ajax({
+          type: "POST",
+          url: "/events/order_auto",
+          data: {
+            positions: order
+          }
+        });
+      },
+      onDragStart: function(table, row) {
+        
+      }
+    });
+  });
+</script>

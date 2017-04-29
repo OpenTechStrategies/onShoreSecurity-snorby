@@ -1,0 +1,113 @@
+<% if @high.empty? and @medium.empty? and @low.empty? %>
+	<div id='SEVERITY-graph' style="<%= active ? "" : 'display:none;' %>" class="dashboard-graph <%= prepend_id.blank? ? 'no-pie-data' : 'no-pie-data-little' %>" data_column="SEVERITY"></div>
+<% else %>
+	<div id='<%= prepend_id %>SEVERITY-graph' style="<%= active ? "" : 'display:none;' %>" class='dashboard-graph' data_column="SEVERITY"></div>
+	<script type="text/javascript">		
+		$(document).ready(function() {
+			window["<%= prepend_id %>SEVERITY-graph"] = chart = new Highcharts.Chart({
+		      chart: {
+		        renderTo: '<%= prepend_id %>SEVERITY-graph',
+		        defaultSeriesType: 'spline',
+			marginTop: 50,
+		        //marginRight: 80,
+			//marginLeft: 80,
+		        //marginBottom: 50,
+            zoomType: 'x'
+		      },
+		      exporting: {
+            enabled: false
+          },
+          credits: {
+            enabled: false
+          },
+		      title: {
+			 <% if enable_title %>
+                                text: 'Severity Events vs Time'
+                         <% else %>
+                                text: null
+                         <% end %>
+		      },
+		      xAxis: {
+						categories: <%= @axis.to_json.html_safe %>,
+		        title: {
+								margin: 10,
+								<% if @range == 'last_year' %>
+                    text: 'Month of Year'
+                <% elsif @range == 'last_quarter' %>
+                  text: 'Date'
+								<% elsif (@range == 'month' || @range == 'last_month') %>
+									text: 'Date of Month'
+								<% elsif (@range == 'week' || @range == 'last_week') %>
+									text: 'Date Of Week'
+                <% elsif @range == 'last_24' %>
+                  text: 'Last 24 Hours'
+								<% else %>
+									text: 'Hour of Day'
+								<% end %>
+            },
+            labels: {
+              <% if @range == 'last_24' or @range == 'last_year' or @range == 'last_month' or @range == 'yesterday' or @range == 'today' or @range == 'before_1_yesterday' or @range == 'before_2_yesterday' or @range == 'before_3_yesterday' or @range == 'before_4_yesterday' %>
+                  step: 2
+              <% elsif @range == 'last_quarter' %>
+                  step: 15
+              <% else %>
+                  step: 1
+              <% end %>
+            }
+		      },
+		      yAxis: {
+                         min: 0,
+		         title: {
+		            text: null,
+		         },
+		         plotLines: [{
+		            value: 0,
+		            width: 1,
+		            color: '#808080'
+		         }]
+		      },
+		      tooltip: {
+		        shared: true,
+		        crosshairs: true
+		      },
+		      legend: {
+                         layout: 'vertical',
+                         align: 'right',
+                         verticalAlign: 'top',
+                         floating: true,
+                         x: 0,
+                         y: 0,
+		         borderWidth: 0,
+			 borderRadius: 0,
+			 borderColor: '#ddd',
+			 backgroundColor: '#fff'
+		      },
+	        plotOptions: {
+	          series: {
+	            marker: {
+	              enabled: false,
+	              states: {
+	              	hover: {
+	              		enabled: true
+	              	}
+	              }
+	            }
+	          }
+	        },
+		      series: [{
+            name: 'High Severity',
+            color: sev1_bg_color,
+						data: [<%= @high.join(', ') %>]
+					},{
+						name: 'Medium Severity',
+            color: sev2_bg_color,
+						data: [<%= @medium.join(', ') %>]
+					},{
+            name: 'Low Severity',
+            color: sev3_bg_color,
+						data: [<%= @low.join(', ') %>]
+					}]
+			});		
+		});
+	</script>
+<% end %>	

@@ -1,0 +1,8 @@
+############################################################
+# Configure Classifications - redBorder IPS   #
+# Sensor: <%= @sensor.name unless @sensor.nil? %>
+############################################################
+
+<%- @classifications.each do |x| %>
+config classification: <%= x.name %>,<%= x.description.present? ? x.description : x.name %>,<%= x.severity.nil? ? 3 : x.severity.sig_id %>
+<% end %> 

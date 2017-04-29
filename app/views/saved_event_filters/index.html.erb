@@ -1,0 +1,56 @@
+<%= title "Saved Filters" do -%>
+  <%= menu_item "Add Filter", search_path(:new_filter => true), 'icons/add.png'  %>
+<%- end %>
+
+<div id="searches" class='grid_12 page boxit'>
+
+  <% if @filters.blank? %>
+    <div class="note no-click">
+      You don't currently have any saved filter. You can add them from the <%= link_to "advanced filter", search_path %> builder.
+    </div>
+  <% else %>
+    <table class='default' border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <th>Public</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Created At</th>
+        <th>Edit</th>
+        <th>Destroy</th>
+      </tr>
+      <tbody class='searches'>
+        <%= render @filters %>
+      </tbody>
+    </table>
+
+    <%= pager(@filters, '/saved/event_filters') %>
+  <% end %>
+</div>
+
+
+<script type="text/javascript" charset="utf-8">
+  $(function() {
+
+    $('#searches').on('click', 'td input[type="checkbox"]', function(e) {
+      var set_public = $(this).is(':checked');
+      var id = $(this).parents('tr').data('id');
+
+      $.post('/saved/event_filters/' + id, { id: id, public: set_public });
+    });
+
+    $('#searches').on('click', 'td.click', function(e) {
+      e.preventDefault();
+      var id = $(this).parents('tr').data('id');
+      
+      if (id>0) {
+        $('#searches table tr').animate({
+          opacity: 0.5
+        }, 1000);
+
+        blockWebUI();
+        apply_event_filter(id, <%= current_user.id %>, false);
+      }
+      return false;
+    });
+  });
+</script>

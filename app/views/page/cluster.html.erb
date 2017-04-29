@@ -1,0 +1,120 @@
+<%= title "Cluster" %>
+
+<div id='dashboard' class="sensor">
+  <div class='main grid_9'>
+    <div class='box-holder <%= "dual" unless @cluster.mode == "single"  %>'>
+      <table class="node">
+        <tbody>
+          <tr>
+            <td></td>
+            <td class="node-info">
+              <div>
+                <span>IP: </span><%= @cluster.local_ip %><br/>
+                <span>Hostname: </span><%= truncate(@cluster.local_hostname, :length => 15) %>
+              </div>
+            </td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <img class="background-image" src="/images/manager.png" alt="" />
+      <% if @cluster.mode != "single" %>
+        <table class="node dual">
+          <tbody>
+            <tr>
+              <td></td>
+              <td class="node-info">
+                <div>
+                  <span>IP: </span><%= @cluster.remote_ip %><br/>
+                  <span>Hostname: </span><%= truncate(@cluster.remote_hostname, :length => 15) %>
+                </div>
+              </td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <img class="background-image dual" src="/images/manager.png" alt="" />
+      <% end %>
+    </div>
+    <div id="sensor-content">
+      <div id="cluster-content" class="dashboard content">
+        <ul class="table categories">
+          <div class="content">
+            <li class="boxit">
+              <div class="sec-title" id="title">
+                <%= sec_title "Services".html_safe -%>
+              </div>  
+              <table class="default table" border="0" cellspacing="0" cellpadding="0">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @cluster.services.each do |service| %>
+                    <tr>
+                      <td><%= service[:name] %></td>
+                      <td>
+                        <% if service[:status] == "OK" %>
+                          <%= image_tag 'icons/incident.png' %>
+                        <% else %>
+                          <%= image_tag 'icons/fp.png' %>
+                        <% end %>
+                        <%= service[:status] %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </li>
+          </div>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <% if !@cluster.drbd.nil? and !@cluster.drbd[:dstate].nil? %>
+    <div class='secondary grid_3 alpha'>
+      <div id='cluster-drbd-info'>
+        <div class='dashboard-header'>
+          <span>DRBD</span>
+        </div>
+        <ul class='box-list'>
+          <li>Connection<span><%= @cluster.drbd[:cstate] %></span></li>
+          <li>Disk<span><%= @cluster.drbd[:dstate].values.join("/") %></span></li>
+        </ul>
+      </div>
+      <div id='cluster-members-info'>
+        <div class='dashboard-header'>
+          <span>Members</span>
+          <span class="plus no_uppercase"><%= @cluster.member_status %></span>
+        </div>
+        <ul class='box-list'>
+          <% @cluster.members.each do |member| %>
+            <li><%= member[:name] %><span><%= member[:status] %></span></li>
+          <% end %>
+        </ul>
+      </div>
+      <div id='cluster-service-info'>
+        <div class='dashboard-header'>
+          <span>Service</span>
+        </div>
+        <ul class='box-list'>
+          <% @cluster.service.each do |service| %>
+            <li>
+              <% if service[:freeze] %>
+                <span class="title add_tipsy" title='Freeze'><%= image_tag 'icons/freeze.png' %></span>
+              <% end %>
+              <span class='title <%= "with_img" if service[:freeze] %>'><%= service[:name] %> / <%= service[:owner] %></span>
+              <span>
+                <%= service[:status] %>
+              </span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <%end%>
+</div>

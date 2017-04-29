@@ -1,0 +1,19 @@
+
+<span class="start_time" style="display:none;"><%= @start_time.to_i %></span>
+<span class="end_time" style="display:none;"><%= @end_time.to_i %></span>
+
+<%= render :partial => '/page/graph_dashboard_individual', :locals => { :tab => {:column => widget.column.to_sym, :name => Event::AGGREGATED_COLUMNS[widget.column.to_sym]}, :prepend_id => ("portlet_#{widget.id}_"), :index => widget.id, :show_legend => true, :enable_title => false, :chart_title => "", :prepend_id => ("portlet_#{widget.id}_"), :active => true, :enable_title => false} %>
+
+<% unless widget.column == 'MAP' %>
+	<div class="expand show_on_hover <%= table_loaded ? "showed loaded" : ""  %>">
+	  <%= link_to '#' do %>
+	    <div class="row">
+	      <%= table_loaded ? "Hide" : "Load More"  %>
+	    </div>
+	  <% end %>
+	</div>
+<% end %>
+
+<% if table_loaded %>
+  <%= render(:partial => '/page/table_any_chart', :locals => {:table_metrics => @table_metrics, :widget => widget, :long_data => false, :prepend_id => "portlet_#{widget.id}_", :table_visible => true }) %>
+<% end %>

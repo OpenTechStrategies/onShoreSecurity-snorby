@@ -1,0 +1,1 @@
+$('#trap_servers').html("<%= escape_javascript(render(:partial => 'trap_servers', :locals => {:trap_servers => Sensor.chef_manager_role.override_attributes["redBorder"]["snmp"]["trap_servers"]}))%>")

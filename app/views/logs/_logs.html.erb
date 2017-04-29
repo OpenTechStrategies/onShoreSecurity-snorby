@@ -1,0 +1,39 @@
+<div id="logs" class='grid_12 boxit' data-action='<%= params[:action] %>' data-page='<%= params[:page].to_i %>'>
+	
+	<ul class='table'>
+		
+		<li class='header'>
+			<div class='row'>
+
+        <div class='user'>
+          <%= sortable(:name, 'User')%>
+        </div>
+        
+        <div class='resource'>
+          <%= sortable(:model_name, 'Resource')%>
+        </div>
+        
+        <div class='sensor'>Object</div>
+        
+        <div class='action'>
+          <%= sortable(:action, 'Action')%>
+        </div>
+        
+        <div class='message'>Message</div>
+
+        <div class='timestamp'>
+          <%= sortable(:created_at, 'Timestamp')%>
+        </div>
+
+			</div>
+		</li>
+		
+		<div class='content'>
+			<%= render @logs %>
+		</div>
+		
+	</ul>
+
+	<%= pager(@logs, request.fullpath) %>
+	
+</div>

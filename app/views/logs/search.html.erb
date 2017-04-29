@@ -1,0 +1,36 @@
+<%= stylesheet 'jquery' %>
+<%= stylesheet 'chosen' %>
+
+<%= title "Search Logs", 'Search Logs' -%>
+
+<div id='search' class='boxit page grid_12'>
+  <%= form_tag logs_path, :method => :get, :class => 'validate' do %>
+    <div id='search-box' class="log">
+      <div class='grid_4 alpha'>
+        <%= label_tag 'User' %><br />
+        <%= select_tag '[search][user_id]', dropdown_select_tag(User.all(:order => [:name.asc]), :id, true), :class => 'add_chosen', :id => 'sel_user' %>
+      </div>
+      <div class='grid_4 alpha'>
+        <%= label_tag 'Resource' %><br />
+        <%= select_tag '[search][resource]', select_options(Log.map{|l| [l.model_name, l.model_name]}.uniq, :include_blank => true), :class => 'add_chosen', :id => 'sel_resource'  %>
+      </div>
+      <div class='grid_4 alpha'>
+        <%= label_tag 'Action' %>
+        <%= select_tag '[search][action]', select_options([["create", "create"], ["update", "update"], ["destroy", "destroy"]], :include_blank => true), :class=> 'add_chosen', :id => 'sel_action' %>
+      </div>
+      <div class='grid_4 alpha'>
+        <%= label_tag 'Log Message' %><br />
+        <%= text_field_tag '[search][text]', nil, :placeholder => 'Text', :class => 'search_fix', :id => 'sel_message' %>
+      </div>
+    </div>
+
+    <%= form_actions do %>
+      <%= button "Submit Search", :class => 'success' %>
+      <div id='logs_count'><span></span></div>
+    <% end %>
+  <% end %>
+</div>
+
+<script type="text/javascript">
+  $('.add_chosen').chosen({ allow_single_deselect: true });
+</script>

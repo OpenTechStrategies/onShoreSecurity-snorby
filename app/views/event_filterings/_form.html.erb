@@ -1,0 +1,7 @@
+<div id='snorbybox-content' class=''>
+  <% if @event_filtering.filtering_type=="limit" %>
+    <%= render 'form_limit' %>
+  <% else %>
+    <%= render 'form_suppress' %>
+  <% end %>
+</div>

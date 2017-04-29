@@ -1,0 +1,48 @@
+<%= drop_down_for("Filters: #{filter_count(session[:filter])}", 'icons/filter.gif', 'filter') do %>
+  <% session[:filter].each do |k, v| %>
+    <% v.each do |key, value| %>
+      <dd>
+        <span><%= Snorby::Search::COLUMN_NAME[k.to_sym] %></span>
+        <span class="icons"><%= link_to image_tag('icons/filter_remove.gif', :size => '16x16'), del_event_filter_path(k.to_s, :value => key), :class => "block-ui-but" %></span>
+        <span class="value" title="<%= Snorby::Search.data_column(k, key.to_s) unless [:isnull, :notnull].include? value[:operator].to_sym %>">
+          <%= operator(value[:operator]) %> <%= truncate(Snorby::Search.data_column(k, key.to_s), :length => 20, :omission => '...') unless [:isnull, :notnull].include? value[:operator].to_sym %>
+        </span>
+      </dd>
+    <% end %>
+  <% end %>
+  <% if filter_count(session[:filter]) > 1 %>
+    <dd >
+      <span style="font-weight: bold">All filters</span>
+      <span class="icons"><%= link_to image_tag('icons/filter_remove.gif', :size => '16x16'), del_event_filter_path(:all), :class => "block-ui-but" %></span>
+    </dd>
+  <% end %>
+  <dd class="<%= (filter_count(session[:filter]) > 0 ) ? "separator" : "" %>">
+    <span><%= link_to "Advanced Filter", search_path, :style => "font-weight: bold", :class => "clean_all" %></span>
+  </dd>
+  <% unless @filters.nil? %>
+    <% @filters.each_with_index do |saved_filter, i| %>
+      <dd class="<%= (i==0) ? "separator" : "" %>">
+        <span><%= truncate(saved_filter.title, :length => 30, :omission => '...') %></span>
+        <span class="icons"><%= link_to image_tag('icons/filter_add.gif', :size => '16x16'), "#", :class => "search-filter block-ui-but", :data => "#{saved_filter.id}" %></span>
+      </dd>
+    <% end %>
+  <% end %>
+<% end %>
+
+
+<script type="text/javascript" charset="utf-8">
+  $(function() {
+    $('#filter .search-filter').click(function(e) {
+      e.preventDefault();
+      var id = $(this).attr('data');
+
+      if (id>0) {
+        $('#title-menu .filter .drop-down-menu').hide();
+        blockWebUI();
+        apply_event_filter(id, <%= current_user.id %>, false);
+      }
+
+      return false;
+    });
+  });
+</script>

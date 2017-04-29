@@ -1,0 +1,5 @@
+$("#dashboard-sensor-other-content").html("<%= escape_javascript(render(:partial => 'sensors/dashboard_segments_content')) %>")
+$.scrollTo('#header', 500);
+$(".event > .row > .select.small > input").hide()
+$("ul.table div.content li .row .signature").css('width', '190px')
+$("ul.table div.content li .row .trap_message").css('width', '200px')

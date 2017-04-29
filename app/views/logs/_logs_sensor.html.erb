@@ -1,0 +1,66 @@
+<div id="logs_sensor" class='grid_12 boxit' data-action='<%= params[:action] %>' data-page='<%= params[:page].to_i %>'>
+	
+	<ul class='table'>
+		<li class='header'>
+			<div class='row'>
+				<div class='first sensor'>
+        	Sensor
+        </div>
+        <div class='application'>
+        	Application
+        </div>
+        <div class='message big'>
+        	Message
+        </div>
+        <div class='last timestamp'>
+          <%= sortable(:created_at, 'Timestamp')%>
+        </div>
+			</div>
+		</li>
+		
+		<div class='content' id="content_segment">
+			<% @log_content.paginate(:page => @page, :per_page => "#{current_user.per_page_count}").each do |line| %>
+				<li class="log">
+					<div class='row'>
+						<tr>
+							<% m = /^(?<date>[^ ]+[ ]+[^ ]+[ ]+[^ ]+)[ ]+(?<sensor>[^ ]+)[ ]+(?<name>[^:]+):[ ]*(\[[^\]]+\])?(?<message>.*)$/.match(line) %>
+							<% m = /^(?<date>[^ ]+[ ]+[^ ]+[ ]+[^ ]+)[ ]+(?<sensor>[^ ]+)[ ]+(?<name>)(?<message>.*)$/.match(line) if m.nil? %>
+							<% unless m.nil? %>
+								<div class='first sensor'>
+									<% if !@filter_search.nil? and @filter_search.present? %>
+										<%= (m[:sensor]).gsub(@filter_search, "<strong>#{@filter_search}</strong>").html_safe %>
+									<% else %>
+										<%= m[:sensor] %>																					
+									<% end %>
+								</div>
+								<div class='application'>
+									<% if !@filter_search.nil? and @filter_search.present? and m[:name].present?%>
+										<%= (m[:name]).gsub(@filter_search, "<strong>#{@filter_search}</strong>").html_safe %>
+									<% else %>
+										<%= m[:name].present? ? m[:name] : "--" %>
+									<% end %>
+								</div>
+								<div class='message big'>
+									<span title="<%= m[:message] %>" class='add_tipsy' >
+										<% if !@filter_search.nil? and @filter_search.present? %>
+											<%= truncate(m[:message], :length => 105).gsub(@filter_search, "<strong>#{@filter_search}</strong>").html_safe %>
+										<% else %>
+											<%= truncate(m[:message], :length => 105) %>																					
+										<% end %>
+									</span>
+								</div>
+								<div class='timestamp last'>
+									<b title='<%= pretty_time("#{Time.now.year.to_s} #{m[:date]}".to_time) %>' class='add_tipsy' >
+										<%= event_time("#{Time.now.year.to_s} #{m[:date]}".to_time) %>
+									</b>
+								</div>
+							<% end %>
+						</tr>						
+					</div>
+				</li>
+			<% end %>			
+		</div>		
+	</ul>	
+	<%= pager_sensor(@log_content.size, @page, @sensor.sid) %>
+	
+</div> 

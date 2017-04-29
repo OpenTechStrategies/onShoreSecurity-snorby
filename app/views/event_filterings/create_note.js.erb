@@ -1,0 +1,10 @@
+$('div#notes_<%= @event_filtering.id %>').prepend("<%= escape_javascript(render(:partial => 'note', :locals => {:note => @note})) %>");
+
+update_main_note_count('<%= @event_filtering.id %>', {notes_count_in_words: "It has <%= pluralize(@event_filtering.notes.count, 'note') %>", notes_count: <%= @event_filtering.notes.count %>});
+
+$('div#new_note_box').remove();
+Snorby.helpers.remove_click_events(false);
+$('div#notes_<%= @event_filtering.id %>').find('textarea#body').val('');
+$('strong.no-notes').remove();
+$('button').removeClass('loading');
+flash();

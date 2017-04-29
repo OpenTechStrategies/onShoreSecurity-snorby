@@ -1,0 +1,40 @@
+<%= title "Listing Sessions <i>(#{number_with_delimiter(@events.pager.total)} unique unclassified sessions)</i>".html_safe, 'Listing Sessions' do -%>
+  <%= render :partial => '/page/filters', :locals => {:widgets => false, :snmps => false} %>
+  <%= render :partial => 'search' %>
+  <%= render :partial => 'events/menu' %>
+  <%= menu_item content_tag(:span, "--"), '#', 'icons/clock-counter.png', :id => "counter", :remote => false, :class => "widgets_counter" %>
+  <%= drop_down_for('More Options', 'icons/grab.png', 'options') do %>
+    <%= drop_down_item "My Events", queue_events_path, nil %>
+    <%= drop_down_item "Hotkeys", hotkey_events_path, nil, :class => 'snorbybox' %>
+    <%= drop_down_item "Force Auto Classification", force_cache_path, nil, {:class => 'force-cache-update'} if Snorby::Worker.running? %>
+    <%= drop_down_item "Enable Autoreload", nil, nil, :id => "disable-counter", :remote => true, :onclick => "clock_locked=!clock_locked; if (clock_locked) $('#disable-counter').html('Enable Autoreload'); else $('#disable-counter').html('Disable Autoreload'); return false;", :remote => false %>
+    <%= drop_down_item "Export To PDF", events_path(:direction => params[:direction], :sort => params[:sort], :quick_search => params[:quick_search], :format => :pdf) %>
+	 <% end %>
+    <%= drop_down_for('Filter Options', 'icons/filter.png', 'options') do %>
+    	<%= drop_down_item "All Unclassified Events", events_path, nil, {} %>
+  	<% end %>
+<%- end -%>
+
+<%= render :partial => 'events/events' %>
+
+<%= render :partial => 'events/hotkeys' %>
+
+<% content_for :footer do %>
+        <script type="text/javascript">
+                start_counter_events(<%= Setting.autoreload_time.value.to_i %>);
+                clock_locked = true;
+
+    <% if session[:filter].size.to_i > 0 %>
+      $('#wrapper #content #title #title-menu-holder ul#title-menu li.filter').css('border', '1px solid red');
+    <% end %>
+        </script>
+<% end %>
+
+<script type="text/javascript" charset="utf-8">
+  Snorby.sessionViewUpdate({
+    page: <%= params[:page].to_i %>,
+    sort: "<%= params[:sort] %>",
+    direction: "<%= params[:direction] %>",
+    timestamp: "<%= params[:_] %>"
+});
+</script>

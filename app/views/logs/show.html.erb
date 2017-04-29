@@ -1,0 +1,16 @@
+<%= snorby_box("#{@sensor.name} Log", true) do %>
+
+	<ul>
+		<% @log_content.each do |line| %>
+			<li>
+				<%- var = line.match(/(^[^:]+:[^:]+:[^:]+:)(.*)$/) %>
+				<%- if var.nil? %> 
+					<%= line %>
+				<%- else %>
+					<span style="font-weight: bold"><%= var[1] %></span>
+					<%= var[2] %>
+				<%- end %>
+			</li>
+		<% end %>
+
+<% end %>

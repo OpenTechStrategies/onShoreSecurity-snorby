@@ -1,0 +1,39 @@
+<% can_edit = (current_user.id == saved_rule_filter.user.id) %>
+<tr data-id="<%= saved_rule_filter.id %>">
+
+  <% if can_edit %>
+    <td class='first' data-user='<%= saved_rule_filter.user.id %>' style='width:50px;'>
+      <%= check_box_tag :public, 1, saved_rule_filter.public %>
+    </td>
+  <% else %>
+    <td class='first' style='width:50px;'>
+      <%= check_box_tag :public, 1, saved_rule_filter.public, :disabled => :disabled %>
+    </td>
+  <% end %>
+
+  <td class='click' style='width:430px;'>
+    <%= truncate(saved_rule_filter.title, :length => 40, :omission => '...') %>
+  </td>
+
+  <td class='click' style='width:160px;'>
+    <%= image_tag(saved_rule_filter.user.gravatar ? get_gravatar_uri(saved_rule_filter.user.email) : saved_rule_filter.user.avatar.url(:small), :size => '16x16', :class => 'avatar-small') %> <%= saved_rule_filter.user.name %>
+  </td>
+
+  <td class='click'>
+    <%= display_time(saved_rule_filter.created_at, true) %>
+  </td>
+
+  <% if can_edit %>
+    <td><%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), view_sensor_saved_rule_filter_path(saved_rule_filter, :sensor_id => @sensor.sid), :class => "saved-filter-edit" %></td>
+
+    <td class='last'>
+      <%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), sensor_saved_rule_filter_path(saved_rule_filter, :sensor_id => @sensor.sid), :method => :delete, :confirm => 'Are you sure you want to remove this rule filter?' %>
+    </td>
+  <% else %>
+
+    <td><%= image_tag('icons/lock.png', :size => '16x16', :class => 'locked') %></td>
+    <td class='last'><%= image_tag('icons/lock.png', :size => '16x16', :class => 'locked') %></td>
+
+  <% end %>
+
+</tr>

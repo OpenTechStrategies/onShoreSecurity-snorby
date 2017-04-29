@@ -1,0 +1,77 @@
+<% if @sensors.nil? %>
+  <tr id='sensor_<%= sensor.sid %>' class='sensor <%=sensor.compiling ? "" : "not_compiling" %> <%= "child-of-sensor_#{sensor.parent.sid}" unless sensor.parent.nil? %> <%= (sensor.domain and sensor.virtual_sensor) ? " domain" : "" %> <%= (sensor.domain and !sensor.virtual_sensor) ? " domain parent folder" : "" %> ' data-sensor-id='<%= sensor.sid %>' style='<%= sensor.is_root? ? "display:none;" : "" %>' >
+<% else %>
+  <tr id='sensor_<%= sensor.sid %>' class='sensor <%=sensor.compiling ? "" : "not_compiling" %> <%= "child-of-sensor_#{(@sensors.include?(sensor.parent) or sensor.parent.is_root?) ? sensor.parent.sid : '1'}" unless sensor.parent.nil? %> <%= (sensor.domain and sensor.virtual_sensor) ? " domain" : "" %> <%= (sensor.domain and !sensor.virtual_sensor) ? " domain parent folder" : "" %> ' data-sensor-id='<%= sensor.sid %>' style='<%= sensor.is_root? ? "display:none;" : "" %>' >
+<% end %>
+  <td class='first name' data-sensor-id='<%= sensor.sid %>'><%= sensor.name %></td>
+  <td class='ip' data-sensor-id='<%= sensor.sid %>' ><%= sensor.ipdir %> </td>
+  <td class="last_check_in"> <%= last_check_in_uptime(sensor) %> </td>
+  <td class="sensor_num">
+    <span title="<%= sensor.virtual_sensors.map{|s| s.name}.join(", ")%>" class='add_tipsy'><%= sensor.virtual_sensors(false).size %></span>
+  </td>
+  <td class="rule_num">
+    <span title="Pendig Rules: <%= sensor.num_pending_rules %> / Active Rules: <%= sensor.num_active_rules %>" class='add_tipsy'><%= sensor.num_pending_rules %>/<%= sensor.num_active_rules %></span>
+  </td>
+  
+  <td class='chart'>
+    <%= css_chart(sensor.event_percentage, false, true) %>
+  </td>
+
+  <% if (can? :read, sensor) %>
+    <td class="icons">
+      <div>
+        <li class="sensor-options" data-sensor-id='<%= sensor.sid %>'><%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), sensors_path %></li>
+        <dl id="sensor-menu-<%= sensor.sid %>" class="sensor-menu" data-sensor-id='<%= sensor.sid %>' style='display:none;'>
+          <div class="arrow"></div>
+          <dd>
+            <%= link_to "Events", results_path(:add_search => { :column => "sensor", :value => sensor.sid, :operator => "is" }) %>
+          </dd>
+          <% if sensor.domain %> 
+            <dd>
+              <%= link_to "B/W Lists", reputations_path(:sensor_sid => sensor.sid) %>
+            </dd>
+            <dd>
+              <% if (can? :manage, sensor) %>
+                <%= link_to "Config", edit_sensor_path(sensor) %>
+              <% else %>
+                <%= link_to "Config", '#', :disabled => true, :class => 'notallowed' %>
+              <% end %>
+            </dd>
+            <dd>
+              <%= link_to "Event Rules", event_filterings_path(:sid => sensor.sid) %>
+            </dd>
+            <dd>
+              <% if (can? :manage, sensor) %>
+                <%= link_to "Rules", sensor_rules_path(:sensor_id => sensor.sid) %>
+              <% else %>
+                <%= link_to "Rules", '#', :disabled => true, :class => 'notallowed' %>
+              <% end %>
+            </dd>
+            <dd>
+              <%= link_to "IPS Stats"  , info_sensor_snort_stats_path(sensor) %>
+            </dd>
+            <dd>
+              <%= link_to "SNMP"  , sensor_snmps_path(:sensor_id => sensor.sid) %>
+            </dd>
+          <% end %>
+          <% if sensor.virtual_sensor %>
+            <dd>
+              <%= link_to "Info"  , sensor_path(sensor) %>
+            </dd>
+            <dd>
+              <%= link_to "Log"  , {:controller => :logs, :action => :show_sensor, :sensor_id => sensor.sid} %>
+            </dd>
+          <% end %>
+        </dl>
+      </div>
+    </td>
+  <% else %>
+    <td class="icons"></td>
+  <% end %>
+
+  <% if current_user.admin and sensor.compiling %>
+    <td class='icons last'><span title='The sensor is compiling' class='add_tipsy'><%= image_tag('icons/lock.png') %></span></td>
+  <% elsif current_user.admin %>
+    <td class='icons last'><%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), sensor_path(sensor), :method => :delete, :confirm => "Are you sure you want to remove this sensor?", :disabled => true %></td>
+  <% end %>
+</tr>

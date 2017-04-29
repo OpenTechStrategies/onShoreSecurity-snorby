@@ -1,0 +1,9 @@
+<%= drop_down_for('Change action(s)', 'icons/actions.png', 'incident') do %>
+  <% @actions.each do |action| %>
+    <%= drop_down_item action.name, '#', nil, { :class => 'action', :"data" => action.id.to_i } %>
+  <% end %>
+<% end %>
+<%= drop_down_for('More Options', 'icons/grab.png', 'options') do %>
+  <%= drop_down_item "Export To CSV", active_rules_sensor_rules_path(:format => 'csv'), nil, {:class => ''} %>
+  <%= drop_down_item "Import From CSV", import_sensor_rules_path, nil, {:class => 'snorbybox', :target => '_blank'} %>
+<% end %>

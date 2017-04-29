@@ -1,0 +1,315 @@
+<%= javascript_include_tag "tablednd" %>
+<%= title "Black / White lists for #{@sensor.name}" -%>
+
+<div id="container_map" style="width: 1020px; height: 350px; margin: 0 auto"></div>
+
+<div class="boxit">
+  <ul class="table reputations">
+    <div class="content">
+      <li class="category boxit">
+        <%= sec_title "IP/Networks " + content_tag(:i, "( Black / White list for IP - Networks ) ").html_safe, "title second" do -%>
+          <%= menu_item "Add", new_reputation_path(:sensor_sid => @sensor.sid, :type_id => 1), 'icons/add.png', {:class => 'snorbybox', :target => '_blank'} if (can? :manage, @sensor) %>
+        <%- end -%>
+        <ul class="table" style="width:1000px;<%= @fn_sensor.present? ? "" : "display:none;" %>">
+          <div class="content">
+            <li class="group">
+              <div class="row bwlists" id="bwlists_nets">
+                <% if @fn_sensor.present? %>
+                  <table class="default reputationsTable" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <th class="first"></th>
+                      <th class="content">Action</th>
+                      <th class="content">IP Networks</th>
+                      <th class="content">Inherited</th>
+                      <th class="icons"></th>                    
+                      <th class="icons"></th>
+                      <% if current_user.admin %>
+                        <th class="icons last"></th>
+                      <% end %>
+                    </tr>
+                    <%- flag = false %>
+                    <tbody class='bwlists_content'>
+                      <% @fn_sensor.each do |reputation| %>
+                        <%- if reputation.sensor_sid==@sensor.sid %>
+                          <%- flag = true %>
+                          <tr class="reputation_type <%= 'selected' if @reputation and @reputation.id == reputation.id %>"  id='<%= reputation.id %>' position='<%= reputation.position %>' >
+                            <td class='dragHandle first'></td>
+                            <td>
+                              <span class="severity-example <%= reputation.action.name %>">
+                                <%= reputation.action.name %>
+                              </span>
+                            </td>
+                            <td><%= reputation.value %></td>
+                            <td></td>
+                            <td class="notes">
+                              <% if reputation.notes.count > 0 %>
+                                <span title="It has <%= pluralize(reputation.notes.count, 'note') %>" class='add_tipsy round notes-count'><%= image_tag("icons/notes.png", :size => '16x16') %></span>
+                              <% end %>
+                            </td>
+                            <td class="icons">
+                              <% if can?(:manage, reputation.sensor) %>
+                                <%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), edit_reputation_path(:id => reputation.id, :sensor_view_sid => @sensor.sid), {:class => 'snorbybox', :target => '_blank'} %>
+                              <% else %>
+                                <%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), '#', :class => 'notallowed' %>
+                              <% end %>
+                            </td>
+                            <% if current_user.admin %>
+                              <td class='icons last'>
+                                <%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), reputation_path(reputation, :sensor_view_sid => @sensor.sid), :method => :delete, :confirm => "Are you sure you want to remove this ip/network list?", :disabled => true %>
+                              </td>
+                            <% end %>
+                          </tr>
+                        <% end %>    
+                      <% end %>
+                    </tbody>
+                    <% (@fn_sensor).each do |reputation| %>
+                      <%- if reputation.sensor.sid!=@sensor.sid %>
+                        <tr class="reputation_type <%= flag ? "first_parent" : "" %>" id='<%= reputation.id %>'>
+                          <td class='dragHandle first'></td>
+                          <td>
+                            <span class="severity-example <%= reputation.action.name %>">
+                              <%= reputation.action.name %>
+                            </span>
+                          </td>
+                          <td class='parent'><%= reputation.value %></td>
+                          <td class='parent'>
+                            <%= link_to reputation.sensor.name, reputations_path(:sensor_sid => reputation.sensor.sid) %>
+                          </td>
+                          <td class="notes">
+                            <% if reputation.notes.count > 0 %>
+                              <span title="It has <%= pluralize(reputation.notes.count, 'note') %>" class='add_tipsy round notes-count'><%= image_tag("icons/notes.png", :size => '16x16') %></span>
+                            <% end %>
+                          </td>
+                          <td class="icons">
+                            <% if can?(:manage, reputation.sensor) %>
+                              <%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), edit_reputation_path(:id => reputation.id, :sensor_view_sid => @sensor.sid), {:class => 'snorbybox', :target => '_blank'} %>
+                            <% else %>
+                              <%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), '#', :class => 'notallowed' %>
+                            <% end %>
+                          </td>
+                          <% if current_user.admin %>
+                            <td class='icons last'>
+                              <%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), reputation_path(reputation, :sensor_view_sid => @sensor.sid), :method => :delete, :confirm => "Are you sure you want to remove this ip/network list?", :disabled => true %>
+                            </td>
+                          <% end %>
+                        </tr>
+                        <%- flag = false %>
+                      <% end %>    
+                    <% end %>
+                  </table>
+                <% else %>
+                  <div class="note no-click" style='width: 1000px;'>
+                    There are no black/white lists based on ip/networks yet
+                  </div>                  
+                <% end %>
+              </div>
+            </li>
+          </div>
+        </ul>
+      </li>
+    </div>
+  </ul>
+</div>
+<div class="boxit">
+  <ul class="table reputations">
+    <div class="content">
+      <li class="category boxit">
+        <%= sec_title "Countries " + content_tag(:i, "( Black / White list for Countries ) ").html_safe, "title second" do -%>
+          <%= menu_item "Add", new_reputation_path(:sensor_sid => @sensor.sid, :type_id => 2), 'icons/add.png', {:class => 'snorbybox', :target => '_blank'} if (can? :manage, @sensor) %>
+        <%- end -%>
+        <ul class="table" style="width:1000px;<%= @fc_sensor.present? ? "" : "display:none;" %>">
+          <div class="content">
+            <li class="group">
+              <div class="row bwlists" id="bwlists_countries">
+                <% if @fc_sensor.present? %>
+                  <table class="default reputationsTable" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <th class="first"></th>
+                      <th class="content">Action</th>
+                      <th class="content">Countries</th>
+                      <th class="content">Inherited</th>
+                      <th class="icons"></th>
+                      <th class="icons"></th>
+                      <% if current_user.admin %>
+                        <th class="icons last"></th>
+                      <% end %>
+                    </tr>
+                    <%- flag = false %>
+                    <tbody class='bwlists_content'>
+                      <% (@fc_sensor).each do |reputation| %>
+                        <%- if reputation.sensor_sid==@sensor.sid %>
+                          <%- flag = true %>
+                          <tr class="reputation_type <%= 'selected' if @reputation and @reputation.id == reputation.id %>"  id='<%= reputation.id %>' position='<%= reputation.position %>' >
+                            <td class='dragHandle first'></td>
+                            <td>
+                              <span class="severity-example <%= reputation.action.name unless reputation.action.nil? %>">
+                                <%= reputation.action.name unless reputation.action.nil? %>
+                              </span>
+                            </td>
+                            <td class='dragHandle'>
+                              <img class='flag' src="/images/flags/<%= reputation.country.code_name.downcase %>.png"/>
+                              <%= reputation.country.name.capitalize %>
+                            </td>
+                            <td></td>
+                            <td class="notes">
+                              <% if reputation.notes.count > 0 %>
+                                <span title="It has <%= pluralize(reputation.notes.count, 'note') %>" class='add_tipsy round notes-count'><%= image_tag("icons/notes.png", :size => '16x16') %></span>
+                              <% end %>
+                            </td>
+                            <td class="icons">
+                              <% if can?(:manage, reputation.sensor) %>
+                                <%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), edit_reputation_path(:id => reputation.id, :sensor_view_sid => @sensor.sid), {:class => 'snorbybox', :target => '_blank'} %>
+                              <% else %>
+                                <%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), '#', :class => 'notallowed' %>
+                              <% end %>
+                            </td>
+                            <% if current_user.admin %>
+                              <td class='icons last'>
+                                <%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), reputation_path(reputation, :sensor_view_sid => @sensor.sid), :method => :delete, :confirm => "Are you sure you want to remove this country?", :disabled => true %>
+                              </td>
+                            <% end %>                      
+                          </tr>
+                        <% end %> 
+                      <% end %>                  
+                    </tbody>
+                    <% (@fc_sensor).each do |reputation| %>
+                      <%- if reputation.sensor.sid!=@sensor.sid %>
+                        <tr class="reputation_type <%= flag ? "first_parent" : "" %>" id='<%= reputation.id %>'>
+                          <td class='dragHandle first'></td>
+                          <td>
+                            <span class="severity-example <%= reputation.action.name %>">
+                              <%= reputation.action.name %>
+                            </span>
+                          </td>
+                          <td class='parent'>
+                            <img class='flag' src="/images/flags/<%= reputation.country.code_name.downcase %>.png"/>
+                            <%= reputation.country.name.capitalize %>
+                          </td>
+                          <td class='parent'>
+                            <%= link_to reputation.sensor.name, reputations_path(:sensor_sid => reputation.sensor.sid) %>
+                          </td>
+                          <td class="notes">
+                            <% if reputation.notes.count > 0 %>
+                              <span title="It has <%= pluralize(reputation.notes.count, 'note') %>" class='add_tipsy round notes-count'><%= image_tag("icons/notes.png", :size => '16x16') %></span>
+                            <% end %>
+                          </td>
+                          <td class="icons">
+                            <% if can?(:manage, reputation.sensor) or current_user.admin %>
+                              <%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), edit_reputation_path(:id => reputation.id, :sensor_view_sid => @sensor.sid), {:class => 'snorbybox', :target => '_blank'} %>
+                            <% else %>
+                              <%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), '#', :class => 'notallowed' %>
+                            <% end %>
+                          </td>
+                          <% if current_user.admin %>
+                            <td class='icons last'>
+                              <%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), reputation_path(reputation, :sensor_view_sid => @sensor.sid), :method => :delete, :confirm => "Are you sure you want to remove this country?", :disabled => true %>
+                            </td>
+                          <% end %>
+                        </tr>
+                        <%- flag = false %>
+                      <% end %>
+                    <% end %>
+                  </table>
+                <% else %>
+                  <div class="note no-click" style='width: 1000px;'>
+                    There are no black/white lists based on countries yet
+                  </div>                  
+                <% end %>
+              </div>
+            </li>
+          </div>
+        </ul>
+      </li>
+    </div>
+  </ul>
+</div>
+<%= render :partial => 'menu' if (can? :manage, @sensor) %>
+
+<% if can?(:manage, @sensor) %>
+  <script type="text/javascript">
+    $(document).ready(function()  {
+      $(".bwlists table tbody.bwlists_content tr").hover(function() {
+        $(this.cells[0]).addClass('showDragHandle');
+        }, function() {
+            $(this.cells[0]).removeClass('showDragHandle');
+        }
+      );
+
+      $('.bwlists table tbody.bwlists_content').tableDnD({
+        onDrop: function(table, row) {
+          var rows = table.rows;
+          order = "";
+
+          for (var i=0; i < rows.length; i++) {
+            order += rows[i].id+";";
+          }
+          $.ajax({
+            type: "POST",
+            url: "/reputations/order_auto",
+            data: {
+              positions: order,
+              sensor_sid: <%= @sensor.sid %>
+            }
+          });
+          var debugStr = "Row dropped was "+row.id+". New order: ";
+          for (var i=0; i<rows.length; i++) {
+              debugStr += rows[i].id+" ";
+          }
+        },
+        onDragStart: function(table, row) {
+          
+        }
+      });
+    });
+  </script>
+<% end %>
+
+<script type="text/javascript">  
+  var chart;
+  $(document).ready(function() {    
+    var options = {
+      chart : {
+        renderTo : 'container_map',
+        borderWidth : 0,
+        zoomType: 'xy'
+      },
+      
+      title : {
+        text : ''
+      },
+      legend: {
+          enabled: false,
+      },   
+      credits : {
+        enabled : false
+      },   
+      tooltip: {
+        formatter: function() {
+          return "<b>" + this.point.name + "</b>"            }
+      },                        
+      series : [
+        {
+          data : <%= @shapes_countries_drop.to_json.html_safe %>,
+          name: 'drop',
+          color: '<%= ReputationAction.drop_action %>'
+        },
+        {
+          data : <%= @shapes_countries_bypass.to_json.html_safe %>,
+          name: 'bypass',
+          color: '<%= ReputationAction.bypass_action %>'
+        },
+        {
+          data : <%= @shapes_countries_analize.to_json.html_safe %>,
+          name: 'analize',
+          color: '<%= ReputationAction.analize_action %>'
+        },
+        {
+          data : <%= @shapes_countries_none.to_json.html_safe %>,
+          name: 'no action',
+          color: '#eaeaea'
+        }
+      ]
+    };
+    chart = new Highcharts.Map(options);    
+  });
+</script>

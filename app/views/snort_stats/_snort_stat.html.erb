@@ -1,0 +1,21 @@
+<li id='stat_<%= snort_stat.id %>' class='stat'>
+
+  <div class='row'>
+
+    <div class='sensor'><%= snort_stat.sensor.name %></div>
+
+    <div class='action'><%= snort_stat.instance %></div>
+
+    <div class='message'>
+      <span title='<%= snort_stat.snort_stat_name.name %>' class='add_tipsy'><%= truncate(snort_stat.snort_stat_name.text_name, :length => 50, :omission => '...') %></span>
+    </div>
+    
+    <div class='trigger'><%= "#{snort_stat.value} #{snort_stat.snort_stat_name.measure_unit}" %></div>
+
+    <div class='click timestamp'>
+      <b title='<%= display_time(snort_stat.timestamp) %>' class='add_tipsy'><%= snort_stat.pretty_time %></b>
+    </div>
+
+  </div>
+
+</li>

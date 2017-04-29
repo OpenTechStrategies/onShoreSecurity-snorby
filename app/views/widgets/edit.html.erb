@@ -1,0 +1,14 @@
+<div id="snorby-box" >
+  <div id="box-title">Edit Widget</div>
+  <div id="box-content">
+    <div id='widget-form' class='grid_12 boxit page'>
+      <%= form_tag widget_path(@widget), :method => :put, :class => 'basic-form validate' do %>
+        <%= render 'form' %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $('#widget-form .validate').validate();
+</script>

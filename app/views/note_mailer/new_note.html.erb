@@ -1,0 +1,15 @@
+All,<br />
+<br />
+
+<strong><%= @note.user.name %></strong> has added a new note to <%= @item.class %> <%= @item.id_email %>.<br />
+
+<br />
+<% if @item.class == Event %>
+	<strong>Event:</strong> <%= link_to view_events_url(:sid => @item.sid, :cid => @item.cid, :protocol => 'https'), view_events_url(:sid => @item.sid, :cid => @item.cid, :protocol => 'https') %><br />
+<% elsif @item.class == Rule %>
+	<strong>Rule:</strong> <%= link_to view_rules_url(:rule_id => @item.rule_id, :gid => @item.gid, :protocol => 'https'), view_rules_url(:rule_id => @item.rule_id, :gid => @item.gid, :protocol => 'https') %><br />
+<% elsif @item.class == Reputation %>
+	<strong>Reputation:</strong> <%= link_to reputations_url(:sensor_sid => @item.sensor_sid, :reputation_id => @item.id, :protocol => 'https'), reputations_url(:sensor_sid => @item.sensor_sid, :reputation_id => @item.id, :protocol => 'https') %><br />
+<% elsif @item.class == EventFiltering %>
+	<strong>Event Rule:</strong> <%= link_to event_filterings_url(:sid => @item.sid, :event_filtering_id => @item.id, :protocol => 'https'), event_filterings_url(:sid => @item.sid, :event_filtering_id => @item.id, :protocol => 'https') %><br />
+<% end %>

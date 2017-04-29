@@ -1,0 +1,17 @@
+<div class="section-title plus">Rule References</div>
+<div class="rule-info plus">
+  <table class="rule-1" border='0' cellspacing='0' cellpadding='0'>
+    <tr>
+      <th class="first">Reference</th>
+      <th class="last">URL</th>
+    </tr>
+    <tbody>
+      <% @rule.rule_references.each do |x| %>
+        <tr>
+          <td class='first'><strong><%= x.reference.name %></strong></td>
+          <td><%= link_to x.url, x.reference.prefix+x.url, :target => '_blank' %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

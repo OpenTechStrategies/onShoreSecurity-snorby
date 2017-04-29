@@ -1,0 +1,10 @@
+<%- unless segment.nil? %>
+  <tr class="segment">
+    <td class='first'><%=name%></td>
+    <td class='interfaces'><%=segment[:interfaces].keys.join(", ")%></td>
+    <td>
+    	<%= check_box_tag 'bypass', 'bypass', segment[:bypass], :class => name, :disabled => cannot?(:manage, @sensor)  %>
+    </td>
+    <td><%=node[:network][:interfaces][name][:mtu]%></td>
+  </tr>
+<%- end %>

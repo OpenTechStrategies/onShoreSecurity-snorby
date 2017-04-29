@@ -1,0 +1,31 @@
+<%= snorby_box("Add user to #{@role.name}", false) do %>
+<table class="default" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <th>Name</th>
+    <th>E-mail</th>
+    <th></th>
+  </tr>
+  <tbody class='users fancybox'>
+    <%= render @users.all(:order => [:name.asc]) %>
+  </tbody>
+</table>
+<% end %>
+
+<script type="text/javascript">
+  $('tbody.users.fancybox tr input').parents('td').remove();
+  $('tbody.users.fancybox tr td.icons.config').remove();
+  $('tbody.users.fancybox td.last_sign_in_at, tbody.users.fancybox td.sign_in_count, tbody.users.fancybox td.last_sign_in_ip').remove();
+
+  var role_id = <%= @role.id %>;
+
+  $('tbody.users.fancybox td.last').each(function(index, value){
+    var user = $(value).parents('tr').attr('data-user-id');
+    $(value).children('a').attr('href', '/roles/'+role_id+'/add_user/'+user);
+    //$(value).children('a').attr('onClick', "$(this).parents('tr').fadeOut();");
+    $(value).children('a').attr('onClick', "$(this).find('img').attr('src', '/images/icons/pager.gif');");
+    $(value).find('img').attr('src', '/images/icons/plus.png');
+    $(value).addClass('icons');
+    $(value).children('a').removeAttr('data-method').removeAttr('data-confirm').removeAttr('rel');
+    $(value).children('a').attr('data-remote', true);
+  });
+</script>

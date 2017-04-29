@@ -1,0 +1,117 @@
+<% if Snorby::Worker.running? and Snorby::Jobs.sensor_update_dbversion? %>
+  <% content_for :worker_info do %>
+    <%= render :partial => 'updating' %>
+  <% end %>
+<% end %>
+
+<% javascript false, 'sparkline', 'highcharts' %>
+
+<%= title "Rules' versions" do %>
+  <%= menu_item "Stats", stats_dbversions_path, 'icons/chart.png', {:class => 'snorbybox', :target => '_blank'} %> 
+  <% if Snorby::Worker.running? %>
+    <%= drop_down_for('More Options', 'icons/grab.png', 'options') do %>
+      <%= drop_down_item "Force Rule Update", force_update_dbversions_path, nil, {:class => 'force-rule-update'} %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<div id="versions" class="dashboard">
+  <div class="boxit sources">
+    <ul class="table categories">
+      <div>
+        <li class="category boxit">
+          <div class="sec-title" id="title">
+            <%= sec_title "Sources " + content_tag(:i, "( Rules sources availabe for this Manager )").html_safe, "title second" do -%>
+              <%= menu_item "Add", rule_source_new_path, 'icons/add.png', {:class => 'snorbybox', :target => '_blank'} %>
+            <%- end -%>
+          </div>
+          <ul class="table">
+            <div>
+              <li class="group">
+                <div class="row">
+                  <%= form_tag "/dbversions/update_sources", :method => :post, :class => 'basic-form validate', :remote => true do %>
+                    <% cont = 1 %>
+                    <% size = Sensor.chef_sensor_role.override_attributes["redBorder"]["snort"]["preprocessors"].size %>
+                    <table id="sources">
+                      <tbody>
+                        <tr class="first">
+                          <% RuleSource.all.each do |source| %>
+                            <td class="size_25">
+                              <%= check_box_tag "[sources][#{source.id}][enable]", source.id, source.enable, :source_id => source.id %>
+                              <span title="<%= source.description %>" class='add_tipsy'><%= label_tag source.name, source.name.upcase %></span>
+                              <% if !source.protected %>
+                                <span class="icons" style="opacity:0;"><%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), "/rule_source/#{source.id}", :method => :delete, :confirm => "Are you sure you want to remove this source?" %></span>
+                              <% end %>
+                              <span class="icons" style="opacity:0;"><%= link_to image_tag("icons/admin2.png", :size => '16x16', :class => 'trash'), "/rule_source/#{source.id}/edit", {:class => 'snorbybox', :target => '_blank'} %></span>
+                              <% if source.has_code %>
+                                <br/>
+                                <%= text_field_tag "[sources][#{source.id}][code]", source.code, :placeholder => 'Code', :source_id => source.id, :hidden => !source.enable %>
+                              <% end %>
+                            </td>
+                            <%= "</tr><tr>".html_safe if (cont%4 == 0 and cont < size) %>
+                            <% cont = cont + 1 %>
+                          <% end %>
+                          <% ((4 -(cont - 1)%4)%4).times do %>
+                            <td class="size_25 noselect"></td>
+                          <% end %>
+                        </tr>
+                      </tbody>
+                    </table>
+
+                    <%= form_actions do %>
+                      <%= button "Save", :class => 'success' %>
+                    <% end %>
+
+                  <% end %>
+                </div>
+              </li>
+            </div>
+          </ul>
+        </li>
+      </div>
+    </ul>
+  </div>
+  
+  <div class="content">
+    <%= render :partial => 'dbversions' %>
+  </div>
+
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function()  {
+    $('input[type=checkbox]').each(function(index, value){
+      if ($(value).attr("checked") != "checked"){
+        var val = $(value).val();
+        $('input[type=text][source_id='+val+']').hide();
+      }
+    });
+    
+    $('div.sources table tr td:first').addClass('first');
+    
+  });
+
+  $('input[type=checkbox]').change(function() {
+    var val = $(this).val();
+    if ($(this).attr("checked") == "checked"){
+      $('input[type=text][source_id='+val+']').fadeIn();
+    }
+    else{
+      $('input[type=text][source_id='+val+']').fadeOut();
+    }
+  });
+  
+  $('li.dbversion-options a').live('click', function(event) {
+    var id = $(this).parent('li').attr('dbversion-id');
+    event.preventDefault();
+    var elements = $('dl.dbversion-menu');
+    for (var i = 0; i < elements.length; i++){
+      var id_aux = $(elements[i]).attr('dbversion-id');
+      if (id != id_aux){
+        elements[i].style.display = 'none';
+      }
+    }
+    $('dl#dbversion-menu-'+id).toggle();
+    return false;
+  });
+</script>

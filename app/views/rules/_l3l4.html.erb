@@ -1,0 +1,30 @@
+<div class="section-title plus">Rule Information</div>
+<div class="rule-info plus">
+  <table class="rule-1" border='0' cellspacing='0' cellpadding='0'>
+    <%- services = @rule.services %>
+    <tr>
+      <th class='first'>Protocol</th>
+      <th>Source Addr</th>
+      <th>Source Port</th>
+      <th>Dest Addr</th>
+      <th <%= services.empty? ? "class='last'" : "" %> >Dest Port</th>
+      <%- unless services.empty? %>
+        <th class='last'>Service</th>
+      <%  end %>
+    </tr>
+    <tbody>
+      <tr>
+        <td class='first'><%= @rule.protocol.upcase %></td>
+        <td><%= @rule.source_addr %></td>
+        <td><%= @rule.source_port %></td>
+        <td><%= @rule.target_addr %></td>
+        <td <%= services.empty? ? "class='last'" : "" %>><%= @rule.target_port %></td>
+        <%- unless services.empty? %>
+          <td class='last'>
+            <span title="<%= truncate(services.map{|x| x.description}.join(", "), :length => 15, :omission => '...') %>" class='add_tipsy'><%= truncate(services.map{|x| x.name}.join(", "), :length => 15, :omission => '...') %></span>
+          </td>
+        <%  end %>
+      </tr>
+    </tbody>
+  </table>
+</div>

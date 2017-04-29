@@ -1,0 +1,99 @@
+<% if @sensor_metrics.empty? %>
+  <div id='SENSOR-graph' style="<%= active ? "" : 'display:none;' %>" class="dashboard-graph <%= prepend_id.blank? ? 'no-pie-data' : 'no-pie-data-little' %>" data_column="SENSOR"></div>
+<% else %>
+  <div id='<%= prepend_id %>SENSOR-graph' style="<%= active ? "" : 'display:none;' %>" class='dashboard-graph' data_column="SENSOR"></div>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      window["<%= prepend_id %>SENSOR-graph"] = chart = new Highcharts.Chart({
+            chart: {
+               renderTo: '<%= prepend_id %>SENSOR-graph',
+               defaultSeriesType: 'spline',
+               marginTop: 50,
+               zoomType: 'x'
+            },
+            exporting: {
+              enabled: false
+            },
+            credits: {
+              enabled: false
+            },
+            title: {
+               <% if enable_title %>
+                 text: 'Sensor Events vs Time'
+               <% else %>
+                 text: null
+               <% end %>
+            },
+            xAxis: {
+              categories: <%= @axis.to_json.html_safe %>,
+              title: {
+                  //margin: 10,
+                  <% if (@range == 'year' || @range == 'quarter' || @range == 'last_year') %>
+                    text: 'Month of Year'
+                  <% elsif (@range == 'last_quarter') %>
+                    text: 'Day of Year'
+                  <% elsif (@range == 'month' || @range == 'last_month') %>
+                    text: 'Date of Month'
+                  <% elsif (@range == 'week' || @range == 'last_week') %>
+                    text: 'Date Of Week'
+                  <% elsif @range == 'last_24' %>
+                    text: 'Last 24 Hours'
+                  <% else %>
+                    text: 'Hour of Day'
+                  <% end %>
+              },
+              labels: {
+                <% if @range == 'last_24' or @range == 'last_year' or @range == 'last_month' or @range == 'today' or @range == 'yesterday' or @range == 'before_1_yesterday' or @range == 'before_2_yesterday' or @range == 'before_3_yesterday' or @range == 'before_4_yesterday' %>
+                  step: 2
+                <% elsif @range == 'last_quarter' %>
+                  step: 15
+                <% else %>
+                  step: 1
+                <% end %>
+              }
+            },
+            yAxis: {
+               title: {
+                   text: null,
+               },
+               min: 0,
+               plotLines: [{
+                  value: 0,
+                  width: 1,
+                  color: '#808080'
+               }]
+            },
+            tooltip: {
+              shared: true,
+              crosshairs: true
+            },
+            legend: {
+               layout: 'vertical',
+               align: 'right',
+               verticalAlign: 'top',
+               floating: true,
+               x: 0,
+               y: 0,
+	       maxHeight: 80,
+               borderWidth: 0,
+               borderRadius: 0,
+               borderColor: '#ddd',
+               backgroundColor: '#fff'
+            },
+            plotOptions: {
+              series: {
+                marker: {
+                  enabled: false,
+                  states: {
+                    hover: {
+                      enabled: true
+                    }
+                  }
+                }
+              }
+            },
+            series: <%= @sensor_metrics.to_json.html_safe %>
+      });
+    });
+  </script>
+<% end %>

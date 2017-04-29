@@ -1,0 +1,84 @@
+<% if @event_filtering
+	filtering_type = @event_filtering.filtering_type
+	tracked_type	 = @event_filtering.tracked_type
+else
+	filtering_type = "limit"
+	tracked_type 	 = "by_src"
+end %>
+
+<%= snorby_box("Suppress Event", false) do %>
+
+	<div id='snorbybox-content' class=''>
+	
+		<%= form_tag '/events/create_filter_event', :method => :post, :id => 'suppress-event-form', :class => 'basic-form validate', :remote => true do %>
+
+			<div id="snorbybox-form-holder">
+				<div id='snorbybox-form-full'>
+					<%= label_tag "signature", "Signature: <strong>#{@rule.msg}</strong>".html_safe %>
+					<%= hidden_field_tag '[e_filter][sid]', @sensor.sid %><br />
+					<%= hidden_field_tag '[e_filter][sig_sid]', @rule.rule_id.to_i %><br />
+					<%= hidden_field_tag '[e_filter][sig_gid]', @rule.gid.to_i %><br />
+					<%= hidden_field_tag '[e_filter][filtering_type]', "suppress" %>
+
+				</div>
+			</div>
+			<div id='snorbybox-form-full' class='clearfix'>
+				<div class="grid_6" style='width:175px'>
+					<br />
+			    	<%= radio_button_tag "[e_filter][tracked_type]", "by_src", (@event.nil? or @event.ip.nil?) ? true : !@event.ip.ip_src.nil? %> <%= label_tag "by_src", "By Source".html_safe %><br />
+					<%= radio_button_tag "[e_filter][tracked_type]", "by_dst" %> <%= label_tag "by_dst", "By Destination".html_safe %><br />
+				</div>
+
+				<div>
+						<%= label_tag "ip", "Ip / Network" %><br />
+						<%= text_field_tag "[e_filter][tracked_ip]", (@event.nil? or @event.ip.nil?) ? nil : @event.ip.ip_src, :class => 'listnetaddr' %><br />
+					
+				</div>
+				<div class="grid_5 suppress_event">
+					<%= form_actions(:remote => true) do %>
+						<button title='<%= "Add the IP / Network to the list" %>' class="default mediumbut" >
+	      					<span>Add</span>
+	    				</button>
+	    			<% end %>
+	    		</div>
+			</div>
+							
+			<br /><br />
+
+
+			<div id="suppress" class='boxit suppress_event'>
+			  <table id="suppressTable" class='default' border="0" cellspacing="0" cellpadding="0">
+			    <tr>
+			      <th>IP / Network</th>
+			      <th>Type</th>
+			      <% if current_user.admin %>
+			        <th class="icons last">Destroy</th>
+			      <% end %>
+			    </tr>				    
+			    <%= render :partial => 'suppress_events_list' %>	    
+			  </table>
+			</div>
+			<br />
+		<% end %>		    
+	</div>
+<% end %>
+
+<script type="text/javascript">
+	function reload_filtering_type(ob){
+		if (ob.val() == "suppress") {
+  		$('p.event_limit_ip').show();
+	    $('input#_e_filter_tracked_ip').addClass('required');
+  	} else {
+  		$('p.event_limit_ip').hide();
+	    $('input#_e_filter_tracked_ip').removeClass('required');
+  	}
+	};
+
+  $(document).ready(function()  {
+  	reload_filtering_type($("input:radio:checked.filtering_type"));
+  	$('#suppress-event-form.validate').validate();
+  	$(".filtering_type").change(function() {
+  		reload_filtering_type($(this));
+  	});
+  });
+</script>

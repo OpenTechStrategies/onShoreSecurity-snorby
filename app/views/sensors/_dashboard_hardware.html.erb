@@ -1,0 +1,12 @@
+<div id='dashboard-sensor-hardware'>
+  <div class='dashboard-header'>
+    <span class="title">HARDWARE</span>
+    <span class='loading'></span>
+  </div>
+  <ul class='box-list'>
+    <li id='cpu'>CPU<span><%=node["cpu"]["total"]%> x <%= (node["cpu"]["0"]["mhz"].to_f/1024).round(2)%> Ghz</span></li>
+    <li id='memory'>Memory<span><%=(node["memory"]["total"].to_f/1024/1024).round(2) %> GB</span></li>
+    <li id='swap'>Swap<span><%=(node["memory"]["swap"]["total"].to_f/1024/1024).round(2) %> GB</span></li>
+    <li id='hd'>HD<span><%=(node["block_device"]["sda"]["size"].to_f/1024/1024).round(2) %> GB</span></li>
+  </ul>
+</div>

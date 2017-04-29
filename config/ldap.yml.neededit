@@ -1,0 +1,32 @@
+authorizations: &AUTHORIZATIONS
+  #group_base: ou=group,dc=somedc,dc=example,dc=com
+  required_groups:
+  #  - cn=<GROUP_CN>,ou=group,dc=somedc,dc=example,dc=com
+  ## Requires config.ldap_check_attributes in devise.rb to be true
+  ## Can have multiple attributes and values, must match all to be authorized
+  require_attribute:
+  #  objectClass: inetOrgPerson
+production:
+  host: 192.168.1.53
+  port: 389
+  attribute: mail
+  base: dc=somedc,dc=example,dc=com
+  admin_user: cn=admin,dc=somedc,dc=example,dc=com
+  admin_password: datpass
+  ssl: false
+  <<: *AUTHORIZATIONS
+development:
+  host: 192.168.1.53
+  port: 389
+  attribute: uid
+  base: ou=people,dc=somedc,dc=example,dc=com
+  admin_user: cn=admin,dc=somedc,dc=example,dc=com
+  admin_password: datpassdub 
+  ssl: false
+
+testing:
+  host: 192.168.1.53
+  port: 636
+  attribute: cn
+  base: ou=people,dc=somedc,dc=example,dc=com
+  ssl: false

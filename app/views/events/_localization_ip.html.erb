@@ -1,0 +1,39 @@
+<tr>
+  <td style='width:150px; position: relative;' class='first'>
+    <a href='/events/lookup?address=<%= ip %>' data-address='<%= ip %>' class='ip-button has-event-menu' onclick="return false;">
+      <%= ip %>
+      <%= clippy(ip, '#FFFFFF', clippy ) %>
+    </a>
+
+    <dl class='event-sub-menu round shadow push-down' style='display:none;'>
+      <dd><%= link_to 'Basic Source Lookup', "/events/lookup?address=#{ip}", :class => 'snorbybox' %></dd>
+      <% @lookups.each do |lookup| %>
+        <dd>
+          <%= link_to lookup.title, lookup.build(:ip => ip), :target => '_blank' %>
+        </dd>
+      <% end %>
+      <% if type == 'Source' %>
+        <dd class='top-separator'><%= link_to "Search by Source", results_path(:search => { "0" => { :column => 'source_ip', :value => @event.ip.ip_src, :operator => "is", :enabled => true }}) %></dd>
+	<dd><%= link_to "Search by Destination", results_path(:search => { "0" => { :column => 'destination_ip', :value => @event.ip.ip_src, :operator => "is", :enabled => true }}) %></dd>
+      <% else %>
+        <dd class='top-separator'><%= link_to "Search by Destination", results_path(:search => {"0" => { :column => 'destination_ip', :value => @event.ip.ip_dst, :operator => "is", :enabled => true}}) %></dd>
+        <dd><%= link_to "Search by Source", results_path(:search => {"0" => { :column => 'source_ip', :value => @event.ip.ip_dst, :operator => "is", :enabled => true}}) %></dd>
+      <% end %>
+    </dl>
+  </td>
+  <% geo = Snorby::Geoip.city(ip) %>
+  <td>
+    <% unless geo[:country_code2].nil? %>
+      <img class='flag' src="/images/flags/<%= geo[:country_code2].to_s.html_safe.downcase %>.png"/>
+    <% end %>
+    <%= geo[:country_name].nil? ? "n/a" : geo[:country_name].to_s.html_safe %>
+  </td>
+
+  <% [ :latitude, :longitude ].each do |x| %>
+    <td><%= geo[x].nil? ? "n/a" : geo[x].to_s.html_safe %></td>
+  <% end %>
+  <td>
+    <span class='default littlebut'><%= link_to 'MAP', show_map_events_path(:ip => ip, :latitude => geo[:latitude], :longitude => geo[:longitude]), {:class => 'snorbybox snorbybox-map', :target => '_blank'} %></span>
+  </td>
+</tr>
+

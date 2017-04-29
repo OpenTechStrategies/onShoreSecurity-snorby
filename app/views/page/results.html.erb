@@ -1,0 +1,31 @@
+<% page_title = (params[:title] ? params[:title] : "Search Results") %>
+	
+<%= title "#{truncate(h(page_title))} <i>#{pluralize(@events.pager.total, 'event')} found</i>".html_safe, "#{truncate(h(page_title))}" do %>
+  <%= menu_item "Hotkeys", hotkey_events_path, 'events/keyboard.png', :class => 'snorbybox', :"data-width" => '753px' %>
+
+	<%= render :partial => 'events/search' %>
+	<%= menu_item "", search_path, 'icons/lens.png', :title => "Advanced Search" %>
+	<%= render :partial => 'events/menu' %>
+
+	<%= drop_down_for('More Options', 'icons/grab.png', 'options') do %>
+    <%= drop_down_item "My Events", queue_events_path, nil %>
+    <%= drop_down_item "Hotkeys", hotkey_events_path, nil, :class => 'snorbybox' %>
+    <%= drop_down_item "Force Auto Classification", force_cache_path, nil, {:class => 'force-cache-update'} if Snorby::Worker.running? %>
+	<% end %>
+
+    <%= drop_down_item "View Saved Searches", saved_searches_path, nil %>
+
+  <% end %>
+<% end %>
+
+<% if @search %>
+  <div id="search-params" style="display:none;">
+    <%= @params %>
+  </div>
+<% end %>
+
+<div class="results" data-direction="<%= params[:direction] %>" data-sort="<%= params[:sort] %>">
+  <%= render :partial => 'page/events' %>
+</div>
+
+<%= render :partial => 'events/hotkeys' %>

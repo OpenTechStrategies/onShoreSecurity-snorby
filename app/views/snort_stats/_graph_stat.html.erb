@@ -1,0 +1,107 @@
+<% if stat[:data].empty? %>
+
+  <div id='metric-graph_<%= index %>' <%= "style=display:none;" unless index.zero? %> class='dashboard-graph snmp no-pie-data'></div>
+
+<% else %>
+
+  <% content_for :footer do %>
+
+    <script type="text/javascript">
+
+      window["<%= index %>-graph"] = new Highcharts.Chart({
+        chart: {
+          renderTo: 'metric-graph_<%= index %>',
+          defaultSeriesType: 'spline',
+          marginTop: 50,
+          marginRight: 10,
+          zoomType: 'x'
+        },
+        credits: {
+          enabled: false
+        },
+        title: {
+          text: '<%= stat[:snort_stat_name].text_name %>',
+          x: -20 //center
+        },
+        xAxis: {
+          categories: <%= @axis.to_json.html_safe %>,
+          title: {
+            margin: 10,
+            <% if @range == 'last_3_hours' %>
+              text: 'Last 3 Hours'
+            <% elsif (@range == 'year' || @range == 'quarter' || @range == 'last_year') %>
+              text: 'Month of Year'
+            <% elsif (@range == 'last_quarter') %>
+              text: 'Day of Year'
+            <% elsif (@range == 'month' || @range == 'last_month') %>
+              text: 'Date of Month'
+            <% elsif (@range == 'week' || @range == 'last_week') %>
+              text: 'Date Of Week'
+            <% elsif @range == 'last_24' %>
+              text: 'Last 24 Hours'
+            <% else %>
+              text: 'Last 3 Hours'
+            <% end %>
+          },
+          <% if @range == 'last_quarter' %>
+            labels: {
+              step: 15
+            }
+          <% elsif ['last_3_hours', 'last_year'].include? @range %>
+            labels: {
+              step: 2
+            }
+          <% end %>
+        },
+        yAxis: {
+          title: {
+            text: '<%= stat[:snort_stat_name].measure_unit %>'
+          },
+          min: 0,
+          plotLines: [{
+              value: 0,
+              width: 1,
+              color: '#808080'
+            }],
+          <% if stat[:snort_stat_name].measure_unit == '%' %>
+            min: 0,
+            max: 100
+          <% end %>
+        },
+        tooltip: {
+          shared: true,
+          crosshairs: true
+        },
+        legend: {
+          layout: 'vertical',
+          align: 'right',
+          verticalAlign: 'top',
+          x: 0,
+          y: 0,
+          borderWidth: 0,
+          borderRadius: 0,
+          borderColor: '#ddd',
+          backgroundColor: '#fff'
+        },
+        plotOptions: {
+          series: {
+            marker: {
+              enabled: false,
+              states: {
+                hover: {
+                  enabled: true
+                }
+              }
+            }
+          }
+        },
+        series: <%= stat[:data].to_json.html_safe %>
+      });
+
+    </script>
+
+  <% end %>
+
+  <div id='metric-graph_<%= index %>' <%= "style=display:none;" unless index.zero? %> class='dashboard-graph snmp' data_column=<%= index %>></div>
+
+<% end %>

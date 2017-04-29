@@ -1,0 +1,75 @@
+<% javascript :footer, 'sparkline', 'highcharts' %>
+
+<%= title "Snort Stats Dashboard for #{@sensor.sensor_name}".html_safe, 'Snort Stats Dashboard' -%>
+
+<div id='dashboard' class=''>
+	
+	<div class='main grid_9'>
+		
+		<div class='dashboard-menu'>
+      
+			<ul>
+
+        <li class='<%= "active" if @range == 'last_3_hours' %> add_tipsy' title="<%= time_range_title(:last_3_hours) %>">
+          <%= link_to "Last 3",  params[:sensor_id].nil? ? info_snort_stats_path(:range => :last_3_hours) : info_sensor_snort_stats_path(:range => :last_3_hours) %>
+        </li>
+
+        <li class='<%= "active" if @range == 'last_24' %> add_tipsy' title="<%= time_range_title(:last_24) %>">
+          <%= link_to "Last 24", params[:sensor_id].nil? ? info_snort_stats_path(:range => :last_24) : info_sensor_snort_stats_path(:range => :last_24) %>
+        </li>
+
+        <li class='<%= "active" if @range == 'last_week' %> add_tipsy' title="<%= time_range_title(:last_week) %>">
+          <%= link_to "Last Week",  params[:sensor_id].nil? ? info_snort_stats_path(:range => :last_week) : info_sensor_snort_stats_path(:range => :last_week) %>
+        </li>
+
+        <li class='<%= "active" if @range == 'last_month' %> add_tipsy' title="<%= time_range_title(:last_month) %>">
+          <%= link_to "Last Month",  params[:sensor_id].nil? ? info_snort_stats_path(:range => :last_month) : info_sensor_snort_stats_path(:range => :last_month) %>
+        </li>
+
+        <li class='<%= "active" if @range == 'last_quarter' %> add_tipsy' title="<%= time_range_title(:last_quarter) %>">
+          <%= link_to "Last Quarter",  params[:sensor_id].nil? ? info_snort_stats_path(:range => :last_quarter) : info_sensor_snort_stats_path(:range => :last_quarter) %>
+        </li>
+
+        <li class='<%= "active" if @range == 'last_year' %> add_tipsy' title="<%= time_range_title(:last_year) %>">
+          <%= link_to "Last Year",  params[:sensor_id].nil? ? info_snort_stats_path(:range => :last_year) : info_sensor_snort_stats_path(:range => :last_year) %>
+        </li>
+
+			</ul>
+
+    </div>
+		
+		<div id="box-tabs">
+
+			<ul id="box-menu">
+				<% @metrics.each_with_index do |metric, index| %>
+          <li class='<%= index.zero? ? "snmp active" : "snmp" %>' >
+            <%= link_to metric[:snort_stat_name].text_name, "#", :class => 'show_metric', :data_index => index, :data_column => index %>
+          </li>
+        <% end %>
+				
+			</ul>
+
+		</div>
+		
+    <%= render 'graph_dashboard.html.erb' %>
+
+	</div>
+
+  <div class='secondary grid_3 alpha'>
+    <% @metrics.each_with_index do |metric, index| %>
+      <div class='dashboard-header'>
+        <span title="<%= metric[:snort_stat_name].text_name %>" class='add_tipsy'> Top 5 '<%= truncate(metric[:snort_stat_name].text_name, :length => 20, :omission => '...') %>' </span>
+        <span class="plus"><%= link_to '+', snort_stats_path(:search => {:sid => @sensor.sid, :snort_stat_name_id => metric[:snort_stat_name].id}) %></span>
+      </div>
+      <ul class="box-list">
+        <% metric[:data].map {|x| [x[:name], x[:data].sum{|s| s.nil? ? 0 : s} / x[:data].count{|c| c.present?}]}.sort{|x, y| y[1] <=> x[1]}.first(10).each do |item| %>
+          <li>
+            <%= item[0] %>
+            <span> <%= item[1].round(2) %> </span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+	
+</div>

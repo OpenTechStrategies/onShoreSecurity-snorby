@@ -1,0 +1,8 @@
+$('div#logs_sensor').replaceWith("<%= escape_javascript(render(:partial => 'logs_sensor.html.erb', :locals => { :log_content => @log_content, :page => @page })) %>");
+
+$('div.content').fadeTo(500, 1);
+$.scrollTo('#header', 500);
+
+Snorby.helpers.remove_click_events(false);
+Snorby.helpers.recheck_selected_events();
+flash();

@@ -1,0 +1,67 @@
+<% if @dst_metrics.empty? %>
+	<div id='IPV4_DST_ADDR-graph' style="<%= active ? "" : 'display:none;' %>" class="dashboard-graph <%= prepend_id.blank? ? 'no-pie-data' : 'no-pie-data-little' %>" data_column="IPV4_DST_ADDR"></div>
+<% else %>
+	<div id='<%= prepend_id %>IPV4_DST_ADDR-graph' style="<%= active ? "" : 'display:none;' %>" class='dashboard-graph' data_column="IPV4_DST_ADDR"></div>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			window["<%= prepend_id %>IPV4_DST_ADDR-graph"] = chart = new Highcharts.Chart({
+		      chart: {
+		         renderTo: '<%= prepend_id %>IPV4_DST_ADDR-graph',
+		         //margin: [50, 165, 50, 160]
+		      },
+		      exporting: {
+            enabled: false
+          },
+          credits: {
+            enabled: false
+          },
+		      title: {
+		         text: ''
+		      },
+		      tooltip: {
+		         formatter: function() {
+		            return "<b>" + this.point.name.substring(0, 30) + "</b>... (" + this.y + " sessions)"
+		         }
+		      },
+		      plotOptions: {
+		         pie: {
+              events: {
+                click: function(event) {
+                	if(event.point.name != 'Others'){
+	                  HCloader(event.target.nearestViewportElement.parentElement.id);
+	                  document.location = '/results?search[0][column]=destination_ip&search[0][value]=' + event.point.name + '&search[0][operator]=is&search[0][enabled]=true' +
+	                  										'&search[1][column]=start_time&search[1][value]=<%= @start_time.to_i %>&search[1][operator]=gte&search[1][enabled]=true' +
+	                  										'&search[2][column]=end_time&search[2][value]=<%= @end_time.to_i %>&search[2][operator]=lte&search[2][enabled]=true';
+	                }
+                }
+              },
+		            allowPointSelect: true,
+		            cursor: 'pointer',
+								dataLabels: {
+										distance: 20,
+									  formatter: function() {
+										return "" + this.point.name.substring(0, 30) + "... (" + Math.round(this.percentage) + "%)"
+									 },
+		                connectorColor: '#888',
+										style: {
+											fontSize: 10
+										}
+		            }
+		         }
+		      },
+			    legend: {
+			        enabled: false
+			    },
+		       series: [{
+		         type: 'pie',
+		         name: 'Unique Destination Addresses',
+		         data: [
+							<% @dst_metrics.each do |key,value| %>
+								['<%= key.to_s %>', <%= value %>],
+							<% end %>
+		         ]
+		      }]
+	  	});
+		});
+	</script>
+<% end %>

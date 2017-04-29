@@ -1,0 +1,29 @@
+<li id='log_<%= log.id %>' class='log'>
+
+  <div class='row'>
+
+    <div class='user'>
+      <% if log.user %>
+        <%= image_tag(log.user.gravatar ? get_gravatar_uri(log.user.email) : log.user.avatar.url(:small), :size => '16x16', :class => 'avatar-small') %> <%= log.user.name %>
+      <% end %>
+    </div>
+
+    <div class='resource'><%= log.model_name_translate %></div>
+
+    <div class='sensor'>
+      <span title='<%= log.object_name %>' class='add_tipsy'><%= truncate(log.object_name, :length => 16, :omission => '...') %></span>
+    </div>
+    
+    <div class='action'><%= log.action.capitalize %></div>
+
+    <div class='message'>
+      <span title='<%= log.message.gsub('\'', '"') %>' class='add_tipsy'><%= truncate(log.message, :length => 80, :omission => '...') %></span>
+    </div>
+
+    <div class='click timestamp'>
+      <b title='<%= display_time(log.created_at) %>' class='add_tipsy'><%= log.pretty_time %></b>
+    </div>
+
+  </div>
+
+</li>

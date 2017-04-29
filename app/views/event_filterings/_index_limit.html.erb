@@ -1,0 +1,28 @@
+<div class="boxit">
+  <ul class="table reputations">
+    <div class="content">
+      <li class="category boxit">
+        <%= sec_title "Limits " + content_tag(:i, "( Events will be limited but never suppressed base on these rules ) ").html_safe, "title second" do -%>
+          <%= menu_item "Add", new_event_filtering_path(:sid => @sensor.sid, :filtering_type => "limit"), 'icons/add.png', {:class => 'snorbybox', :target => '_blank'} if (can? :manage, @sensor) %>
+        <%- end -%>
+        <ul class="table" style="width:1000px;<%= @limit_rules.present? ? "" : "display:none;" %>">
+          <div class="content">
+            <li class="group">
+              <div class="row event_rules_list" id="event_rules_list_limits">
+                <% if @limit_rules.present? %>
+                  <table class="default" id="event_filtering_limit_table" border="0" cellspacing="0" cellpadding="0">
+                    <%= render :partial => 'limit_table'%>
+                  </table>
+                <% else %>
+                  <div class="note no-click" style='width: 1000px;'>
+                    There are no limit event rules defined
+                  </div>                  
+                <% end %>
+              </div>
+            </li>
+          </div>
+        </ul>
+      </li>
+    </div>
+  </ul>
+</div>

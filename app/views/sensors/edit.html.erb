@@ -1,0 +1,334 @@
+<%= title "Sensor: #{@sensor.name}" -%>
+
+<%= form_tag "/sensors/#{@sensor.sid}", :method => :put, :class => 'basic-form validate' do %>
+  <%= error_messages_for(@sensor) %>
+  <div class="dashboard content sensor edit_sensor">
+    <div class="boxit">
+      <ul class="table categories">
+        <div class="content">
+          <li class="category boxit">
+            <div class="sec-title" id="title">
+              <div class="grid_6" id="title-header">General <i>( Operation mode configuration and segments selection )</i></div>
+            </div>
+            <ul class="table">
+              <div class="content">
+                <li class="group">
+                  <div class="row info">
+                    <div class="grid_6">
+                      <p>
+                        <%= label_tag 'Name' %><i> ( unique sensor name that identifies the sensor )</i>
+                        <br />
+                        <%= text_field_tag '[sensor][name]', @sensor.name, :placeholder => 'Domain Name', :class => 'required', :disabled => 'disabled' if @sensor.virtual_sensor %>
+                        <%= text_field_tag '[sensor][name]', @sensor.name, :placeholder => 'Domain Name', :class => 'required alphanumeric' unless @sensor.virtual_sensor %>
+                      </p>
+                      <p>
+                        <%= label_tag 'Operational Mode' %>
+                        <br />
+                        <%= select_tag '[role][redBorder][snort][mode]', select_role_options(@sensor, ["redBorder", "snort", "mode"], Sensor::MODES, :selected => @role.override_attributes["redBorder"]["snort"]["mode"]) %>
+                      </p>
+                      <p>
+                        <%= label_tag 'Default Action' %><i> ( to be effective this option, the reputation preprocessor must be enabled )</i>
+                        <br />
+                        <%= select_tag '[role][redBorder][snort][default_action]', select_role_options(@sensor, ["redBorder", "snort", "default_action"], Sensor::DEFAULT_ACTIONS, :selected => @role.override_attributes["redBorder"]["snort"]["default_action"]) %>
+                      </p>
+                    </div>
+                    <div class="grid_5">
+                      <% if @sensor.virtual_sensor %>
+                        <p>
+                          <%= label_tag 'IP', 'IP' %><i> ( management ip address )</i>
+                          <br />
+                          <%= text_field_tag '[sensor][ip_addr]', @sensor.ipdir, :placeholder => 'Domain Ip', :class => 'required', :disabled => 'disabled' %>
+                        </p>
+                        <p>
+                          <%= label_tag 'Segments where the IDS/IPS will listen to:' %>
+                          <br/>
+                          <% cont = 1 %>
+                          <% size = @node[:redBorder][:segments].size %>
+                          <table class="no_border">
+                            <tbody>
+                              <tr>
+                                <% @node[:redBorder][:segments].each do |k, v| %>
+                                  <td class="size_33">
+                                    <%= check_box_tag '[role][redBorder][snort][segments][]', k, ( (!@snort_segments.present? and !@snort_initialized) ? true : (@snort_segments.include? k) ) %> <%= label_tag k, k %><br />
+                                  </td>
+                                  <%= "</tr><tr>".html_safe if (cont%3 == 0 and cont < size) %>
+                                  <% cont = cont + 1 %>
+                                <% end %>
+                                <% ((3 -(cont - 1)%3)%3).times do %>
+                                  <td class="size_33 noselect"></td>
+                                <% end %>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </p>
+                      <% end %>
+                    </div>
+                  </div>
+                </li>
+              </div>
+            </ul>
+
+          </li>
+        </div>
+      </ul>
+    </div>
+
+    <div class="boxit">
+      <ul class="table categories">
+        <div class="content">
+          <li class="category boxit">
+            <div class="sec-title" id="title">
+              <div class="grid_6" id="title-header">Logging <i>( Remote syslog servers where the IPS events and the system events will be sent )</i></div>
+            </div>
+            <ul class="table" style="display: none;">
+              <div class="content">
+                <li class="group">
+                  <div class="row info">
+                    <div class="grid_6">
+                      <p>
+                        <span title='<%=h "Example: 192.168.100.1:514, 192.168.50.2" %>'>
+                          <%= label_tag 'Syslog Servers' %>
+                          <i>(Servers separated by commas. Default port: 514)</i>
+                        </span>
+                        <br/>
+                        <%= text_field_tag "[role][redBorder][syslog-ng][servers]", (@role.override_attributes["redBorder"]["syslog-ng"]["servers"].map{|s| s.to_s}.join(", ") unless @role.override_attributes["redBorder"]["syslog-ng"]["servers"].nil?), :placeholder => @sensor.role_value(["redBorder", "syslog-ng", "servers"]).map{|s| s.to_s}.join(", "), :class => 'listipaddrport', :data => @sensor.role_value(["redBorder", "syslog-ng", "servers"]).map{|s| s.to_s}.join(", ") %>
+                      </p>
+                      <p>
+                        <%= label_tag 'Syslog Protocol' %>
+                        <br/>
+                        <%= select_tag '[role][redBorder][syslog-ng][protocol]', select_options([['tcp', 'TCP'], ['udp', 'UDP']], :selected => @role.override_attributes["redBorder"]["syslog-ng"]["protocol"]) %>
+                      </p>
+                    </div>
+                    <div class="grid_5">
+                      <p>
+                        <% if @sensor.role_value(["redBorder", "snort", "save_pcap"]) %>
+                          <%=  image_tag "icons/incident.png" %>
+                        <% else %>
+                          <%=  image_tag "icons/fp.png" %>
+                        <% end %>
+                        <%= label_tag 'Save pcap files' %>
+                        <i>(pcap files will be generated.)</i>
+                        <br/>
+                        <%= select_tag "[role][redBorder][snort][save_pcap]", select_role_options(@sensor, ["redBorder","snort","save_pcap"], Sensor::PREPROCESSOR_VALUES, :selected => @role.override_attributes["redBorder"]["snort"]["save_pcap"]) %>
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              </div>
+            </ul>
+          </li>
+        </div>
+      </ul>
+    </div>
+
+
+    <div id='preprocessors' class="boxit">
+      <ul class="table categories">
+        <div class="content">
+          <li class="category boxit">
+            <div class="sec-title" id="title">
+              <div class="grid_6" id="title-header">Preprocessors <i>( Preprocessor code is run before the detection engine is called, but after the packet has been decoded )</i></div>
+            </div>
+            <ul class="table" style="display: none;">
+              <div class="content">
+                <li class="group">
+                  <div class="row info">
+                    <% cont = 1 %>
+                    <% size = Sensor.chef_sensor_role.override_attributes["redBorder"]["snort"]["preprocessors"].size %>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <% Sensor.chef_sensor_role.override_attributes["redBorder"]["snort"]["preprocessors"].each do |key, value| %>
+                            <td class="size_33">
+                              <% if @sensor.role_value(["redBorder", "snort", "preprocessors", key, "mode"]) %>
+                                <%=  image_tag "icons/incident.png" %>
+                              <% else %>
+                                <%=  image_tag "icons/fp.png" %>
+                              <% end %>
+                              <label for='<%= key.capitalize %>'>
+                                <strong>
+                                  <%= @sensor.role_value(["redBorder", "snort", "preprocessors", key, "name"]) %>
+                                </strong>
+                              </label>
+                              <span title="<%= value["description"] %>" class='add_tipsy'>
+                                <i>(<%= truncate(value["description"], :length => 45, :omission => '...') %>)</i>
+                              </span>
+                              <br/>
+                              <%= select_tag "[role][redBorder][snort][preprocessors][#{key}][mode]", select_role_options(@sensor, ["redBorder","snort","preprocessors","#{key}", "mode"], Sensor::PREPROCESSOR_VALUES, :selected => selected_preprocessor_value(@role, key)), :class => "preprocessor", :id => "#{key}", :disabled => (!value["editable"] or !@sensor.check_preprocessor("#{key}")) %>
+                              <% if !@sensor.check_preprocessor("#{key}") %>
+                                <span title="There're rules depending on it" class='add_tipsy'>
+                                  <%= image_tag "icons/information_grey.png", :class => "info" %><i>Information</i>
+                                </span>
+                              <% end %>
+                            </td>
+                            <%= "</tr><tr>".html_safe if (cont%3 == 0 and cont < size) %>
+                            <% cont = cont + 1 %>
+                          <% end %>
+                          <% ((3 -(cont - 1)%3)%3).times do %>
+                            <td class="size_33 noselect"></td>
+                          <% end %>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </li>
+              </div>
+            </ul>
+          </li>
+        </div>
+      </ul>
+    </div>
+
+    <div class="boxit">
+      <ul class="table categories">
+        <div class="content">
+          <li class="category boxit">
+            <div class="sec-title" id="title">
+              <div class="grid_6" id="title-header">IP Variables <i>( Blank boxs will be inherited from its parent )</i></div>
+            </div>
+            <ul class="table" style="display: none;">
+              <div class="content">
+                <li class="group">
+                  <div class="row info">
+                    <% cont = 1 %>
+                    <% size = RuleVariable.all(:type => RuleVariable::IPVAR).size %>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <% RuleVariable.all(:type => RuleVariable::IPVAR).each do |v| %>
+                            <td class="size_33">
+                              <%= label_tag v.name %>
+                              <br/>
+                              <%= text_field_tag "[role][redBorder][snort][ipvars][#{v.name}]", selected_variable_value(@role, "ipvars", v.name), :placeholder => @sensor.role_value(["redBorder", "snort", "ipvars", v.name]), :data => @sensor.role_value(["redBorder", "snort", "ipvars", v.name]), :class => 'snort_ipvar' %>
+                            </td>
+                            <%= "</tr><tr>".html_safe if (cont%3 == 0 and cont < size) %>
+                            <% cont = cont + 1 %>
+                          <% end %>
+                          <% ((3 -(cont - 1)%3)%3).times do %>
+                            <td class="size_33 noselect"></td>
+                          <% end %>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </li>
+              </div>
+            </ul>
+          </li>
+        </div>
+      </ul>
+    </div>
+
+    <div class="boxit">
+      <ul class="table categories">
+        <div class="content">
+          <li class="category boxit">
+            <div class="sec-title" id="title">
+              <div class="grid_6" id="title-header">Port Variables <i>( Blank boxs will be inherited from its parent )</i></div>
+            </div>
+            <ul class="table" style="display: none;">
+              <div class="content">
+                <li class="group">
+                  <div class="row info">
+                    <% cont = 1 %>
+                    <% size = RuleVariable.all(:type => RuleVariable::PORTVAR).size %>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <% RuleVariable.all(:type => RuleVariable::PORTVAR).each do |v| %>
+                            <td class="size_33">
+                              <%= label_tag v.name %>
+                              <br/>
+                              <%= text_field_tag "[role][redBorder][snort][portvars][#{v.name}]", selected_variable_value(@role, "portvars", v.name), :placeholder => @sensor.role_value(["redBorder", "snort", "portvars", v.name]), :data => @sensor.role_value(["redBorder", "snort", "portvars", v.name]), :class => 'snort_portvar' %>
+                            </td>
+                            <%= "</tr><tr>".html_safe if (cont%3 == 0 and cont < size) %>
+                            <% cont = cont + 1 %>
+                          <% end %>
+                          <% ((3 -(cont - 1)%3)%3).times do %>
+                            <td class="size_33 noselect"></td>
+                          <% end %>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </li>
+              </div>
+            </ul>
+          </li>
+        </div>
+      </ul>
+    </div>
+
+    <div class="boxit">
+      <ul class="table categories">
+        <div class="content">
+          <li class="category boxit">
+            <%= sec_title "Trap Servers " + content_tag(:i, "( SNMP notification method. This manager is alwasys included as trap server even if it is not present )").html_safe, "title second" do -%>
+              <%= menu_item "Add", sensor_new_trap_path(@sensor), 'icons/add.png', {:class => 'snorbybox', :target => '_blank'} %>
+            <%- end -%>
+            <ul class="table" style="display: none;">
+              <div class="content">
+                <li class="group">
+                  <div class="row">
+                    <% trap_servers = @sensor.role_value(["redBorder", "snmp", "trap_servers"]) %>
+                    <% if trap_servers.present? %>
+                      <%= render :partial => 'trap_servers', :locals => {:trap_servers => trap_servers}  %>
+                    <% else %>
+                      <div id="trap_servers" class="note no-click no-traps" style='width: 1000px;'>
+                        There are no traps defined for this sensor/domain
+                      </div>
+                    <% end %>
+                  </div>
+                </li>
+              </div>
+            </ul>
+          </li>
+        </div>
+      </ul>
+    </div>
+
+    <div class="boxit">
+      <ul class="table categories">
+        <div class="content">
+          <li class="category boxit">
+            <div class="sec-title" id="title">
+              <div class="grid_6" id="title-header">MTA Server <i>( Leaving it blank, mails will be delivered directly )</i></div>
+            </div>
+            <ul class="table" style="display: none;">
+              <div class="content">
+                <li class="group">
+                  <div class="row info">
+                    <div class="grid_6">
+                      <p>
+                        <%= label_tag 'Relay Host' %>
+                        <br/>
+                        <%= text_field_tag "[role][redBorder][smtp][relayhost]", (@role.override_attributes["redBorder"]["smtp"]["relayhost"] unless @role.override_attributes["redBorder"]["smtp"].nil?), :placeholder => @sensor.role_value(["redBorder", "smtp", "relayhost"]), :class => 'domain', :data => @sensor.role_value(["redBorder", "smtp", "relayhost"]) %>
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              </div>
+            </ul>
+          </li>
+        </div>
+      </ul>
+    </div>
+
+    <%= form_actions do %>
+      <button id='applyfw' title='<%= "Apply this configuration to #{@sensor.name}" %>' class="success default add_tipsy longbut" >
+        <span>Apply</span>
+      </button>
+    <% end %>
+  </div>
+<% end %>
+
+<% if @sensor.deep == 1 %>
+  <script type="text/javascript">
+    $(document).ready(function()  {
+      $("option:contains('Inherited')").each(function(index) {
+        var texto = $(this).text().replace("Inherited", "Default");
+        $(this).text(texto);
+      });
+    });
+  </script>
+<% end %>

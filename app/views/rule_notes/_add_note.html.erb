@@ -1,0 +1,28 @@
+<div id='new_note_box' class='rule-note event-note round'>
+
+  <div class='note-avatar-holder'>
+    <%= image_tag(@user.gravatar ? get_gravatar_uri(@user.email) : @user.avatar.url(:small), :size => '32x32') %>
+  </div>
+
+  <div class='username'>
+    <span><%= @user %></span>
+    <i><%= time_ago_in_words(Time.now) %></i>
+
+  </div>
+
+  <div class='note-body'>
+
+    <div id='new_note' class='fake_form' data-rule-id='<%= @rule.id %>' >
+
+      <%= text_area_tag :body %>
+
+      <%= form_actions do %>
+        <%= button "Save Note", :class => 'submit_new_rule_note' %>
+        <%= button "Cancel", :class => 'warning cancel-note' %>
+      <% end %>
+
+    </div>
+
+  </div>
+
+</div>

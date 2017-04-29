@@ -1,0 +1,56 @@
+<li id='rule_<%= rule.id %>' data='<%= rule.id %>' class="rule">
+  <div class="row">
+    <%- if @sensor.nil?  %>
+      <div class="select small">&nbsp;</div>
+    <%- else %>
+      <%- locked = false %>
+      <div class="select small"><%= check_box_tag 'rule-selector', nil, false, :class => "check_box_rule_#{rule.id}" %></div>
+      <div class='important big'>
+        <% if rule.favorite? %>
+          <div class='destroy-favorite enabled'></div>
+        <% else %>
+          <div class='create-favorite enabled'></div>
+        <% end %>
+        <% sr = @last_rules.last(:rule => rule) %>
+        <% if @sensor.virtual_sensor %>
+          <% if !sr.nil? and !sr.allow_overwrite and sr.inherited %>
+            <% locked = true %>
+            <div title="locked" class='not-allow-overwrite disabled'></div>
+          <% else %>
+            <div class='allow-overwrite disabled blank'></div>
+          <% end %>
+        <% else %>
+          <% if sr.nil? %>
+            <div class='allow-overwrite disabled blank'></div>
+          <% elsif sr.allow_overwrite %>
+            <% if sr.inherited %>
+              <div class='allow-overwrite disabled blank'></div>
+            <% else %>
+              <div class='allow-overwrite enabled'></div>
+            <% end %>
+          <% elsif sr.inherited %>
+            <% locked = true %>
+            <div title="locked" class='not-allow-overwrite disabled'></div>
+          <% else %>
+            <div class='not-allow-overwrite enabled'</div>
+          <% end %>
+        <% end %>
+      </div>
+      <div class="action click">
+        <%= render :partial => 'action', :locals => {:action => action, :mactions => nil, :locked => locked } %>
+      </div>
+    <%- end %>
+    <div class="message click"><%= truncate(rule.short_msg, :length => 100, :omission => '...') %></div>
+    <div class="timestamp">
+      <%= render :partial => 'note_tipsy'    , :locals => {:notes => rule.notes } %>
+      <%= render :partial => 'policy_tipsy'  , :locals => {:policies => rule.policies }  %>
+      <%= render :partial => 'flowbit_tipsy', :locals => {:flowbits => rule.flowbits }  %>
+      <%- intmp = @last_rules.first(:rule_id => rule.id) %>
+      <%= render :partial => 'inherited_tipsy', :locals => { :inherited => ((!intmp.nil? && intmp.inherited) ? 1 : 0)  } %>
+      <%= render :partial => 'default_enabled_tipsy', :locals => {:enabled => rule.default_enabled} if @show_disabled_rules %>
+    </div>
+  </div>
+  <div class="rule-data event-data" style='display:none;'>
+    <div class="content"></div>
+  </div>
+</li>

@@ -1,0 +1,50 @@
+<div class='section-title plus'>TCP Header Information</div>
+
+<div class='proto plus'>
+  <table class='ip-header' border='0' cellspacing='0' cellpadding='0'>
+    <tr>
+      <th class='first'><span title="Source port (16 bits) - identifies the sending port" class='add_tipsy'>Src Port</span></th>
+      <th><span title="Destination port (16 bits) - identifies the receiving port" class='add_tipsy'>Dst Port</span></th>
+      <th><span title="Sequence number (32 bits) - has a dual role: If the SYN flag is set (1), then this is the initial sequence number. The sequence number of the actual first data byte and the acknowledged number in the corresponding ACK are then this sequence number plus 1; If the SYN flag is clear (0), then this is the accumulated sequence number of the first data byte of this packet for the current session." class='add_tipsy'>Seq</span></th>
+      <th><span title="Acknowledgment number (32 bits) - if the ACK flag is set then the value of this field is the next sequence number that the receiver is expecting. This acknowledges receipt of all prior bytes (if any). The first ACK sent by each end acknowledges the other end's initial sequence number itself, but no data." class='add_tipsy'>Ack</span></th>
+      <th><span title="Data offset (4 bits) - specifies the size of the TCP header in 32-bit words. The minimum size header is 5 words and the maximum is 15 words thus giving the minimum size of 20 bytes and maximum of 60 bytes, allowing for up to 40 bytes of options in the header. This field gets its name from the fact that it is also the offset from the start of the TCP segment to the actual data." class='add_tipsy'>Off</span></th>
+      <th><span title="Reserved (3 bits) - for future use and should be set to zero" class='add_tipsy'>Res</span></th>
+      <th><span title="Flags (9 bits) (aka Control bits) - contains 9 1-bit flags: NS (1 bit) - ECN-nonce concealment protection; CWR (1 bit) - Congestion Window Reduced (CWR) flag is set by the sending host to indicate that it received a TCP segment with the ECE flag set and had responded in congestion control mechanism; ECE (1 bit) - ECN-Echo; URG (1 bit) - indicates that the Urgent pointer field is significant; ACK (1 bit) - indicates that the Acknowledgment field is significant; PSH (1 bit) - Push function. Asks to push the buffered data to the receiving application; RST (1 bit) - Reset the connection; SYN (1 bit) - Synchronize sequence numbers; FIN (1 bit) - No more data from sender" class='add_tipsy'>Flags</span></th>
+      <th><span title="Window size (16 bits) – the size of the receive window, which specifies the number of bytes (beyond the sequence number in the acknowledgment field) that the sender of this segment is currently willing to receive." class='add_tipsy'>Win</span></th>
+      <th><span title="Checksum (16 bits) – The 16-bit checksum field is used for error-checking of the header and data." class='add_tipsy'>Csum</span></th>
+      <th class='last'><span title="Urgent pointer (16 bits) – if the URG flag is set, then this 16-bit field is an offset from the sequence number indicating the last urgent data byte." class='add_tipsy'>URP</span></th>
+    </tr>
+    <tbody>
+      <tr>
+        <td class='first' style='position: relative;'>
+          <a href="#" class='ip-button has-event-menu' onclick="return false;">  
+            <%= @event.tcp.tcp_sport %>
+            <%= clippy(@event.tcp.tcp_sport, '#FFFFFF', "src-port-#{@event.id}") %>
+          </a>
+          <dl class='event-sub-menu round shadow push-down' style="display:none;">
+            <dd><%= link_to "Search by TCP Source Port", results_path(:add_search => { :column => "tcp_source_port", :value => @event.tcp.tcp_sport, :operator => "is" }) %></dd>
+            <dd><%= link_to "Discard by TCP Source Port", results_path(:add_search => { :column => "tcp_source_port", :value => @event.tcp.tcp_sport, :operator => "is_not" }) %></dd>
+          </dl>
+        </td>
+        <td style='position: relative;'>
+          <a href="#" class='ip-button has-event-menu' onclick="return false;">
+            <%= @event.tcp.tcp_dport %>
+            <%= clippy(@event.tcp.tcp_dport, '#FFFFFF', "dst-port-#{@event.id}") %>
+          </a>
+          <dl class='event-sub-menu round shadow push-down' style="display:none;">
+            <dd><%= link_to "Search by TCP Destination Port", results_path(:add_search => { :column => "tcp_destination_port", :value => @event.tcp.tcp_dport, :operator => "is" }) %></dd>
+            <dd><%= link_to "Discard by TCP Destination Port", results_path(:add_search => { :column => "tcp_destination_port", :value => @event.tcp.tcp_dport, :operator => "is_not" }) %></dd>
+          </dl>
+        </td>
+        <td><%= @event.tcp.tcp_seq %></td>
+        <td><%= @event.tcp.tcp_ack %></td>
+        <td><%= @event.tcp.tcp_off %></td>
+        <td><%= @event.tcp.tcp_res %></td>
+        <td><%= @event.tcp.tcp_flags %></td>
+        <td><%= @event.tcp.tcp_win %></td>
+        <td><%= @event.tcp.tcp_csum %></td>
+        <td class='last'><%= @event.tcp.tcp_urp %></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

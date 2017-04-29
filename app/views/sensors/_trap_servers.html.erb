@@ -1,0 +1,18 @@
+<% unless trap_servers.nil? %>
+	<table border="0" cellspacing="0" cellpadding="0" class="default trap_servers">
+    <tr>
+      <th>IP</th>
+      <th>Community</th>
+      <th></th>
+    </tr>
+    <tbody id="trap_servers" class="config_content preprocessor">
+			<% trap_servers.each_with_index do |server, index| %>
+			  <tr>
+			    <td><%= server["ip"] %></td>
+			    <td><%= server["community"] %></td>
+			    <td class="last icons"><%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), sensor_delete_trap_path(@sensor, :trap_index => index), :method => :post, :remote => true %></td>
+			  </tr>
+			<% end %>
+		</tbody>
+  </table>
+<% end %>

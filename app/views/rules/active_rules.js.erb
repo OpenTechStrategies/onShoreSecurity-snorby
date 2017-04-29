@@ -1,0 +1,6 @@
+$('div#rules').replaceWith("<%= escape_javascript(render(:partial => 'rules/rules')) %>");
+$('div.content').fadeTo(500, 1);
+Snorby.helpers.remove_click_events(false);
+Snorby.helpers.recheck_selected_events();
+$.scrollTo('#header', 500);
+flash();

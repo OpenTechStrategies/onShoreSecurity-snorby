@@ -1,0 +1,10 @@
+<%- if @found %>
+  $('#_trap_ip').addClass('error');
+<%- else %>
+	$('a#fancybox-close').click();
+	if($('table.trap_servers')){
+		$('table.trap_servers').replaceWith("<%= escape_javascript(render(:partial => 'trap_servers', :locals => {:trap_servers => @sensor.role_value(["redBorder", "snmp", "trap_servers"])}))%>");	
+	} else {
+		$('#trap_servers').replaceWith("<%= escape_javascript(render(:partial => 'trap_servers', :locals => {:trap_servers => @sensor.role_value(["redBorder", "snmp", "trap_servers"])}))%>");	
+	}
+<%- end %>

@@ -1,0 +1,13 @@
+$("#dashboard-sensor-other-content").html("<%= escape_javascript(render(:partial => 'sensors/dashboard_rules_content')) %>")
+$(".event > .row > .select.small > input").hide()
+$(".event > .row > .domain").hide()
+$(".event > .row > .sensor").hide()
+$(".event > .row > .important").hide()
+$(".trap > .row > .sensor").hide()
+$(".country_flag").hide()
+
+$("ul.table div.content li .row .signature").css('width', '350px')
+$("ul.table div.content li .row .trap_message").css('width', '320px')
+$('#events ul.table .header .address').css('width', 100);
+$('#events ul.table div.content li .row .address').css('width', 100);
+    

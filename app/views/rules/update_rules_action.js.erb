@@ -1,0 +1,14 @@
+<%- if @rulestype == "compiled_rules" %>
+  flash_message.push({
+    type: 'success',
+    message: "<%= pluralize(@rules.size, 'rule') %> added to pending rules successfully"
+  });
+<%- else %>
+  flash_message.push({
+    type: 'success',
+    message: "Updated <%= pluralize(@rules.size, 'rule')%> successfully"
+  });
+<%- end %>
+
+flash();
+$.scrollTo('#header', 500);

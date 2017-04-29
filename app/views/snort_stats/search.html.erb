@@ -1,0 +1,50 @@
+<%= stylesheet 'jquery' %>
+<%= stylesheet 'chosen' %>
+<%= javascript :header, 'daterangepicker' %>
+
+<%= title "Search Stats", 'Search Stats' -%>
+
+<div id='search' class='boxit page grid_12'>
+  <%= form_tag snort_stats_path, :method => :get, :class => 'validate' do %>
+    <div id='search-box' class="log">
+      <div class='grid_4 alpha'>
+        <%= label_tag 'Sensor' %><br />
+        <%= select_tag '[search][sid]', dropdown_select_tag(@sensors, :sid, true), :class => 'add_chosen', :id => 'sel_sensor' %>
+      </div>
+      <div class='grid_4 alpha'>
+        <%= label_tag 'Instance' %><br />
+        <%= text_field_tag '[search][instance]', nil, :placeholder => 'Instance Nº', :class => 'search_fix', :id => 'sel_instance' %>
+      </div>
+      <div class='grid_4 alpha'>
+        <%= label_tag 'Snort Stat' %><br />
+        <%= select_tag '[search][snort_stat_name_id]', dropdown_select_tag(SnortStatName.all(:enable => true, :order => [:name.asc]), :id, true), :class => 'add_chosen', :id => 'sel_stat'  %>
+      </div>
+      <div class='grid_4 alpha'>
+        <%= label_tag 'Start Time' %><br />
+        <%= text_field_tag '[search][timestamp.gte]', nil, :class => 'daterangepicker', :id => 'start_time'  %>
+      </div>
+      <div class='grid_4 alpha'>
+        <%= label_tag 'End Time' %><br />
+        <%= text_field_tag '[search][timestamp.lte]', nil, :class => 'daterangepicker', :id => 'end_time'  %>
+      </div>
+    </div>
+
+    <%= form_actions do %>
+      <%= button "Submit Search", :class => 'success' %>
+      <div id='logs_count'><span></span></div>
+    <% end %>
+  <% end %>
+</div>
+
+<script type="text/javascript">
+  $('.add_chosen').chosen({ allow_single_deselect: true });
+  $('.daterangepicker').datetimepicker({
+          timeFormat: 'hh:mm:ss',
+          dateFormat: 'yy-mm-dd',
+          numberOfMonths: 1,
+          showSecond: true,
+          separator: ' ',
+          stepMinute: 5
+        });
+
+</script>

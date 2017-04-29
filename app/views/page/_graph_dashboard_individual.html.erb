@@ -1,0 +1,16 @@
+<% case tab[:column].to_sym %>
+<% when :SENSOR %>
+  <%= render :partial => 'page/graph_event.html.erb', :locals => {:prepend_id => prepend_id, :active => active, :enable_title => enable_title } %>
+<% when :SEVERITY %>
+  <%= render :partial => 'page/graph_severity.html.erb', :locals => {:prepend_id => prepend_id, :active => active, :enable_title => enable_title }   %>		
+<% when :PROTOCOL %>
+  <%= render :partial => 'page/graph_protocol.html.erb', :locals => {:prepend_id => prepend_id, :active => active, :enable_title => enable_title }   %>		
+<% when :SIGNATURE %>
+  <%= render :partial => 'page/graph_signature.html.erb', :locals => {:prepend_id => prepend_id, :active => active, :enable_title => enable_title }  %>	
+<% when :MAP %>
+  <%= render :partial => 'page/graph_map.html.erb', :locals => {:prepend_id => prepend_id, :active => active, :enable_title => enable_title }  %>		
+<% when :IPV4_SRC_ADDR %>
+  <%= render :partial => 'page/graph_source_ips.html.erb', :locals => {:prepend_id => prepend_id, :active => active, :enable_title => enable_title }  %>
+<% when :IPV4_DST_ADDR %>
+  <%= render :partial => 'page/graph_destination_ips.html.erb', :locals => {:prepend_id => prepend_id, :active => active, :enable_title => enable_title }  %>
+<% end %>

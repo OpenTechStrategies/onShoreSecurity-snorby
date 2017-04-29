@@ -1,0 +1,84 @@
+<div class='section-title plus'>IP Header Information</div>
+
+<div class='ip plus'>
+
+  <table class='ip-header' border='0' cellspacing='0' cellpadding='0'>
+    <tr>
+      <th class='first'>Source</th>
+      <th>Destination</th>
+      <th><span title="IP Protocol Version: The first header field in an IP packet is the four-bit version field. For IPv4, this has a value of 4" class='add_tipsy'>Ver</span></th>
+      <th><span title="Internet Header Length (IHL): The second field (4 bits) is the Internet Header Length (IHL), which is the number of 32-bit words in the header. Since an IPv4 header may contain a variable number of options, this field specifies the size of the header (this also coincides with the offset to the data). The minimum value for this field is 5 (RFC 791), which is a length of 5×32 = 160 bits = 20 bytes. Being a 4-bit value, the maximum length is 15 words (15×32 bits) or 480 bits = 60 bytes." class='add_tipsy'>IHL</span></th>
+      <th><span title="Type Of Service: The TOS field (6 bits) could specify a datagram's priority and request a route for low-delay, high-throughput, or highly-reliable service." class='add_tipsy'>Tos</span></th>
+      <th><span title="Total Length: This 16-bit field defines the entire packet (fragment) size, including header and data, in bytes. The minimum-length packet is 20 bytes (20-byte header + 0 bytes data) and the maximum is 65,535 bytes — the maximum value of a 16-bit word. The largest datagram that any host is required to be able to reassemble is 576 bytes, but most modern hosts handle much larger packets." class='add_tipsy'>Len</span></th>
+      <th><span title="Identification: This field is an identification field and is primarily used for uniquely identifying fragments of an original IP datagram." class='add_tipsy'>ID</span></th>
+      <th><span title="Flags: A three-bit field follows and is used to control or identify fragments. They are (in order, from high order to low order): bit 0 - Reserved; bit 1 - Don't Fragment (DF); bit 2 - More Fragments (MF)." class='add_tipsy'>Flags</span></th>
+      <th><span title="Fragment Offset: The fragment offset field, measured in units of eight-byte blocks, is 13 bits long and specifies the offset of a particular fragment relative to the beginning of the original unfragmented IP datagram. The first fragment has an offset of zero." class='add_tipsy'>Off</span></th>
+      <th><span title="Time To Live: An eight-bit time to live field helps prevent datagrams from persisting (e.g. going in circles) on an internet. This field limits a datagram's lifetime. It is specified in seconds, but time intervals less than 1 second are rounded up to 1. In practice, the field has become a hop count. When the datagram arrives at a router, the router decrements the TTL field by one. When the TTL field hits zero, the router discards the packet and typically sends a ICMP Time Exceeded message to the sender." class='add_tipsy'>TTL</span></th>
+      <th><span title="IP Protocol: This field defines the protocol used in the data portion of the IP datagram. The Internet Assigned Numbers Authority maintains a list of IP protocol numbers which was originally defined in RFC 790." class='add_tipsy'>Proto</span></th>
+      <th class='last'><span title="Header Checksum: The 16-bit checksum field is used for error-checking of the header. When a packet arrives at a router, the router calculates the checksum of the header and compares it to the checksum field. If the values do not match, the router discards the packet. Errors in the data field must be handled by the encapsulated protocol. Both UDP and TCP have checksum fields." class='add_tipsy'>Csum</span></th>
+    </tr>
+    <tbody>
+      <tr>
+        <td style='width:150px; position: relative;' class='first'>
+          <a href='/events/lookup?address=<%= @event.ip.ip_src %>' 
+             data-address='<%= @event.ip.ip_src %>' class='ip-button has-event-menu' onclick="return false;">
+
+            <%= @event.ip.ip_src %>
+            <%= clippy(@event.ip.ip_src, '#FFFFFF', "src-#{@event.id}") %>
+          </a>
+
+          <dl class='event-sub-menu round shadow push-down' style='display:none;'>
+            <dd><%= link_to 'Basic Source Lookup', "/events/lookup?address=#{@event.ip.ip_src}", :class => 'snorbybox' %></dd>
+
+            <% @lookups.each do |lookup| %>
+              <dd>
+                <%= link_to lookup.title,
+                  lookup.build(:ip => @event.ip.ip_src, :port => @event.source_port),
+                  :target => '_blank' %>
+              </dd>
+            <% end %>
+            <dd class='top-separator'><%= link_to "Search by Source", results_path(:search => { "0" => { :column => "source_ip", :value => @event.ip.ip_src, :operator => "is", :enabled => true }}) %></dd>
+	    <dd class=''><%= link_to "Search by Destination", results_path(:search => { "0" => { :column => "destination_ip", :value => @event.ip.ip_src, :operator => "is", :enabled => true }}) %></dd>
+            <dd class=''><%= link_to "Discard by Source", results_path(:search => { "0" => { :column => "source_ip", :value => @event.ip.ip_src, :operator => "is_not", :enabled => true }}) %></dd>
+          </dl>
+        </td>
+
+        <td style='width:150px; position: relative;'>
+          <a href='/events/lookup?address=<%= @event.ip.ip_dst %>' 
+             data-address='<%= @event.ip.ip_dst %>' class='ip-button has-event-menu'>
+            <%= @event.ip.ip_dst %>
+            <%= clippy(@event.ip.ip_dst, '#FFFFFF', "dst-#{@event.id}") %>
+          </a>
+
+          <dl class='event-sub-menu round shadow push-down' style='display:none;'>
+            <dd><%= link_to 'Basic Destination Lookup', "/events/lookup?address=#{@event.ip.ip_dst}", :class => 'snorbybox' %></dd>
+
+            <% @lookups.each do |lookup| %>
+              <dd>
+                <%= link_to lookup.title,
+                  lookup.build(:ip => @event.ip.ip_dst, :port => @event.destination_port),
+                  :target => '_blank' %>
+              </dd>
+            <% end %>
+
+            <dd class='top-separator'><%= link_to "Search by Destination", results_path(:search => { "0" => { :column => "destination_ip", :value => @event.ip.ip_dst, :operator => "is", :enabled => true }}) %></dd>
+	    <dd class=''><%= link_to "Search by Source", results_path(:search => { "0" => { :column => "source_ip", :value => @event.ip.ip_dst, :operator => "is", :enabled => true }}) %></dd>
+            <dd class=''><%= link_to "Discard by Destination", results_path(:search => { "0" => { :column => "destination_ip", :value => @event.ip.ip_dst, :operator => "is_not", :enabled => true}}) %></dd>
+          </dl>
+        </td>
+
+        <td><%= @event.ip.ip_ver %></td>
+        <td><%= @event.ip.ip_hlen %></td>
+        <td><%= @event.ip.ip_tos %></td>
+        <td><%= @event.ip.ip_len %></td>
+        <td><%= @event.ip.ip_id %></td>
+        <td><%= @event.ip.ip_flags %></td>
+        <td><%= @event.ip.ip_off %></td>
+        <td><%= @event.ip.ip_ttl %></td>
+        <td><%= @event.ip.ip_proto %></td>
+        <td class='last'><%= @event.ip.ip_csum %></td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

@@ -1,0 +1,22 @@
+<div class='portlet graphcontainer loading <%= widget.minimized ? "minimized" : "maximized" %>' data=<%= widget.id %> graph_type='<%= widget.graph_type %>' >
+  <div class='portlet-header <%= widget.minimized ? "minimized" : "maximized" %>'>
+    <div class="wtitle">
+      <%= widget.name %><%= widget.description.present? ? "  (#{truncate(widget.description, :length => 30)})" : "" %>
+    </div>
+    <div class='toolbar'>
+      <% if widget.minimized %>
+        <%= link_to image_tag("icons/widget_plus.png", :size => '16x16'), '#', :class => "visibility plus", :remote => false %>
+      <% else %>
+        <%= link_to image_tag("icons/widget_minus.png", :size => '16x16'), '#', :class => "visibility minus", :remote => false %>
+      <% end %>
+      <%= link_to image_tag("icons/widget_reload.png", :size => '16x16'), reload_widget_path(widget), :class => "reload-widget" %>
+      <%#= link_to image_tag("icons/widget_newwin.png", :size => '16x16'), newwin_widget_path(widget), :class => "snorbybox widget", :target => "_blank", :data_column => widget.column %>
+      <%= link_to image_tag("icons/widget_edit.png"  , :size => '16x16'), edit_widget_path(widget), :class => "snorbybox", :target => "_blank" %>
+      <%= link_to image_tag("icons/widget_close.png" , :size => '16x16'), '#', :class => "close-widget" %>
+
+    </div>
+  </div>
+  <div class="portlet-content <%= widget.column %> " style="<%= widget.minimized ? "display:none;" : "" %>">
+    <img class="loading" src="/images/icons/loading_bar.gif"/>
+  </div>
+</div>

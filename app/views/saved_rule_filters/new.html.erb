@@ -1,0 +1,27 @@
+<%= snorby_box("New Saved Filter", false) do %>
+
+  <div id='saved-search-form' class='boxit page'>
+    <%= form_for @filter, :url => '/sensors/#{@sensor.sid}/saved_rule_filters', :html => { :class => 'validate' } do |f| %>
+      <%= error_messages_for(@filter) %>
+      <p>
+        <%= f.label 'Filter Title' %><br />
+        <%= f.text_field :title, :class => 'required', :style => "width: 400px;", :autocomplete => :off %>
+      </p>
+      <br />
+      <p>
+        <%= f.check_box :public %> <%= f.label 'Filter valid for all registered users (public)' %><br />
+      </p>
+    <% end %>
+  </div>
+
+  <%= snorby_box_footer do %>
+    <%= form_actions do %>
+      <%= button "Save Filter", :class => 'success new-saved-search-record', :data_model => 'rule' %>
+      <%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<script type="text/javascript">
+  $('#snorby-box .validate').validate();
+</script>

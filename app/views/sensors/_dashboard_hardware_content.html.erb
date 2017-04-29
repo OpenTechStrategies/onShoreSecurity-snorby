@@ -1,0 +1,129 @@
+<div class="boxit">
+  <ul class="table categories" style='border:5px solid white;'>
+    <div class="content protected">
+      <% if !node["redBorder"]["ipmi"].nil? and !node["redBorder"]["ipmi"]["sensors"].nil? %>
+        <li class="category highlight boxit">
+          <div class="sec-title" id="title" style="width:716px;">
+            <%= sec_title "Hardware Sensors".html_safe -%>
+          </div>
+          <ul class="table">
+            <div class="content protected">
+              <li class="group">
+                <div class="row">
+                  <table class="default" id="cpuTable" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <th class="first">Name</th>
+                      <th>Value</th>
+                      <th class="last">Status</th>
+                    </tr>
+                    <tbody class='sensors'>
+                      <% node["redBorder"]["ipmi"]["sensors"].each do |sensor| %>
+                        <tr>
+                          <td><%= sensor["sensor"] %></td>
+                          <td><%= sensor["value"] %></td>
+                          <td>
+                            <% if sensor["status"].upcase == "OK" %>
+                              <%= image_tag 'icons/incident.png' %>
+                            <% elsif sensor["status"].upcase == "NC" %>
+                              <%= image_tag 'icons/question.png' %>
+                            <% else %>
+                              <%= image_tag 'icons/fp.png' %>
+                            <% end %>
+                          </td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </div>
+              </li>
+            </div>
+          </ul>
+        </li>
+        <br/>
+      <% end %>
+      <li class="category highlight boxit">
+        <div class="sec-title" id="title" style="width:716px;">
+          <%= sec_title "CPU".html_safe -%>
+        </div>
+        <ul class="table" style="<%= (!node["redBorder"]["ipmi"].nil? and !node["redBorder"]["ipmi"]["sensors"].nil?) ? "display: none;" : "" %>" >
+          <div class="content protected">
+            <li class="group">
+              <div class="row">
+                <table class="default" id="cpuTable" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <th>Name</th>
+                    <th>Model name</th>
+                    <th>Cache</th>
+                    <th>Core ID</th>
+                    <th>Physycal CPU</th>
+                  </tr>
+                  <tbody class='cpus'>
+                    <% for cpu_index in 0..(node[:cpu][:total]-1) do %>
+                      <%= render :partial => 'dashboard_hardware_content_cpu', :locals =>{:cpu_info=> node[:cpu]["#{cpu_index}"], :cpu_index=>cpu_index} %>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </li>
+          </div>
+        </ul>
+      </li>
+      <br/>
+      <li class="category highlight boxit">
+        <div class="sec-title" id="title" style="width:716px;">
+          <%= sec_title "Memory".html_safe -%>
+        </div>
+        <ul class="table" style="display: none;" >
+          <div class="content protected">
+            <li class="group">
+              <div class="row">
+                <table class="default" id="memoryTable" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <th>Type</th>
+                    <th>Total</th>
+                    <th>Used</th>
+                    <th>Free</th>
+                    <th>Buffers</th>
+                    <th>Cached</th>
+                  </tr>
+                  <tbody class='memory'>
+                    <%= render :partial => 'dashboard_hardware_content_memory', :locals =>{:mem_info=> node[:memory], :mem_type=>"RAM"} %>
+                    <%= render :partial => 'dashboard_hardware_content_memory', :locals =>{:mem_info=> node[:memory][:swap], :mem_type=>"Swap"} %>
+                  </tbody>
+                </table>
+              </div>
+            </li>
+          </div>
+        </ul>
+      </li>
+      <br/>
+      <li class="category highlight boxit">
+        <div class="sec-title" id="title" style="width:716px;">
+          <%= sec_title "Filesystem".html_safe -%>
+        </div>
+        <ul class="table" style="display: none;>
+          <div class="content protected">
+            <li class="group">
+              <div class="row">
+                <table class="default" id="hdTable" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <th>Name</th>
+                    <th>Dev</th>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th>Used</th>
+                  </tr>
+                  <tbody class='filesystem'>
+                    <%- { "/dev/mapper/vg_rb-lv_root" => node[:filesystem]["/dev/mapper/vg_rb-lv_root"], "/dev/mapper/VolGroup-lv_home" => node[:filesystem]["/dev/mapper/VolGroup-lv_home"], "/dev/sda1" => node[:filesystem]["/dev/sda1"] }. each do |key, x| %>
+                      <%= render :partial => 'dashboard_hardware_content_hd', :locals =>{:hd_info=> x,  :device=>key} %>
+                    <%- end %>
+                  </tbody>
+                </table>
+              </div>
+            </li>
+          </div>
+        </ul>
+      </li>
+    </div>
+  </ul>
+</div>

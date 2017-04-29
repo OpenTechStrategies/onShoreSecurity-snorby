@@ -1,0 +1,28 @@
+<div class="boxit">
+  <ul class="table reputations">
+    <div class="content">
+      <li class="category boxit">
+        <%= sec_title "Suppress " + content_tag(:i, "( Events will be suppressed base on these rules ) ").html_safe, "title second" do -%>
+          <%= menu_item "Add", new_event_filtering_path(:sid => @sensor.sid, :filtering_type => "suppress"), 'icons/add.png', {:class => 'snorbybox', :target => '_blank'} if (can? :manage, @sensor) %>
+        <%- end -%>
+        <ul class="table" style="width:1000px;<%= @suppress_rules.present? ? "" : "display:none;" %>">
+          <div class="content">
+            <li class="group">
+              <div class="row event_rules_list" id="event_rules_list_suppress">
+                <% if @suppress_rules.present? %>
+                  <table class="default" id="event_filtering_suppress_table" border="0" cellspacing="0" cellpadding="0">
+                    <%= render :partial => 'suppress_table'%>
+                  </table>
+                <% else %>
+                  <div class="note no-click" style='width: 1000px;'>
+                    There are no event rules defined yet
+                  </div>                  
+                <% end %>
+              </div>
+            </li>
+          </div>
+        </ul>
+      </li>
+    </div>
+  </ul>
+</div>

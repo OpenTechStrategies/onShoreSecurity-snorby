@@ -1,0 +1,264 @@
+<%= javascript :footer, 'daterangepicker' %>
+
+<%= title "General Settings" %>
+
+<div id='general-settings' class='page boxit'>	
+	<%= form_tag '/settings', :multipart => true, :class => 'basic-form validate' do %>	
+
+		<div class="boxit"  id="form-holder">
+	      <ul class="table conf-settings">        
+	          <li>
+	            <div class="sec-title" id="title" style="width:1010px;">
+	              <%= sec_title "General Configuration Settings ".html_safe -%>
+	            </div>
+	            <ul class="table">
+	              <div class="content">
+	                <li class="group">
+	                  <div class="row info">
+	                    <div class='grid_6'>
+							<p>
+								<%= label_tag 'Company Name' %><br />
+								<%= text_field_tag '[settings][company]', (Setting.company ? Setting.find(:company) : nil), :placeholder => 'Company Name', :autocomplete => :off, :class => 'required', :data => (Setting.company ? Setting.find(:company) : nil) %>
+							</p>
+
+							<p>
+								<%= label_tag 'Company Email' %> <i>(this email will be used as the report sender)</i><br />
+								<%= text_field_tag '[settings][email]', (Setting.email ? Setting.find(:email) : nil), :placeholder => 'Company Email', :autocomplete => :off, :class => 'required email', :data => (Setting.email ? Setting.find(:email) : nil) %>
+							</p>
+							
+							<p>
+								<%= label_tag 'Signature Lookup URL' %> <i>(user $$sid$$ and $$gid$$ for the get request parameters)</i><br />
+								<%= text_field_tag '[settings][signature_lookup]', (Setting.signature_lookup ? Setting.find(:signature_lookup) : nil), :placeholder => 'Signature Lookup URL', :autocomplete => :off, :class => 'required url', :data => (Setting.signature_lookup ? Setting.find(:signature_lookup) : nil) %>
+							</p>
+
+					  		<p>
+					    		<%= label_tag 'Private KEY' %> <i>(RSA key used to communicate the manager with the sensors)</i> <%= link_to image_tag("icons/destroy.png", :size => '13x13', :class => 'trash'), recreate_rsa_settings_path, :confirm => "Are you sure you want to recreate the RSA key?", :title => "Recreate Private Key" %><br />
+					    		<%= text_area_tag '[rsa]', @rsa_content.html_safe, :id => "rsa_text_area", :autocomplete => :off, :rows => "10", :cols => 70, :disabled => true, :escape => true %>
+					  		</p>
+
+					   		<p>
+									<%= label_tag 'Autoreload dashboard time' %>
+									<br/>
+									<%= text_field_tag '[settings][autoreload_time]', (Setting.autoreload_time ? Setting.find(:autoreload_time) : 99), :placeholder => 'Autoreload time', :autocomplete => :off, :class=> 'autoreload_time required numberAutoreload', :data => (Setting.autoreload_time ? Setting.find(:autoreload_time) : nil) %> (seconds)
+					 	   	</p>
+						
+							<p class='_settings_packet_capture'>
+								<%= check_box_tag '[settings][packet_capture]', 0, (Setting.packet_capture ? Setting.find(:packet_capture) : nil) %> <%= label_tag 'Enable Packet Capture Support' %><br />
+								<i>(Enable the Snorby Packet Capture Plugin)</i>
+
+						</div>
+
+						<div class='grid_5'>
+
+							<p>
+								<%= check_box_tag '[settings][lookups]', 1, (Setting.lookups ? Setting.find(:lookups) : nil) %> <%= label_tag 'Address Lookups' %><br />
+								<i>(This option enables the analyst to perform basic queries using external sources)</i><br />
+							</p>
+
+							<p>
+								<%= check_box_tag '[settings][event_notifications]', 0, (Setting.event_notifications ? Setting.find(:event_notifications) : nil) %>
+								<%= label_tag 'Enable Global Event Notifications' %><br />
+				        		<i>(Show new event notifications globally. Event count since last check time)</i>
+							</p>
+
+							<p>
+								<%= check_box_tag '[settings][notes]', 0, (Setting.notes ? Setting.find(:notes) : nil) %>
+								<%= label_tag 'Enable Rules Notes' %>
+							</p>
+
+							<p>
+								<%= check_box_tag '[settings][geoip]', 1, Setting.find(:geoip) %> <%= label_tag 'GeoIP' %><br />
+								<i>(Display GeoIP information on the events list)</i><br />
+							</p>
+				      		<p>
+								<%= check_box_tag '[settings][show_disabled_rules]', 1, Setting.find(:show_disabled_rules) %> <%= label_tag 'Show disabled rules at the origin' %><br />
+								<i>(These rules are not enabled by default as they may generate false positive alarms)</i><br />
+							</p>
+				      
+				      		<p>
+								<%= check_box_tag '[settings][flowbits_dependencies]', 1, Setting.find(:flowbits_dependencies) %> <%= label_tag 'Flowbits Dependencies' %><br />
+								<i>(Resolve flowbits dependencies before compile, activating those necessary rules)</i><br />
+							</p>
+
+							<p>
+						      	<%= check_box_tag '[settings][autodrop]', 1, Setting.find(:autodrop) %> <%= label_tag 'Prune database when event count is greater than' %>
+						        <%= select_tag '[settings][autodrop_count]', "<option value='500000'>500,000</option><option value='1000000'>1,000,000</option><option value='2000000'>2,000,000</option><option value='3000000'>3,000,000</option><option value='4000000'>4,000,000</option><option value='5000000'>5,000,000</option>".html_safe, 
+										{ :class => 'require', :autodrop_count => Setting.find(:autodrop_count), :style => "width: 100px;" } %>
+						        <br />
+						        <i>(Prune the database automatically when the event count exceeds this limit)</i><br />
+							</p>
+
+							<p>
+								<span class='plus'>+</span>
+								<span class='prune_manually'><%= link_to 'Prune Events Manually', prune_view_events_path, {:class => 'snorbybox', :target => '_blank'} %></span>
+								<br />
+							</p>
+
+					        <p>
+					      	  <%= check_box_tag '[settings][autodrop_rollback]', 1, Setting.find(:autodrop_rollback) %> <%= label_tag 'Prune database when rollback count is greater than ' %>
+					          <%= select_tag '[settings][autodrop_rollback_count]', "<option value='5'>5</option><option value='10'>10</option><option value='20'>20</option><option value='30'>30</option><option value='40'>40</option>".html_safe,
+									{ :class => 'require', :autodrop_rollback_count => Setting.find(:autodrop_rollback_count), :style => "width: 75px;" } %>
+							  <br />
+					          <i>(Prune the database automatically when the rollbacks per sensor exceeds this limit)</i><br />
+								<br/>
+							</p>
+						</div>
+	                  </div>
+  
+                         <div class='pc-settings'>
+		
+		               <div class='grid_6'>
+
+		               	<p class='pc-settings'>
+		               		<%= label_tag 'Packet Capture Plugin:' %>
+		               		<%= select_tag '[settings][packet_capture_type]', "<option value='openfpc'>OpenFPC</option><option value='solera'>Solera Networks</option>".html_safe, 
+		               		{ :class => 'require', :packet_capture_plugin => Setting.find(:packet_capture_type) } %><br />
+		               	</p>
+			
+			        <p class='pc-settings'>
+			        	<%= check_box_tag '[settings][packet_capture_auto_auth]', 1, (Setting.packet_capture_auto_auth ? Setting.find(:packet_capture_auto_auth) : nil) %> 
+			        	<%= label_tag 'Packet Capture Auto-Authenticate' %><br />
+			        	<i>(Pass the credentials in the get request)</i><br />
+			        </p>
+				
+			        <p class='pc-settings'>
+			        	<%= label_tag 'Packet Capture Extract URL' %> <i>(Packet Capture extract URL)</i><br />
+			        	<%= text_field_tag '[settings][packet_capture_url]', (Setting.packet_capture_url ? Setting.find(:packet_capture_url) : nil), 
+			        	:placeholder => 'Packet Capture Extract URL', :autocomplete => :off, :class => 'url' %>
+			        </p>
+			</div>
+
+			<div class='grid_5'>
+
+				<p class='pc-settings'>
+					<%= label_tag 'API User' %> <i>(User name for Packet Capture API)</i><br />
+					<%= text_field_tag '[settings][packet_capture_user]', (Setting.packet_capture_user ? Setting.find(:packet_capture_user) : nil), 
+					:placeholder => 'Packet Capture User', :autocomplete => :off, :class => '' %>
+				</p>
+
+				<p class='pc-settings'>
+					<%= label_tag 'API Password' %> <i>(Password for Packet Capture API)</i><br />
+					<%= password_field_tag '[settings][packet_capture_password]', (Setting.packet_capture_password ? Setting.find(:packet_capture_password) : nil), 
+					:placeholder => 'Packet Capture Password', :autocomplete => :off, :class => '' %>
+				</p>
+
+			</div>
+	                </li>
+	              </div>
+	            </ul>
+	          </li>	        
+	      </ul>
+	    </div>
+
+		<div class="boxit" id="mta_server">
+	      <ul class="table conf-settings">        
+	        <li class="boxit">
+	            <div class="sec-title" id="title" style="width:1010px;">
+	              <div class="grid_6" id="title-header">Servers <i>(Default Servers configuration)</i></div>
+	            </div>
+	            <ul class="table" style="display: none;">
+	              <div class="content">
+	                <li class="group">
+	                  <div class="row info">
+	                    <div class="grid_6">
+	                      <p>
+							<%= label_tag 'Syslog servers' %>
+							<br/>
+							<%= text_field_tag "[role][redBorder][syslog-ng][servers]", (@role.override_attributes["redBorder"]["syslog-ng"]["servers"].map{|s| s.to_s}.join(", ") unless @role.override_attributes["redBorder"]["syslog-ng"]["servers"].nil?), :placeholder => @role.override_attributes["redBorder"]["syslog-ng"]["servers"].map{|s| s.to_s}.join(", "), :class => 'listipaddrport', :data => @role.override_attributes["redBorder"]["syslog-ng"]["servers"].map{|s| s.to_s}.join(", ") %>
+						  </p>
+						  <p>
+			    			<%= label_tag 'Syslog protocol' %><br/>
+			    			<%= select_tag '[role][redBorder][syslog-ng][protocol]', select_options([['tcp', 'TCP'], ['udp', 'UDP']], :selected => @role.override_attributes["redBorder"]["syslog-ng"]["protocol"]) %>
+			    		  </p>
+			    		  <%= check_box_tag '[settings][proxy]', 0, (Setting.proxy ? Setting.find(:proxy) : nil) %> <%= label_tag 'Enable Proxy Settings' %><br />
+			    	      <br/>
+	                    </div>
+	                    <div class="grid_5">
+			    		  <p>
+			            	<%= label_tag 'MTA Relay Host' %>
+			            	<i>(Leaving it blank, mails will be delivered directly)</i>
+			            	<br/>
+			            	<%= text_field_tag "[role][redBorder][smtp][relayhost]", (@role.override_attributes["redBorder"]["smtp"]["relayhost"] unless @role.override_attributes["redBorder"]["smtp"].nil?), :placeholder => @role.override_attributes["redBorder"]["smtp"]["relayhost"], :class => 'domain', :data => @role.override_attributes["redBorder"]["smtp"]["relayhost"] %>
+						  </p>
+			    		  <p>
+			    			<%= label_tag 'Ntp servers' %>
+			    			<br/>
+			    			<%= text_field_tag "[role][redBorder][ntp][servers]", (@role.override_attributes["redBorder"]["ntp"]["servers"].map{|s| s.to_s}.join(", ") unless @role.override_attributes["redBorder"]["ntp"]["servers"].nil?), :placeholder => @role.override_attributes["redBorder"]["ntp"]["servers"].map{|s| s.to_s}.join(", "), :class => 'listdomain', :data => @role.override_attributes["redBorder"]["ntp"]["servers"].map{|s| s.to_s}.join(", ") %>
+			    		  </p>
+			    		</div>
+	                  </div>
+
+	                  <div class="proxy-settings">
+						<div class="grid_6">
+						  <p class='proxy-settings'>
+							<%= label_tag 'Proxy Addr' %> <i>(Address for Proxy)</i><br />
+							<%= text_field_tag '[settings][proxy_address]', (Setting.proxy_address ? Setting.find(:proxy_address) : nil), 
+							:placeholder => 'Proxy Address', :autocomplete => :off, :class => 'ipaddr req', :data => (Setting.proxy_address ? Setting.find(:proxy_address) : nil) %>
+						  </p>
+
+						  <p class='proxy-settings'>
+							<%= label_tag 'Proxy Port' %> <i>(Port for Proxy)</i><br />
+							<%= text_field_tag '[settings][proxy_port]', (Setting.proxy_port ? Setting.find(:proxy_port) : nil), 
+							:placeholder => 'Proxy Port', :autocomplete => :off, :class => 'digits req', :data => (Setting.proxy_port ? Setting.find(:proxy_port) : nil) %>
+						  </p>
+						</div>
+						<div class="grid_5">
+						  <p class='proxy-settings'>
+							<%= label_tag 'Proxy User' %> <i>(Leave blank if not required)</i><br />
+							<%= text_field_tag '[settings][proxy_user]', (Setting.proxy_user ? Setting.find(:proxy_user) : nil), 
+							:placeholder => 'Proxy User', :autocomplete => :off, :class => '', :data => (Setting.proxy_user ? Setting.find(:proxy_user) : nil) %>
+						  </p>
+
+						  <p class='proxy-settings'>
+							<%= label_tag 'Proxy Password' %> <i>(Leave blank if not required)</i><br />
+							<%= password_field_tag '[settings][proxy_password]', (Setting.proxy_password ? Setting.find(:proxy_password) : nil), 
+							:placeholder => 'Proxy Password', :autocomplete => :off, :class => '' %>
+						  </p>
+						</div>
+					  </div>
+	                </li>
+	              </div>
+	            </ul>
+	          </li>        
+	      </ul>
+	    </div>
+			
+		<div class="boxit"  id="trap_server">
+	      <ul class="table conf-settings">        
+	          <li>
+	            <div class="sec-title" id="title" style="width:1010px;">
+	              <%= sec_title "Trap Servers " + content_tag(:i, "( SNMP notification method )").html_safe, "title second" do -%>
+		      		<%= menu_item "Add Trap", new_trap_settings_path(), 'icons/add.png', {:class => 'snorbybox', :target => '_blank'} %>
+		     	  <%- end -%>
+	            </div>
+	            <ul class="table" style="display: none;">
+	              <div class="content">
+	                <li class="group">
+	                  <div class="row info">
+                      	<table class='default' border="0" cellspacing="0" cellpadding="0" style="width:998px;">
+					      <tr>
+					        <th>IP</th>
+					        <th>Community</th>
+					        <th></th>
+					      </tr>
+					      <tbody id="trap_servers" class="">
+							<%= render :partial => 'trap_servers', :locals => {:trap_servers => Sensor.chef_manager_role.override_attributes["redBorder"]["snmp"]["trap_servers"]}  %>
+						  </tbody>
+						</table>	                    
+	                  </div>
+	                </li>
+	              </div>
+	            </ul>
+	          </li>
+	        
+	      </ul>
+	    </div>
+	    <div class='boxit' style='width:1020px;'>
+		    <%= form_actions do %>	    
+			    <button title='<%= "Apply/Save this Configuration" %>' class="success default add_tipsy longbut">
+			      <span>Apply</span>
+			    </button>	
+		  	<% end %>
+		</div>
+	<% end %>	
+</div>

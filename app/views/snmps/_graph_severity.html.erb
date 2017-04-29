@@ -1,0 +1,107 @@
+<div id='metric-graph_SEVERITIES' style="<%= active ? "" : 'display:none;' %>" class='dashboard-graph snmp' data_column="SEVERITIES"></div>
+
+<script type="text/javascript">
+    $(document).ready(function() {	
+  		window["SEVERITIES-graph"] = new Highcharts.Chart({
+	   		chart: {
+		    	renderTo: 'metric-graph_SEVERITIES',
+		      defaultSeriesType: 'spline',
+          marginTop: 50,
+          marginRight: 10,
+          zoomType: 'x'
+        },
+        exporting: {
+          enabled: false
+        },
+        credits: {
+        	enabled: false
+        },
+		    title: {
+		    	text: 'Severity Count vs Time',
+		      x: -20 //center
+		    },
+			  xAxis: {
+				  categories: <%= @axis.to_json.html_safe %>,
+		    	title: {
+            margin: 10,
+            <% if (@range == 'year' || @range == 'quarter' || @range == 'last_year') %>
+              text: 'Month of Year'
+            <% elsif (@range == 'last_6_hours') %>
+              text: 'Last 6 Hours'
+            <% elsif (@range == 'last_quarter') %>
+              text: 'Day of Year'
+            <% elsif (@range == 'month' || @range == 'last_month') %>
+              text: 'Date of Month'
+            <% elsif (@range == 'week' || @range == 'last_week') %>
+              text: 'Date Of Week'
+            <% elsif @range == 'last_24' %>
+              text: 'Last 24 Hours'
+            <% else %>
+              text: 'Last 6 Hours'
+            <% end %>
+		    	},
+          <% if @range == 'last_quarter' %>
+            labels: {
+              step: 15
+            }
+          <% elsif @range == 'last_year' || @range == 'last_6_hours' %>
+            labels: {
+              step: 2
+            }
+          <% end %>
+		    },
+		    yAxis: {
+          min: 0,
+		    	title: {
+		        	text: 'Severity Count'
+		        },
+		        plotLines: [{
+		        	value: 0,
+              width: 1,
+              color: '#808080'
+		        }]
+		    },
+		    tooltip: {
+		    	shared: true,
+          crosshairs: true
+		    },
+		    legend: {
+		    	layout: 'vertical',
+		      align: 'right',
+		      verticalAlign: 'top',
+		      x: 0,
+		      y: 0,
+		      borderWidth: 0,
+          borderRadius: 0,
+          borderColor: '#ddd',
+          backgroundColor: '#fff'
+		    },
+        plotOptions: {
+          series: {
+            marker: {
+              enabled: false,
+              states: {
+                hover: {
+                  enabled: true
+                }
+              }
+            }
+          }
+        },
+        series: [{
+        	  name: 'High Severity',
+        	  color: sev1_bg_color,
+        	  data: [<%= @high_snmp.join(', ') %>]
+          },{
+          	name: 'Medium Severity',
+          	color: sev2_bg_color,
+          	data: [<%= @medium_snmp.join(', ') %>]
+        	},{
+          	name: 'Low Severity',
+          	color: sev3_bg_color,
+          	data: [<%= @low_snmp.join(', ') %>]
+        	}
+        ]
+		  });
+    });		
+</script>

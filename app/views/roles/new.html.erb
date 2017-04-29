@@ -1,0 +1,20 @@
+<%= snorby_box("Create Role", false) do %>
+
+  <%= form_for(@role) do |f|%>
+
+    <%= error_messages_for(@role) %>
+
+    <p><%= f.label :name %><br />
+      <%= f.text_field :name, :placeholder => 'Role Name', :class => 'required', :style => "width: 400px;" %>
+    </p>
+
+    <%= snorby_box_footer do %>
+      <%= form_actions do %>
+        <%= f.submit "Create", :class => 'success' %>
+        <%= button "Cancel", :class => 'warning cancel-snorbybox' %>
+      <% end %>
+    <% end %>
+
+  <% end %>
+
+<% end %>

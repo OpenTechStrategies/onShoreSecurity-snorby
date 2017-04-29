@@ -1,0 +1,3 @@
+<%- if notes.present? %>
+  <span title="<%= pluralize(notes.size, 'note') %>" class='add_tipsy round notes-count'><%= image_tag("icons/notes.png", :size => '16x16') %></span>
+<%- end %>

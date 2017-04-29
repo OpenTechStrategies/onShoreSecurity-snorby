@@ -1,0 +1,9 @@
+<% unless trap_servers.nil? %>
+	<% trap_servers.each_with_index do |server, index| %>
+	  <tr>
+	    <td><%= server["ip"] %></td>
+	    <td><%= server["community"] %></td>
+	    <td class="last icons"><%= link_to image_tag("icons/destroy.png", :size => '16x16', :class => 'trash'), delete_trap_settings_path(:trap_index => index), :method => :post, :remote => true %></td>
+	  </tr>
+	<% end %>	  
+<% end %>

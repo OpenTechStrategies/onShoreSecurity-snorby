@@ -1,0 +1,17 @@
+<div class='section-title plus'>IP Localization</div>
+
+<div class='ip plus'>
+  <table class='ip-header' border='0' cellspacing='0' cellpadding='0'>
+    <tr>
+      <th class='first'>IP</th>
+      <th>Country</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th class='last'></th>
+    </tr>
+    <tbody>
+      <%= render :partial => 'events/localization_ip', :locals => {:ip => @event.ip.ip_src, :clippy => "src-#{@event.id}", :type => 'Source'} %>
+      <%= render :partial => 'events/localization_ip', :locals => {:ip => @event.ip.ip_dst, :clippy => "dst-#{@event.id}", :type => 'Destination'} %>
+    </tbody>
+  </table>
+</div>

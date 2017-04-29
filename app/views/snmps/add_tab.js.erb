@@ -1,0 +1,22 @@
+var visible = $('div.box-large-inside div[data_column="<%= @tab[:column] %>"].dashboard-graph').is(':visible');
+var content = $('div.box-large-inside div[data_column="<%= @tab[:column] %>"]');
+
+if (content.length == 0) {
+  $('div.box-large-inside').append("<%= escape_javascript(render(:partial => 'graph_dashboard_individual', :locals => {:tab => @tab, :active => false})) %>")
+} else {
+  content.replaceWith("<%= escape_javascript(render(:partial => 'graph_dashboard_individual', :locals => {:tab => @tab, :active => false})) %>");
+}
+
+$('ul#box-menu li[data_column="<%= @tab[:column] %>"]').replaceWith("<%= escape_javascript(render(:partial => 'li_tab', :locals => {:tab => @tab, :index => 100 })) %>");
+
+if (visible){
+  $('div.box-large-inside div[data_column="<%= @tab[:column] %>"].dashboard-graph').show();
+  $('ul#box-menu li[data_column="<%= @tab[:column] %>"]').addClass('active');
+
+  chart_aux =  window["<%= @tab[:column] %>-graph"];
+  window["<%= @tab[:column] %>-graph"] = new Highcharts.Chart(chart_aux.options);
+}
+
+<% if current_user.snmpTabs.count >= 10 %>
+  $('ul#title-menu a#tab').animate({opacity: 0.4}, 500).removeClass('has_dropdown').removeClass('right-more').attr('title', 'max tabs open').attr('onclick', "return false;");
+<% end %>

@@ -1,0 +1,115 @@
+<%= title "Add New User" -%>
+
+<div id='settings' class='grid_12 boxit page'>
+	
+	<%= form_for(@user, :url => add_users_path(@user), :html => { :method => :put, :multipart => true, :class => 'basic-form validate' }) do |f| %>
+	
+		<%= error_messages_for(@user) %>
+
+		<div id='form-holder' class=''>
+
+			<div class='grid_5'>
+				
+				<% if Snorby::CONFIG[:authentication_mode] == "cas" %>
+  				<p><%= f.label :name %> <i>(please use your complete CAS login)</i><br />
+  			  <%= f.text_field :name, :placeholder => 'CAS login', :class => 'required', :data => @user.name.nil? ? "" : @user.name  %></p>
+        <% else %>
+  				<p><%= f.label :name %> <i>(please use first and last name)</i><br />
+  			  <%= f.text_field :name, :placeholder => 'Full Name', :class => 'required', :data => @user.name.nil? ? "" : @user.name %></p>
+                                <% if Snorby::CONFIG[:authentication_mode] == "ldap" %>
+                                  <p>
+                                    <%= f.label :email %> <i>(please user the ldap username)</i><br/>
+                                    <%= f.text_field :login, :placeholder => '', :class => 'required', :data => @user.login.nil? ? "" : @user.login  %>
+                                  </p>
+
+                                <% end %>
+        <% end %>  
+        
+			  <p><%= f.label :email %> <i>(example: admin@onshore.com)</i><br />
+			  <%= f.text_field :email, :placeholder => 'E-mail Address', :class => 'required email', :data => @user.email.nil? ? "" : @user.email %></p>
+				
+				<% if Snorby::CONFIG[:authentication_mode] == "database" %>
+  				<p><%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
+  			  <%= f.password_field :password, :placeholder => 'Password' %></p>
+
+  			  <p><%= f.label :password_confirmation %><br />
+  			  <%= f.password_field :password_confirmation, :placeholder => 'Password Confirmation' %></p>
+
+  			  	<p>
+		          <%= f.label 'User home page:' %>
+		          <%= f.select :root_page, [
+		              ['Dashboard', url_for(:controller => 'page',   :action => 'dashboard')], 
+		              ['SNMP',      url_for(:controller => 'snmps',  :action => 'index')    ], 
+		              ['Events',    url_for(:controller => 'events', :action => 'index')    ], 
+		              ['Widgets',   url_for(:controller => 'widgets', :action => 'index')   ]
+		            ], { :include_blank => false } %>
+		          <br />
+		          <i>(Select the default home page you would like to see)</i><br />
+		          <br />
+		        </p>
+
+  				<p>
+				<% end %>  
+					I would like to list <%= f.select :per_page_count, %w[25 45 65 100 250 500], { :include_blank => false } %>  <%= f.label "items per page." %><br />
+					<i>(Select the default amount of events to list per page view)</i><br />
+					<br />
+				</p>
+				
+
+			</div>
+
+			<div class='grid_5 alpha'>
+				
+				<div class='user-show-avatar'>
+					
+					<%= image_tag(@user.avatar.url(:small), :class => 'avatar') %>
+					
+					<p><strong>Login Count:</strong> <%= @user.sign_in_count %></p>
+          
+					<p><strong>Current Login IP:</strong> <%= @user.current_sign_in_ip || 'N/A' %></p>
+          
+					<p><strong>Last Login:</strong> <%= @user.last_sign_in_at.blank? ? Time.now.strftime('%a %b, %Y %I:%M %p') : @user.last_sign_in_at.strftime('%a %b, %Y %I:%M %p') %></p>
+          
+					<p><strong>Last Login IP:</strong> <%= @user.last_sign_in_ip || 'N/A' %></p>
+          
+					<p><strong>Queued Event Count:</strong> <%= @user.favorites_count %></p>
+          
+					<p><strong>Notes Count:</strong> <%= @user.notes_count %></p>
+					
+				</div>
+				
+				<p>
+					<%= f.label 'Change Avatar' %><br />
+					<%= f.file_field :avatar %><br />
+					<br />
+				</p>
+				
+				<p>
+					<%= f.check_box :gravatar%> <%= f.label "Use Gravatar" %>
+					<i>(Get avatar from gravatar.com)</i>
+				</p>
+				
+				<% if current_user.admin? %>
+
+					<p>
+						<%= f.check_box :admin %> <%= f.label "Administrator" %>
+						<i>(should this user have administrative rights?)</i>
+					</p>
+
+				<% end %>
+				
+			</div>
+		
+		</div>
+
+		<%= form_actions do %>
+
+			<%= button "Add", :class => 'success' %>
+
+			<%= button "Cancel", :class => 'warning cancel' %>
+
+		<% end %>
+
+	<% end %>
+	
+</div>

@@ -1,0 +1,161 @@
+# Snorby - All About Simplicity.
+# 
+# Copyright (c) 2010 Dustin Willis Webber (dustin.webber at gmail.com)
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+require "./lib/snorby/dm/types"
+require "./lib/snorby/jobs"
+require "./lib/snorby/worker"
+
+namespace :redBorder do
+  
+  desc 'Setup'  
+  task :setup => :environment do
+        
+    Rake::Task['secret'].invoke
+    
+    # Create the snorby database if it does not currently exist
+    Rake::Task['db:create'].invoke
+    
+    # Snorby update logic 
+    Rake::Task['redBorder:update'].invoke
+    
+  end
+  
+  desc 'Update Snorby'
+  task :update => :environment do
+    
+    # Setup the snorby database
+    Rake::Task['db:autoupgrade'].invoke
+    
+    # Load Default Records
+    Rake::Task['db:seed'].invoke
+  end
+ 
+  desc 'Remove Old CSS/JS packages and re-bundle'
+  task :refresh => :environment do
+    `jammit`
+  end
+  
+  desc 'Restart Worker/Jobs'
+  task :restart_worker => :environment do
+
+    if Snorby::Worker.running?
+      puts '* Stopping the Snorby worker process.'
+      Snorby::Worker.stop
+    end
+      
+    sleep 1
+
+    unless Snorby::Worker.running?
+      puts "* Removing old jobs"
+      Snorby::Jobs.find.all.destroy
+
+      puts "* Starting the Snorby worker process."
+      Snorby::Worker.start
+
+      sleep 2
+
+      if Snorby::Worker.running?
+        puts "* Adding jobs to the queue"
+        Snorby::Jobs.run_now!
+      else
+        puts "[X] Error: Unable to start the Snorby worker process."
+      end
+    end
+  end
+
+  desc 'Stop Worker/Jobs'
+  task :stop_worker => :environment do
+
+    if Snorby::Worker.running?
+      puts '* Stopping the Snorby worker process.'
+      Snorby::Worker.stop
+    end
+
+    sleep 1
+
+    if Snorby::Worker.running?
+      puts "[X] Error: Unable to stop the Snorby worker process."
+    end
+
+    puts "* Removing old jobs"
+    Snorby::Jobs.find.all.destroy
+  end
+
+
+  desc 'Start Worker/Jobs'
+  task :start_worker => :environment do
+
+    if Snorby::Worker.running?
+      puts '* Snorby worker process is already running'
+    else
+      puts "* Starting the Snorby worker process."
+      Snorby::Worker.start
+    end
+
+    sleep 2
+
+    if Snorby::Worker.running?
+      puts "* Removing old jobs"
+      Snorby::Jobs.find.all.destroy
+
+      puts "* Adding jobs to the queue"
+      Snorby::Jobs.run_now!
+    else
+      puts "[X] Error: Unable to start the Snorby worker process."
+    end
+  end
+
+  desc 'Soft Reset - Reset Snorby metrics'
+  task :soft_reset => :environment do
+    
+    # Reset Counter Cache Columns
+    puts 'Reseting Snorby metrics and counter cache columns'
+    Severity.update!(:events_count => 0)
+    Sensor.update!(:events_count => 0)
+    Signature.update!(:events_count => 0)
+
+    puts 'This could take awhile. Please wait while the Snorby cache is rebuilt.'
+    Snorby::Worker.reset_cache(:all, true)
+  end
+  
+  desc 'Hard Reset - Rebuild Snorby Database'
+  task :hard_reset => :environment do
+    
+    # Drop the snorby database if it exists
+    Rake::Task['db:drop'].invoke
+    
+    # Invoke the snorby:setup rake task
+    Rake::Task['redBorder:setup'].invoke
+    
+  end
+
+  desc 'Update wrong Signature names'
+  task :update_signatures => :environment do
+
+    Signature.all(:sig_name.like => "Snort Alert%").each do |signature|
+      rule = Rule.first(rule_id: signature.sig_sid, gid: signature.sig_gid)
+
+      if rule
+        signature.sig_name = rule.msg
+        signature.save
+      end
+    end
+
+  end
+  
+end

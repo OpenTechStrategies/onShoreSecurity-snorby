@@ -1,0 +1,10 @@
+<div class='suppress-events-table'>
+  <% if @suppress_rules.present? %>
+	<div class="section-title plus">Suppress Event Rules</div>
+	<div class="rule-info plus">
+	  <table class="rule-1" border='0' cellspacing='0' cellpadding='0'>
+	    <%= render :partial => '/event_filterings/suppress_table'%>
+	  </table>
+	</div>
+  <% end %>
+</div>

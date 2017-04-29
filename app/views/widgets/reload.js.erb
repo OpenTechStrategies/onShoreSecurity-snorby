@@ -1,0 +1,7 @@
+
+$(".portlet[data=<%= @widget.id %>]").find(".portlet-content").html("<%= escape_javascript(render(:partial => 'widget_content.html', :locals => {:metric => @tab, :widget => @widget, :table_loaded => @table_loaded, :metric_table => @metric_table} )) %>");
+$(".portlet[data=<%= @widget.id %>]").removeClass("loading");
+
+<% if @widget.column.to_sym == :MAP %>
+  Gmaps.load_map<%= @widget.id  %>();
+<% end %>

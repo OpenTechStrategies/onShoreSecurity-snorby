@@ -1,0 +1,43 @@
+<% javascript :footer, 'sparkline', 'highcharts', 'highstock', 'exporting', 'jquery.ui.sortable', 'jquery.ui.core', 'jquery.ui.mouse', 'jquery.ui.widget' %>
+
+<%= title "Widgets" do -%>
+  <%= menu_item "Add Widget", new_widget_path, 'icons/tabs.png', :class => "snorbybox", :target => "_blank" %>
+  <%= menu_item content_tag(:span, "--"), '#', 'icons/clock-counter.png', :id => "counter", :remote => false, :class => "widgets_counter" %>
+  <%= drop_down_for('More Options', 'icons/grab.png', 'options') do %>
+    <%= drop_down_item "Force Cache Update", force_cache_path, nil, {:class => 'force-cache-update'} if Snorby::Worker.running? %>
+    <%= drop_down_item "Enable Autoreload", nil, nil, :id => "disable-counter", :remote => true, :onclick => "clock_locked=!clock_locked; if (clock_locked) { $('#disable-counter').html('Enable Autoreload'); $('.dashboard-menu li.caching').remove() } else { $('#disable-counter').html('Disable Autoreload'); } return false;", :remote => false %>
+  <% end %>
+<%- end -%>
+
+<div id='widgets'>
+  <% if @col_widgets[0].blank? and @col_widgets[1].blank? %>
+    <%= image_tag "add_widget.png", :class => "add_widget" %>
+  <% end %>
+  <%= render :partial => 'widgets', :locals => {:col_widgets => @col_widgets} %>
+</div>
+
+<script type="text/javascript">
+  function add_widget(index, value) {
+    var id = $(value).attr('data');
+    queue_ajax($.ajax({
+      url: "/widgets/"+ id +"/add",
+      fail: function(data) {
+      }
+    }));
+  }
+  $(document).ready(function() {
+    <% if session[:filter].size.to_i > 0 %>
+      $('#wrapper #content #title #title-menu-holder ul#title-menu li.filter').css('border', '1px solid red');
+    <% end %>
+    $(".portlet.maximized").each(function(index, value){
+      add_widget(index, value);
+    });
+    $(".portlet.minimized").each(function(index, value){
+      add_widget(index, value);
+    });
+
+    start_counter_widgets(<%= Setting.autoreload_time.value.to_i %>);
+    clock_locked = true;
+  });
+</script>
+

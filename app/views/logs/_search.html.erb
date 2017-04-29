@@ -1,0 +1,6 @@
+<li class="form">
+  <%= form_tag logs_path, :method => :get, :class => 'validate' do %>
+    <%= text_field_tag '[search][text]', nil, :placeholder => 'Filter Logs', :class => 'title-search-box right'  %>
+    <%= button "Submit Search", :class => 'success' %>
+  <% end %>
+</li>  

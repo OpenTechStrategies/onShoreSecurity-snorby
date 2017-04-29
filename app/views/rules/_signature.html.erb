@@ -1,0 +1,28 @@
+<div class='section-title plus'>Signature Information</div>
+<div class='signature-table plus'>
+  <table class='ip-header' border='0' cellspacing='0' cellpadding='0'>
+    <tr>
+      <th class='first'><span title="The gid keyword (generator id) is used to identify what part of Snort generates the event when a particular rule fires. For example gid 1 is associated with the rules subsystem and various gids over 100 are designated for specific preprocessors and the decoder." class='add_tipsy'>Generator ID</span></th>
+      <th><span title="The sid keyword is used to uniquely identify Snort rules. This information allows output plugins to identify rules easily." class='add_tipsy'>Signature ID</span></th>
+      <th><span title="The rev keyword is used to uniquely identify revisions of Snort rules. Revisions, along with Snort rule id's, allow signatures and descriptions to be refined and replaced with updated information." class='add_tipsy'>Signature Revision</span></th>
+      <th>Source</th>
+      <th>&nbsp;</th>
+      <th class='last'></th>
+    </tr>
+    <tbody>
+      <tr>
+        <td class='first'><%= @rule.gid || 'N/A' %></td>
+        <td><%= @rule.rule_id || 'N/A' %></td>
+        <td><%= @rule.rev || 'N/A' %></td>
+        <td><%= @rule.source.name.capitalize %></td>
+        <td style='width:190px;' class=''>
+          <%= link_to "Query Signature Database", @rule.signature_url, :target => '_blank' %>
+        </td>
+        <td style='width:90px;' class='last'>
+          <%= link_to "View Rule", rule_path(:id => @rule.id), :class => 'snorbybox', :target => '_blank' %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

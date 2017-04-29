@@ -1,0 +1,156 @@
+<% if current_user.admin %>
+  <%= title "Listing Sensors" do -%>
+    <% if current_user.admin %>
+      <%= menu_item "Add Domain", new_sensor_path, 'icons/add.png', {:class => 'snorbybox', :target => '_blank'} %>
+    <% end %>
+  <%- end -%>
+<% else %>
+  <%= title "Listing Sensors" -%>
+<% end %>
+
+<%= stylesheet_link_tag "jquery.treeTable" %>
+<%= javascript_include_tag "jquery.treeTable" %>
+<% if current_user.admin %>
+  <%= javascript_include_tag "jquery.ui.draggable" %>
+  <%= javascript_include_tag "jquery.ui.droppable" %>
+<% end %>
+<%= javascript_include_tag "jquery.ui.core.js" %>
+<%= javascript_include_tag "jquery.ui.mouse.js" %>
+<%= javascript_include_tag "jquery.ui.widget.js" %>
+
+<div id="sensors" class='boxit'>
+  <table id="sensorTable" class='default' border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <th>Name</th>
+      <th>Ip</th>
+      <th>Last Check-in</th>
+      <th>Sensors</th>
+      <th>
+        <span title='Pendig Rules / Active Rules' class='add_tipsy'>Rules</span>
+      </th>
+      <th>Event %</th>
+      <th class="icons">Tools</th>
+      <% if current_user.admin %>
+        <th class="icons last">Destroy</th>
+      <% end %>
+    </tr>
+    <tbody class='sensors'>
+      <%= render :partial => 'sensors/sensor', :locals => {:sensor=> Sensor.root} %>
+      <%= render @sensors %>
+    </tbody>
+  </table>
+
+</div>
+
+<script type="text/javascript">
+  window.onload=function(){
+    $('table#sensorTable tbody.sensors #sensor_1').toggleBranch()
+    var elements = $('table#sensorTable tbody.sensors').children('.folder').not('.ui-helper-hidden').not("#sensor_1");
+    for (var i = 0; i < elements.length; i++){
+      $(elements[i]).toggleBranch();
+    }
+  }
+</script>
+
+<% if current_user.admin %>
+  <script type="text/javascript">
+      // Configure draggable nodes
+    $(document).ready(function()  {
+      $("#sensorTable .sensor.domain.not_compiling").draggable({
+        helper: "clone",
+        opacity: .75,
+        refreshPositions: true, // Performance?
+        revert: "invalid",
+        revertDuration: 300,
+        scroll: true,
+        handle: '.name'
+      });
+
+      $("#sensorTable .sensor.not_compiling").droppable({
+        accept: ".sensor.domain.not_compiling",
+        tolerance: "pointer",
+        drop: function(e, ui) {
+          if ($(this).hasClass("domain") && $(this).hasClass("folder") && confirm("Are you sure you want to move this sensor/domain?")) {
+            $(ui.draggable).appendBranchTo(this);
+            var sid = ui.draggable.attr("data-sensor-id");
+            var p_sid = $(this).attr("data-sensor-id");
+            $(this).addClass("expanded")
+            $(this).addClass("parent")
+            $.ajax({
+              url: 'sensors/update_parent',
+              data: {
+                id: sid,
+                p_sid: p_sid
+              },
+              success: function(data){
+                flash_message.push({
+                  type: 'info',
+                  message: "The sensor has been moved successfully"
+                });
+                flash();
+                $.scrollTo('#header', 500);
+                $("#sensor_" +sid +" .icons.last").html('<span class="add_tipsy" original-title="The sensor is compiling"><img alt="Lock" src="/images/icons/lock.png?1336125965"></span>')
+                $("#sensor_" +sid).removeClass("ui-draggable").removeClass("ui-droppable");
+              }
+            });
+          } else {
+            flash_message.push({
+              type: 'error',
+              message: "The sensor cannot moved to this location"
+            });
+            flash();
+            $.scrollTo('#header', 500);
+          }
+        },
+        hoverClass: "accept",
+        over: function(e, ui) {
+          if(this.id != $(ui.draggable).id && !$(this).is(".expanded") && $(this).hasClass("domain") && $(this).hasClass("folder")) {
+            $(this).expand();
+          }
+        }
+      });
+
+      $("#sensorTable").droppable({
+        accept: ".sensor.domain",
+        tolerance: "pointer",
+        drop: function(evt, ui) {
+        }
+      });
+
+
+      $("#wrapper").droppable({
+        accept: ".sensor.domain",
+        tolerance: "pointer",
+        drop: function(evt, ui) {
+          if (confirm("Are you sure you want to move the sensor to the root node?")) {
+            var root = $("#sensorTable .sensor.domain")[0]
+            $(ui.draggable).appendBranchTo(root);
+            var sid = ui.draggable.attr("data-sensor-id");
+            var p_sid = $(root).attr("data-sensor-id");
+            $(root).addClass("expanded")
+            $(root).addClass("parent")
+
+            $.ajax({
+              url: 'sensors/update_parent',
+              data: {
+                id: sid,
+                p_sid: p_sid
+              },
+              success: function(data){
+                flash_message.push({
+                  type: 'info',
+                  message: "The sensor has been moved successfully"
+                });
+                flash();
+                $.scrollTo('#header', 500);
+                $("#sensor_" +sid +" .icons.last").html('<span class="add_tipsy" original-title="The sensor is compiling"><img alt="Lock" src="/images/icons/lock.png?1336125965"></span>')
+                $("#sensor_" +sid).removeClass("ui-draggable").removeClass("ui-droppable");
+              }
+            });
+          }
+        },
+        hoverClass: "accept"
+      });
+    });
+  </script>
+<% end %>

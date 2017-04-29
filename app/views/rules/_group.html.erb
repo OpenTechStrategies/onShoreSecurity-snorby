@@ -1,0 +1,29 @@
+<%- rules = @rules.all(:category1 => group) %>
+<%- rules_count = rules.count %>
+<%- if rules_count>0 or true %>
+  <li id='group-<%= category.id %>-<%= group.id %>' data='<%= group.id %>' class="group <%= (expand ? "highlight" : "") %>">
+    <div class="row">
+      <%- if @sensor.nil?  %>
+        <div class="select small">&nbsp;</div>
+      <%- else %>
+        <div class="select small"><%= check_box_tag 'group-selector', nil, false, :class => "check_box_#{category.id}_#{group.id}" %></div>
+        <div class='important big'>
+          <div class='create-favorite enabled'></div>
+          <% unless @sensor.virtual_sensor %>
+            <div class='allow-overwrite enabled'></div>
+          <% end %>
+        </div>
+        <div class="action click">
+          <%= render :partial => 'action', :locals => {:action => nil, :mactions => nil, :locked => false} %>
+        </div>
+      <%- end %>
+      <div class="message click <%= (expand ? "loaded" : "") %>"><%= group.name.upcase %></div>
+      <div class="nrules"><span class="active"><%= (rules & @last_rules_rules).count %></span> / <span class="total"><%= rules_count %></span> </div>
+    </div>
+    <ul class="table families" <%= (expand ? "" : "style='display:none';") %>>
+      <div class="content">
+        <%= render(:partial => 'rules/rules_group', :locals => {:group => group}) if expand %>
+      </div>
+    </ul>
+  </li>
+<%- end %>

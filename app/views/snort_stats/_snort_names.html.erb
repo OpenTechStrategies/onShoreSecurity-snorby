@@ -1,0 +1,34 @@
+<div id="snort_names" class='grid_12 page boxit'>
+	
+	<table class='default' border="0" cellspacing="0" cellpadding="0">
+		
+		<tr>
+			<th>Enable</th>		
+			<th>ID</th>
+			<th>Name</th>
+			<th>Text Name</th>
+			<th>Measure Unit</th>
+		</tr>
+		
+		<tbody class='sensors content'>
+			<% @snort_names.each do |snort_name| %>
+				<%= render :partial => 'snort_name', :locals => {:snort_name => snort_name} %>
+			<% end %>
+		</tbody>
+		
+	</table>
+	
+</div>
+
+<script type="text/javascript">
+	$('input[type="checkbox"]').live('click', function(event) {
+		var snort_name_id = $(this).attr('data_snort_name_id');
+		var checked = $(this).attr('checked') == 'checked';
+
+		$.ajax({
+          url: "/snort_stats/update_enabled_name",
+          data: {snort_name_id: snort_name_id, enable: checked},
+          type: 'POST'
+        });
+	});
+</script>

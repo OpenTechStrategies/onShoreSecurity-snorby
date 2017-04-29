@@ -1,0 +1,99 @@
+
+<div id='dashboard'>	
+	<div class='main grid_9'>		
+		<div class='dashboard-menu'>
+			<ul>
+                                <li class='<%= "active" if @range == 'last_6' %> add_tipsy' title="<%= time_range_title(:last_6) %>"><%= link_to "Last 6", dashboard_path(:range => :last_6) %></li>
+				<li class='<%= "active" if @range == 'last_24' %> add_tipsy' title="<%= time_range_title(:last_24) %>"><%= link_to "Last 24", dashboard_path(:range => :last_24) %></li>
+				<li class='<%= "active" if @range == 'last_week' %> add_tipsy' title="<%= time_range_title(:last_week) %>"><%= link_to "Last Week", dashboard_path(:range => :last_week) %></li>
+				<li class='<%= "active" if @range == 'last_month' %> add_tipsy' title="<%= time_range_title(:last_month) %>"><%= link_to "Last Month", dashboard_path(:range => :last_month) %></li>
+				<li class='<%= "active" if @range == 'last_quarter' %> add_tipsy' title="<%= time_range_title(:last_quarter) %>"><%= link_to "Last Quarter", dashboard_path(:range => :last_quarter) %></li>				
+				<li class='<%= "active" if @range == 'last_year' %> add_tipsy' title="<%= time_range_title(:last_year) %>"><%= link_to "Last Year", dashboard_path(:range => :last_year) %></li>
+				<% if [:today, :yesterday, :before_1_yesterday, :before_2_yesterday, :before_3_yesterday, :before_4_yesterday].include? @range.to_sym %>
+					<li class='active add_tipsy' title="<%= time_range_title(@range.to_sym) %>"><%= link_to "Custom", "#", :onclick => "return false;" %></li>
+				<% end %>
+
+				<% if Snorby::Jobs.caching? %>
+					<li class='right caching'><i>Currently Caching <%= image_tag('icons/pager.gif', :size => '16x11') %></i></li>
+				<% else %>
+					<li class='right last-cache-time'>
+						<i>Updated: <%= @last_cache.strftime('%D %l:%M:%S %p') unless @last_cache.nil?%></i>
+					</li>
+				<% end %>
+			</ul>
+		</div>
+		
+		<div id='box-holder'>
+			<%= render 'severity_dashboard.html.erb' %>
+		</div>
+		
+		<div id="box-tabs">
+			<ul id="box-menu">
+				<% @tabs.each_with_index do |tab, index| %>
+          <% if (session[:tab].to_s == tab[:column].to_s) or tab[:column]==:SIGNATURE or tab[:column]==:SENSOR or @load_all %>
+            <%= render :partial => 'li_tab', :locals => { :tab => tab, :index => index } %>
+          <% elsif !tab[:name].nil? %>
+          	<li class='data_column loading' id='<%= tab[:column] %>' data_column='<%= tab[:column] %>' data_index='<%= index %>' >
+          	  <%= link_to tab[:name].pluralize, '#', :data_column => tab[:column], :data_index => index, :class => 'show_metric' %>
+              <%= link_to (image_tag 'icons/loading.gif', :width => '10px', :class => "loading-tab"), delete_dashboard_tab_path(tab[:column], :range => @range, :end_time => @end_time.to_i),
+                :class => 'close-tab', :data_column => tab[:column], :remote => true %>
+          	</li>
+          <% end %>
+        <% end %>
+			</ul>
+		</div>
+
+		<div class='box-large round'>	
+		  <div class='box-large-inside'>
+		  	<% @tabs.each_with_index do |tab, index| %>
+		  		<% if (tab[:column].to_s == session[:tab].to_s) or tab[:column] == :SIGNATURE or tab[:column] == :SENSOR or @load_all %>
+  	  				<%= render :partial => 'graph_dashboard_individual', :locals => { :tab => tab, :prepend_id => "", :active => (session[:tab].to_s == tab[:column].to_s), :enable_title => false } %>
+		  		<% end %>
+			  <% end %>
+		  </div>
+		</div>
+	</div>
+	
+	<div class='secondary grid_3 alpha'>
+
+		<div class='dashboard-header'>
+			<span>Top 10 Sensors</span>
+		</div>
+
+		<ul class='box-list'>
+			<% @sensors.each do |sensor| %>
+				<li>
+					<%= link_to truncate(sensor[1], :length => 35), results_path(:search => {"0" => { :column => :sensor, :value => sensor[0], :operator => "is", :enabled => true },"1" => {:column => :end_time, :value => @end_time.to_i, :operator => "lte", :enabled => true }, "2" => {:column => :start_time, :value => @start_time.to_i, :operator => "gte", :enabled => true}}), :title => sensor[1] %> 
+					<span>
+						<%= number_with_delimiter(sensor[2]) %>
+					</span>
+				</li>
+			<% end %>
+		</ul>
+
+		<div class='dashboard-header'>
+			<span>Top 10 Signatures</span>
+		</div>
+		
+		<ul class='box-list'>
+			<% @signature_metrics.first(10).each do |signature| %>
+				<li>
+					<%= link_to truncate(signature[0], :length => 35), results_path(:search => {"0" => {:column => :signature_name, :value => "#{signature[0]}", :operator => "is", :enabled => true}, "1" => {:column => :end_time, :value => @end_time.to_i, :operator => "lte", :enabled => true}, "2"=> {:column => :start_time, :value => @start_time.to_i, :operator => "gte", :enabled => true}}), :title => signature[0] %> 
+					<span>
+						<%= number_with_delimiter signature[1].zero? ? Event.count(:sig_id => signature[1]) : signature[1] %>
+					</span>
+				</li>
+			<% end %>
+		</ul>
+
+		<div class='dashboard-header'>
+			<span>Total Analyst Classified Events</span>
+		</div>
+		
+		<ul class='box-list'>
+			<% @classifications.each do |classification| %>
+				<li><%= link_to truncate(classification.name, :length => 35), results_path(:search => {"0"=> {:column => :classification, :value => "#{classification.id}", :operator => "is", :enabled => true}}), :title => classification.name %> <span><%= number_with_delimiter classification.events_count %></span></li>
+			<% end %>
+		</ul>
+	</div>
+</div>

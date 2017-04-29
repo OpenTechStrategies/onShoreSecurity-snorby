@@ -1,0 +1,54 @@
+  <%= title "Rule View #{@rule.rule_id}.#{@rule.gid}" -%>
+
+ <div id="rules" class="view boxit" data-sensor-sid=0 >
+  <ul class="table categories">
+    <li class="header">
+      <div class="row">
+        <div class="small">&nbsp;</div>
+        <div class="message">Message</div>
+        <div class="categories">Category</div>
+        <div class="categories">Group</div>
+        <% unless @rule.short_msg.downcase == @rule.category3.name.downcase %>
+        	<div class="categories">Family</div>
+        <% end %>
+        <div class="nrules"></div>
+      </div>
+    </li>
+    <div class="content">
+      <li id='rule_<%= @rule.id %>' data='<%= @rule.id %>' class="rule highlight">
+			  <div class="row">
+			    <div class="select small">&nbsp;</div>
+			    <div class="message"><%= truncate(@rule.short_msg, :length => 100, :omission => '...') %></div>
+			    <div class="categories"><%= @rule.category4.name.capitalize %></div>
+			    <div class="categories"><%= @rule.category1.name.capitalize %></div>
+			    <% unless @rule.short_msg.downcase == @rule.category3.name.downcase %>
+			    	<div class="categories"><%= @rule.category3.name.capitalize %></div>
+			    <% end %>
+			    <div class="timestamp">
+			      <%= render :partial => 'note_tipsy'    , :locals => {:notes => @rule.notes } %>
+			      <%= render :partial => 'policy_tipsy'  , :locals => {:policies => @rule.policies }  %>
+			      <%= render :partial => 'flowbit_tipsy', :locals => {:flowbits => @rule.flowbits }  %>
+			      <%= render :partial => 'default_enabled_tipsy', :locals => {:enabled => @rule.default_enabled} %>
+			    </div>
+			  </div>
+			  <div class="rule-data event-data">
+			    <div class="content">
+			    	<div class='rule-data-holder'>
+						  <div class='rule-data-holder-inside'>
+						    <div id="rule-menu"></div>
+						    <%= render :partial => 'signature'%>
+						    <%= render :partial => 'l3l4' unless @rule.protocol.nil? %>
+					      <%= render :partial => 'reference' unless @rule.rule_references.blank? %>
+						    <%= render :partial => 'policy' unless @rule.rule_policies.blank? %>
+						    <%= render :partial => 'flowbit' unless @rule.rule_flowbits.blank? %>
+
+						    <%= render :partial => 'details', :locals => {:original_rule => @rule.rule, :rule => @rule, :severity => nil}%>
+						    <%= render :partial => 'notes' if Setting.notes?%>
+						  </div>
+						</div>
+			    </div>
+			  </div>
+			</li>
+    </div>
+  </ul>
+</div>

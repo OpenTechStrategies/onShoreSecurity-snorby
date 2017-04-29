@@ -1,0 +1,18 @@
+<% @sensors.each do |sensor| %>
+  $('tr#sensor_<%=sensor.sid%> td.event_count').html(<%=sensor.events_count%>);
+
+  $('tr#sensor_<%=sensor.sid%> td.chart div div').attr('style', "width: <%= sensor.event_percentage %>\%");
+  $('tr#sensor_<%=sensor.sid%> td.chart div span').html("<%= sensor.event_percentage %>\%");
+
+  $('tr#sensor_<%=sensor.sid%> td.sensor_num span').html(<%= sensor.virtual_sensors.size %>);
+  $('tr#sensor_<%=sensor.sid%> td.sensor_num span').attr('title', "<%= sensor.virtual_sensors.map{|s| s.name}.join(', ') %>");
+
+  <% if sensor.last %>
+    $('tr#sensor_<%=sensor.sid%> td.last_event_time').html('<span></span>');
+    $('tr#sensor_<%=sensor.sid%> td.last_event_time span').attr('title', "<%= sensor.last.timestamp.strftime('%A, %b %d, %Y at %I:%M:%S %p') %>");
+    $('tr#sensor_<%=sensor.sid%> td.last_event_time span').addClass('add_tipsy');
+    $('tr#sensor_<%=sensor.sid%> td.last_event_time span').html("<%= sensor.last_pretty_time %>");
+  <% else %>
+    $('tr#sensor_<%=sensor.sid%> td.last_event_time').html('N/A');
+  <% end %>
+<% end %>

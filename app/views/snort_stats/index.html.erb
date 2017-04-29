@@ -1,0 +1,10 @@
+<%= title "Snort Stats <i>(#{number_with_delimiter(@stats.pager.total)} entries)</i>".html_safe, 'Snort Stats' do -%>
+  <%= menu_item "", search_snort_stats_path, 'icons/lens.png', :title => "Advanced Search" %>
+  <%- if current_user.admin %>
+	  <%= drop_down_for('More Options', 'icons/grab.png', 'options') do %>
+	  	<%= drop_down_item "Manage names", names_snort_stats_path, nil %>
+	  <% end %>
+	<%- end -%> 
+<%- end -%>
+
+<%= render :partial => 'snort_stats' %>

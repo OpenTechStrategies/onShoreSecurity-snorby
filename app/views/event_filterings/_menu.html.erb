@@ -1,0 +1,16 @@
+<%- unless @sensor.nil? %>
+  <div id="rules-menu">
+    <button id='apply_event_rules' title='<%= @sensor.virtual_sensor? ? "Apply these Event Rules to #{@sensor.name}" : "Apply these Event Rules to all the sensors included at the domain #{@sensor.name}" %>' class="success default add_tipsy longbut" >
+      <span>Apply</span>
+    </button>
+  </div>
+<%- end %>
+
+<script type="text/javascript">
+  $("#apply_event_rules").click(function() {
+    if (confirm("Are you sure you want to apply this Event Rules?")) {
+      blockWebUI();
+      $.post("/event_filterings/apply", {sid: <%= @sensor.sid %>})
+    }
+  });
+</script>

@@ -1,0 +1,121 @@
+<%- if @rulestype == "compiled_rules" %>  
+  flash_message.push({
+    type: 'success',
+    message: "<%= pluralize(@rules.size, 'rule') %> added to pending rules successfully"
+  });
+  flash();
+  $(".rule_actions .loading").html("changed")
+  $(".rule_actions .loading").removeClass("loading").addClass("changed")
+  $.scrollTo('#header', 500);
+<%- else %>
+  <%- if !@rule.nil? %>
+    $('li.rule[data="<%= @rule.id %>"] .row .action.click dl').removeClass("loading");
+    <%- if @action.inherited? %>
+      $('li.rule[data="<%= @rule.id %>"] .row .action.click dl.rule_actions dd').not(".locked").not(".noaction").attr('class', '<%= @action.name %>');
+      $('li.rule[data="<%= @rule.id %>"] .row .action.click dl.rule_actions dd').not(".locked").not(".noaction").children("span").html('<%= @action.name %>');
+    <%- else %>
+      $('li.rule[data="<%= @rule.id %>"] .row .action.click dl.rule_actions dd').not(".locked").attr('class', '<%= @action.name %>');
+      $('li.rule[data="<%= @rule.id %>"] .row .action.click dl.rule_actions dd').not(".locked").children("span").html('<%= @action.name %>');
+    <%- end %>
+
+    $('li.category[data="<%= @rule.category4.id %>"] > .row > .nrules > span.active').html("<%= @rules.count(:category4 => @rule.category4) %>");
+    $('li.group[data="<%= @rule.category1.id %>"] > .row > .nrules > span.active').html("<%= @rules.count(:category4 => @rule.category4, :category1 => @rule.category1) %>");
+    $('li.family[data="<%= @rule.category3.id %>"] > .row > .nrules > span.active').html("<%= @rules.count(:category4 => @rule.category4, :category1 => @rule.category1, :category3 => @rule.category3) %>");
+
+    <%- unless @sensor.virtual_sensor %>
+      <%- if @action.inherited? %>
+        $('li.rule[data="<%= @rule.id %>"] .row .important').find('.allow-overwrite,.not-allow-overwrite').addClass("blank").removeClass("enabled").addClass("disabled");
+      <% else %>
+        $('li.rule[data="<%= @rule.id %>"] .row .important .allow-overwrite').removeClass("blank").removeClass("disabled").addClass("enabled");
+        $('#family-<%= @rule.category4.id %>-<%= @rule.category1.id %>-<%= @rule.category3.id %> > .row').find('.allow-overwrite.blank').removeClass("blank").removeClass("disabled").addClass("enabled")
+      <% end %>
+
+      $('#family-<%= @rule.category4.id %>-<%= @rule.category1.id %>-<%= @rule.category3.id %> > .row').find('.not-allow-overwrite.enabled').removeClass('not-allow-overwrite').addClass('allow-overwrite')
+      $('#group-<%= @rule.category4.id %>-<%= @rule.category1.id %> > .row').find('.not-allow-overwrite').removeClass('not-allow-overwrite').addClass('allow-overwrite')
+      $('#category-<%= @rule.category4.id %> > .row').find('.not-allow-overwrite').removeClass('not-allow-overwrite').addClass('allow-overwrite')
+    <% end %>
+
+  <%- elsif !@category.nil? && @group.nil? && @family.nil? %>
+
+    $('li.category[data="<%= @category.id %>"] > .row > .nrules > span.active').html("<%= @rules.count(:category4 => @category) %>");
+    $('li.category[data="<%= @category.id %>"] .row .action.click dl').removeClass("loading");
+    <%- if @action.inherited? %>
+      $('li.category[data="<%= @category.id %>"] .row .action.click dl.rule_actions dd').not(".locked").not(".noaction").attr('class', '<%= @action.name %>');
+      $('li.category[data="<%= @category.id %>"] .row .action.click dl.rule_actions dd').not(".locked").not(".noaction").children("span").html('<%= @action.name %>');
+    <%- else %>
+      $('li.category[data="<%= @category.id %>"] .row .action.click dl.rule_actions dd').not(".locked").attr('class', '<%= @action.name %>');
+      $('li.category[data="<%= @category.id %>"] .row .action.click dl.rule_actions dd').not(".locked").children("span").html('<%= @action.name %>');
+    <%- end %>
+
+    // update rules count from childs
+    $('li.category[data="<%= @category.id %>"] li.group > .row > .nrules, li.category[data="<%= @category.id %>"] li.family > .row > .nrules').each(function(index) {
+      var total = $(this).children('span.total').text();
+      $(this).children('span.active').html(total);
+    });
+
+    <%- if @action.inherited? and !@sensor.virtual_sensor %>
+      $('#category-<%= @category.id %> .family').find('.allow-overwrite,.not-allow-overwrite').addClass("blank").removeClass("enabled").addClass("disabled");
+    <% end %>
+
+  <%- elsif !@category.nil? && !@group.nil? && @family.nil? %>
+
+    $('li.group[data="<%= @group.id %>"] > .row > .nrules > span.active').html("<%= @rules.count(:category4 => @category, :category1 => @group) %>");
+    $('li.group[data="<%= @group.id %>"] .row .action.click dl').removeClass("loading");
+    <%- if @action.inherited? %>
+      $('li.group[data="<%= @group.id %>"] .row .action.click dl.rule_actions dd').not(".locked").not(".noaction").attr('class', '<%= @action.name %>');
+      $('li.group[data="<%= @group.id %>"] .row .action.click dl.rule_actions dd').not(".locked").not(".noaction").children("span").html('<%= @action.name %>');
+    <%- else %>
+      $('li.group[data="<%= @group.id %>"] .row .action.click dl.rule_actions dd').not(".locked").attr('class', '<%= @action.name %>');
+      $('li.group[data="<%= @group.id %>"] .row .action.click dl.rule_actions dd').not(".locked").children("span").html('<%= @action.name %>');
+    <%- end %>
+
+    $('li.category[data="<%= @category.id %>"] > .row > .nrules > span.active').html("<%= @sensor.last_rules.rules.count(:category4 => @category) %>");
+    
+    // update rules count from childs
+    $('li.group[data="<%= @group.id %>"] li.family > .row > .nrules').each(function(index) {
+      var total = $(this).children('span.total').text();
+      $(this).children('span.active').html(total);
+    });
+
+    <%- unless @sensor.virtual_sensor %>
+      <%- if @action.inherited? %>
+        $('#group-<%= @category.id %>-<%= @group.id %> .family').find('.allow-overwrite,.not-allow-overwrite').addClass("blank").removeClass("enabled").addClass("disabled");
+      <% else %>
+        $('#category-<%= @category.id %> > .row').find('.not-allow-overwrite').removeClass('not-allow-overwrite').addClass('allow-overwrite')
+      <% end %>
+    <% end %>
+
+  <%- elsif !@category.nil? && !@group.nil? && !@family.nil? %>
+
+    $('li.family[data="<%= @family.id %>"] > .row > .nrules > span.active').html("<%= @rules.count(:category4 => @category, :category1 => @group, :category3 => @family) %>");
+    $('li.family[data="<%= @family.id %>"] .row .action.click dl').removeClass("loading");
+    <%- if @action.inherited? %>
+      $('li.family[data="<%= @family.id %>"] .row .action.click dl.rule_actions dd').not(".locked").not(".noaction").attr('class', '<%= @action.name %>');
+      $('li.family[data="<%= @family.id %>"] .row .action.click dl.rule_actions dd').not(".locked").not(".noaction").children("span").html('<%= @action.name %>');
+    <%- else %>
+      $('li.family[data="<%= @family.id %>"] .row .action.click dl.rule_actions dd').not(".locked").attr('class', '<%= @action.name %>');
+      $('li.family[data="<%= @family.id %>"] .row .action.click dl.rule_actions dd').not(".locked").children("span").html('<%= @action.name %>');
+    <%- end %>
+
+    $('li.category[data="<%= @category.id %>"] > .row > .nrules > span.active').html("<%= @sensor.last_rules.rules.count(:category4 => @category) %>");
+    $('li.group[data="<%= @group.id %>"] > .row > .nrules > span.active').html("<%= @sensor.last_rules.rules.count(:category4 => @category, :category1 => @group) %>");
+
+    <%- unless @sensor.virtual_sensor %>
+      <%- if @action.inherited? %>
+        $('#family-<%= @category.id %>-<%= @group.id %>-<%= @family.id %>').find('.allow-overwrite,.not-allow-overwrite').addClass("blank").removeClass("enabled").addClass("disabled");
+      <% else %>
+        $('#family-<%= @category.id %>-<%= @group.id %>-<%= @family.id %>').find(".allow-overwrite.blank").removeClass("blank").removeClass("disabled").addClass("enabled");
+        $('#group-<%= @category.id %>-<%= @group.id %> > .row').find('.not-allow-overwrite').removeClass('not-allow-overwrite').addClass('allow-overwrite')
+        $('#category-<%= @category.id %> > .row').find('.not-allow-overwrite').removeClass('not-allow-overwrite').addClass('allow-overwrite')
+      <% end %>
+    <% end %>
+
+  <%- end %>
+
+  flash_message.push({
+    type: 'success',
+    message: "Updated <%= pluralize(@rules.size, 'rule')%> successfully"
+  });
+  flash();
+<%- end %>
+

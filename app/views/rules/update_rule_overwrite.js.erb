@@ -1,0 +1,44 @@
+<%- if @rulestype == "compiled_rules" %>
+  flash_message.push({
+    type: 'success',
+    message: "<%= pluralize(@rules.size, 'rule') %> added to pending rules successfully"
+  });
+  flash();
+  $.scrollTo('#header', 500);
+<%- else %>
+  <%- if !@rule.nil? %>
+    <%- if @allow_overwrite %>
+      $('#family-<%= @rule.category4.id %>-<%= @rule.category1.id %>-<%= @rule.category3.id %> > .row').find('.not-allow-overwrite.enabled').removeClass('not-allow-overwrite').addClass('allow-overwrite')
+      $('#group-<%= @rule.category4.id %>-<%= @rule.category1.id %> > .row').find('.not-allow-overwrite').removeClass('not-allow-overwrite').addClass('allow-overwrite')
+      $('#category-<%= @rule.category4.id %> > .row').find('.not-allow-overwrite').removeClass('not-allow-overwrite').addClass('allow-overwrite')
+    <% end %>
+  <%- elsif !@category.nil? && @group.nil? && @family.nil? %>
+    <%- if @allow_overwrite %>
+      $("#category-<%=@category.id%>").find(".not-allow-overwrite.enabled").removeClass("not-allow-overwrite").addClass("allow-overwrite")
+    <% else %>
+      $("#category-<%=@category.id%>").find(".allow-overwrite.enabled").removeClass("allow-overwrite").addClass("not-allow-overwrite")
+    <% end %>
+  <%- elsif !@category.nil? && !@group.nil? && @family.nil? %>
+    <%- if @allow_overwrite %>
+      $("#group-<%=@category.id%>-<%=@group.id%>").find(".not-allow-overwrite.enabled").removeClass("not-allow-overwrite").addClass("allow-overwrite")
+      $('#category-<%= @category.id %> > .row').find('.not-allow-overwrite').removeClass('not-allow-overwrite').addClass('allow-overwrite')
+    <% else %>
+      $("#group-<%=@category.id%>-<%=@group.id%>").find(".allow-overwrite.enabled").removeClass("allow-overwrite").addClass("not-allow-overwrite")
+    <% end %>
+  <%- elsif !@category.nil? && !@group.nil? && !@family.nil? %>
+    <%- if @allow_overwrite %>
+      $("#family-<%=@category.id%>-<%=@group.id%>-<%=@family.id%>").find(".not-allow-overwrite.enabled").removeClass("not-allow-overwrite").addClass("allow-overwrite")
+      $('#group-<%= @category.id %>-<%= @group.id %> > .row').find('.not-allow-overwrite').removeClass('not-allow-overwrite').addClass('allow-overwrite')
+      $('#category-<%= @category.id %> > .row').find('.not-allow-overwrite').removeClass('not-allow-overwrite').addClass('allow-overwrite')
+    <% else %>
+      $("#family-<%=@category.id%>-<%=@group.id%>-<%=@family.id%>").find(".rule").find(".allow-overwrite.enabled").removeClass("allow-overwrite").addClass("not-allow-overwrite")
+    <% end %>
+  <%- end %>
+
+  flash_message.push({
+    type: 'success',
+    message: "Updated <%= pluralize(@rules.size, 'rule')%> successfully"
+  });
+  flash();
+<%- end %>
+

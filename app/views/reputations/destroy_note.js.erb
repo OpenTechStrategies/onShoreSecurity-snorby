@@ -1,0 +1,3 @@
+$('div#note_<%= @note.id %>').fadeOut('fast');
+$('div.notes').fadeTo(500, 1);
+update_main_note_count('<%= @reputation.id %>', {notes_count_in_words: "It has <%= pluralize(@reputation.notes.count, 'note') %>", notes_count: <%= @reputation.notes.count %>});

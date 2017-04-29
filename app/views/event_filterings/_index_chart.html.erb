@@ -1,0 +1,57 @@
+
+<% if @all_rules.empty? %>
+	<div id='EVENT-RULES-graph' class='event-rules-graph no-pie-data' data_column="SUPPRESS"></div>
+<% else %>
+	<div id='EVENT-RULES-graph' class='event-rules-graph' data_column="SUPPRESS"></div>
+
+	<script type="text/javascript">
+		pie_all_rules = new Highcharts.Chart({
+	      chart: {
+	         renderTo: 'EVENT-RULES-graph',
+	      },
+		  exporting: {
+	        enabled: false
+	      },
+	      credits: {
+	        enabled: false
+	      },
+	      title: {
+	         text: ''
+	      },
+	      tooltip: {
+	         formatter: function() {
+	            return "<b>" + this.point.name.substring(0, 30) + "</b>... (" + this.y + " events rules)"
+	         }
+	      },
+	      plotOptions: {
+	        pie: {
+	      	events: {},
+		  	allowPointSelect: true,
+		    cursor: 'pointer',
+				dataLabels: {
+					distance: 20,
+					formatter: function() {
+						return "" + this.point.name.substring(0, 30) + "... (" + Math.round(this.percentage) + "%)"
+					},
+	    			connectorColor: '#888',
+					style: {
+						fontSize: 10
+					}
+		    	}
+		 	}
+	  	  },
+	      legend: {
+	        enabled: false
+	      },
+	      series: [{
+	        type: 'pie',
+	        name: 'Event Rules',
+	        data: [
+						<% @all_rules.group_by(&:signature_name).each do |key,content| %>
+							['<%= key.to_s.truncate(35) %>', <%= content.size %>],
+						<% end %>
+	        ]
+	      }]
+		});		
+	</script>
+<% end %>

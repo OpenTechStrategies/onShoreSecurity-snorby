@@ -1,0 +1,33 @@
+<div class="section-title plus">Rule Compilations</div>
+<div class="rule-info plus">
+  <table class="rule-1" border='0' cellspacing='0' cellpadding='0'>
+    <tr>
+      <th class="first">Name</th>
+      <th>Sensor</th>
+      <th>User</th>
+      <th>Email</th>
+      <th>Time</th>
+      <th class="last">&nbsp;</th>
+    </tr>
+    <tbody>
+      <% @rule_compilations.each do |x| %>
+        <tr>
+          <td>
+            <span title='<%= x.name %>' class='add_tipsy'>
+              <strong><%= x.name.nil? ? "unknown" : truncate(x.name, :length => 35, :omission => '...')%></strong>
+            </span>
+          </td>
+          <td class='name'><%= x.sensor.nil? ? "unknown" : x.sensor.sensor_name   %></td>
+          <td class='name'><%= image_tag(x.user.gravatar ? get_gravatar_uri(x.user.email) : x.user.avatar.url(:small), :size => '16x16', :class => 'avatar-small') %> <%= x.user.name %></td>
+          <td class='email'><%= x.user.email %></td>
+          <td>
+            <span title='<%= x.timestamp.strftime('%A, %b %d, %Y at %I:%M:%S %p') %>' class='add_tipsy'><%= x.pretty_timestamp %></span>
+          </td>
+          <td class="last">
+            <%= link_to "View Rules", sensor_rules_path(@sensor, :compilation_id => x.id), :id => "comp_link", :class => "button" unless @sensor.nil?%>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

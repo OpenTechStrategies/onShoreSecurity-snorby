@@ -1,0 +1,5 @@
+$('a#fancybox-close').click();
+$('#worker_info').html("<%= escape_javascript(render :partial => 'compiling') %>");
+$.scrollTo('#header', 500);
+flash_message.push({type: 'success', message: 'The compilation is enqueued.'});
+flash();

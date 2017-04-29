@@ -1,0 +1,31 @@
+############################################################
+# Configure Thresholding and Suppression - redBorder IPS   #
+# Sensor: <%= @sensor.name unless @sensor.nil? %>
+############################################################
+
+###########################
+#   Configured filters    #
+###########################
+<% @event_filterings.each do |filter| %>
+  <% if filter.suppress? %>
+    <% filter.tracked_ip.split(',').each do |ip| %>
+suppress \
+      gen_id <%= filter.sig_gid %>, sig_id <%= filter.sig_sid %>, \
+      track <%= filter.tracked_type.present? ? filter.tracked_type : "by_src" %>, ip <%= ip %>
+    <% end %>
+  <% else %>
+event_filter \
+      gen_id <%= filter.sig_gid %>, sig_id <%= filter.sig_sid %>, \
+      type <%= filter.filtering_type %>, \
+      track <%= filter.tracked_type.present? ? filter.tracked_type : "by_src" %>, \
+      count <%= filter.count %>, seconds <%= filter.seconds %>
+  <% end %>
+<% end %>
+
+###########################
+# Default event filtering #
+###########################
+event_filter \
+    gen_id 0, sig_id 0, \
+    type limit, track by_src, \
+    count 1, seconds 120

@@ -1,0 +1,38 @@
+<%- if !@rule.nil? %>
+  <%- if @create_favorite %>
+    $("#rule_<%=@rule.id%>").find(".create-favorite.enabled").removeClass("create-favorite").addClass("destroy-favorite")
+  <% else %>
+    $("#rule_<%=@rule.id%>").find(".destroy-favorite.enabled").removeClass("destroy-favorite").addClass("create-favorite")
+    $('#family-<%= @rule.category4.id %>-<%= @rule.category1.id %>-<%= @rule.category3.id %> > .row').find('.destroy-favorite.enabled').removeClass('destroy-favorite').addClass('create-favorite')
+    $('#group-<%= @rule.category4.id %>-<%= @rule.category1.id %> > .row').find('.destroy-favorite').removeClass('destroy-favorite').addClass('create-favorite')
+    $('#category-<%= @rule.category4.id %> > .row').find('.destroy-favorite').removeClass('destroy-favorite').addClass('create-favorite')
+  <% end %>
+<%- elsif !@category.nil? && @group.nil? && @family.nil? %>
+  <%- if @create_favorite %>
+    $("#category-<%=@category.id%>").find(".create-favorite.enabled").removeClass("create-favorite").addClass("destroy-favorite")
+  <% else %>
+    $("#category-<%=@category.id%>").find(".destroy-favorite.enabled").removeClass("destroy-favorite").addClass("create-favorite")
+  <% end %>
+<%- elsif !@category.nil? && !@group.nil? && @family.nil? %>
+  <%- if @create_favorite %>
+    $("#group-<%=@category.id%>-<%=@group.id%>").find(".create-favorite.enabled").removeClass("create-favorite").addClass("destroy-favorite")
+  <% else %>
+    $("#group-<%=@category.id%>-<%=@group.id%>").find(".destroy-favorite.enabled").removeClass("destroy-favorite").addClass("create-favorite")
+    $('#category-<%= @category.id %> > .row').find('.destroy-favorite').removeClass('destroy-favorite').addClass('create-favorite')
+  <% end %>
+<%- elsif !@category.nil? && !@group.nil? && !@family.nil? %>
+  <%- if @create_favorite %>
+    $("#family-<%=@category.id%>-<%=@group.id%>-<%=@family.id%>").find(".create-favorite.enabled").removeClass("create-favorite").addClass("destroy-favorite")
+  <% else %>
+    $("#family-<%=@category.id%>-<%=@group.id%>-<%=@family.id%>").find(".destroy-favorite.enabled").removeClass("destroy-favorite").addClass("create-favorite")
+    $('#group-<%= @category.id %>-<%= @group.id %> > .row').find('.destroy-favorite').removeClass('destroy-favorite').addClass('create-favorite')
+    $('#category-<%= @category.id %> > .row').find('.destroy-favorite').removeClass('destroy-favorite').addClass('create-favorite')
+  <% end %>
+<%- end %>
+
+flash_message.push({
+  type: 'success',
+  message: "Updated <%= pluralize(@rules.size, 'rule')%> successfully"
+});
+flash();
+
