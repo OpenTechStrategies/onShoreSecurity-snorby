@@ -1,0 +1,576 @@
+#ruby in IRC on Freenode.net, between ~7pm CT and 11:55pm CT, 2017-05-13.
+
+<kfogel>   Anyone know how to patch a gem for native build, during a
+           bundle install process?
+           https://hastebin.com/iwugarahar.txt
+
+<jaegerca> kfogel: Why don't you just unpack the gem and modify it
+           in your project?
+
+<kfogel>   jaegerca: I've tried that, I think.  I put "gem 'json',
+           '1.6.1', :path =>
+           'vendor/bundle/ruby/2.3.0/gems/json-1.6.1'" into the
+           Gemfile (replacing the original line).
+
+<kfogel>   jaegerca: then I applied my patch
+
+<kfogel>   jaegerca: I think it may have worked; at least, I have
+           now encountered a different build error.
+
+<jaegerca> Hrm
+
+<jaegerca> That's really the best way I can think of.
+
+<kfogel>   jaegerca: (because I'm not very experienced in Ruby, I
+           might be misinterpreting errors)
+
+<jaegerca> What's the new error?
+
+<kfogel>   jaegerca: Oh, I think it worked.  Well, here's what
+           happened:
+
+<kfogel>   jaegerca: (it's a bit surprising to me) I replaced the
+           "gem 'json',  '1.6.1'" line with "gem 'json', '1.6.1',
+           :path => 'vendor/bundle/ruby/2.3.0/gems/json-1.6.1'".
+           Then I ran 'bundle install --path vendor/bundle' again.
+
+<kfogel>   jaegerca: and I got a *different* compilation error
+           (which I'll paste in a moment), but the weird thing is, I
+           get that same new error *whether or not I apply the patch
+           that should allow json 1.6.1 to build locally*. 
+
+<kfogel>   jaegerca: https://hastebin.com/atavukakon.txt
+
+<jaegerca> kfogel: I would `gem unpack json` and move it into your
+           project in (I am assuming rails) vendor/gems/json, then
+           point your gem path there in the gemfile - just to make
+           sure you are applying the patch you think you are (plus
+           you'll need the source of the gem anyway from here on
+           out)
+
+<kfogel>   jaegerca: thank you; I'll try that now.  But it has to be
+           json 1.6.1, b/c of the legacy nature of this old fork.
+           I'll read docs on 'gem unpack' and learn how to do that.
+
+<kfogel>   jaegerca: 'gem unpack -v 1.6.1 json'
+
+<jaegerca> Yeah, that should do it
+
+<jaegerca> Put that in your project, apply your patch, point to it
+           with path and see if you get the same error as you did in
+           your last paste
+
+<kfogel>   jaegerca: trying that now
+
+<kfogel>   jaegerca: ("gem 'json',  '1.6.1', :path =>
+           'foo/json-1.6.1'" in Gemfile now, btw)
+
+<jaegerca> Im not sure at that point that you need to keep the
+           version specified but that should do it
+
+<jaegerca> At least now bundler isn't going to throw any surprises
+           and you have everything you need to work with in your
+           project
+
+<kfogel>   jaegerca: cool.  I get the same error as starting on line
+           99 of https://hastebin.com/atavukakon.txt -- which I
+           guess is progress of sorts
+
+<kfogel>   jaegerca: (thanks for your help, btw)
+
+<jaegerca> That looks like eventmachine causing issues
+
+<jaegerca>
+           https://www.google.com/search?q=%E2%80%98rb_thread_select%E2%80%99+was+not+declared+in+this+scope&oq=%E2%80%98rb_thread_select%E2%80%99+was+not+declared+in+this+scope&aqs=chrome..69i57.244j0j7&sourceid=chrome&ie=UTF-8
+
+<jaegerca> There are a few github issues related to that so you are
+           in luck - I think you're past your json troubles
+
+<kfogel>   jaegerca: yeah.  I wish I had some way of knowing how
+           many more of these there will be :-), but this is at
+           least one step closer down the... Cantorian... road to
+           getting this built ;-).
+
+* kfogel goes glassy-eyed 
+
+<jaegerca> I would guess you are fairly close at this point -
+
+<jaegerca> What ruby version are you using?
+
+<kfogel>   jaegerca: I'm trying to find out who's even bringing
+           eventmachine in.  It's not in the top-level Gemfile, nor
+           is it in the json-1.6.1 Gemfile 
+
+<kfogel>   jaegerca: ruby 2.3
+
+<jaegerca> Do you have a Gemfile.lock?
+
+<kfogel>   jaegerca: yes
+
+<jaegerca> You should be able to see what is requiring it in there,
+           open it up and search for eventmachone
+
+<kfogel>   jaegerca: oh!  it shows dep tree
+
+<jaegerca> Based on the github issues you might be able to fix that
+           by downgrading to ruby 2.1 - but if you don't need it
+           better to keep the more recent ruby and get rid of the
+           gem
+
+<kfogel>   jaegerca: well, what's weird is Gemfile.lock just says
+           "GEM
+
+<kfogel>     remote: http://rubygems.org/
+
+<kfogel>     specs:
+
+<kfogel>   "
+
+<kfogel>   jaegerca: and then eventmachine is in the top level of
+           that subtree
+
+<jaegerca> Hm, interesting
+
+<kfogel>   jaegerca: I.e., it's not clear who's pulling it in, yet
+           it's not listed by name in the Gemfile either, if I'm
+           interpreting Gemfile.lock correctly.
+
+<jaegerca> kfogel: Can you paste your lock file
+
+<kfogel>   jaegerca: https://hastebin.com/ajuqihefok.txt
+
+<jaegerca> I think it's thin requiring it
+
+<kfogel>   jaegerca: (the overall context here: this old fork of
+           snorby I'm working with wants to import a more recent
+           patch; the patch applies cleanly to upstream, but needs
+           to be adjusted to apply to this old fork.  So my first
+           task is to get the old fork up and running -- that's what
+           all of this is about.)
+
+<kfogel>   jaegerca: interesting
+
+<kfogel>   jaegerca: I see 'eventmachine (>= 0.12.6)' yes
+
+<jaegerca> You might try to update thin, it looks like there is a
+           1.7.0 version out.
+
+<kfogel>   jaegerca: that's just what I was starting to
+           think... will try!
+
+<jaegerca> Although I would hope it's getting the most recent
+           version since it's looking for anything > that 0.12
+
+<kfogel>   jaegerca: current Gemfile says "gem 'thin', '~> 1.3.1'"
+           -- kind of worrying what happens if I go to 1.7.0, but
+           worth a try.
+
+<kfogel>   jaegerca: of eventmachine, right.  Yeah, that was
+           puzzling.  Well, I'll try thin first.
+
+<jaegerca> I would think upgrading thin would have a very minimal
+           impact, nothing to worry about
+
+<kfogel>   jaegerca: if no APIs changed
+
+<jaegerca> kfogel: Hope not!
+
+<kfogel>   jaegerca: well, new error!  at bottom of
+           https://hastebin.com/axeyexolel.txt
+
+<jaegerca> Nice!
+
+<kfogel>   jaegerca: yeah!
+
+<jaegerca> kfogel: Looks like you just need to install imagemagik
+           now
+
+<kfogel>   jaegerca: I did install imagemagick, as per README.md in
+           https://github.com/onShoreSecurity/snorby, but looking
+           now to see what this error is about
+
+<jaegerca> Ah
+
+<kfogel>   jaegerca: well, maybe I need to do 'apt-get install
+           imagemagick-dev' or something like that, you know?
+
+<jaegerca> kfogel: I always do apt-get for that and have never had
+           an issue with the gems finding the files they need
+
+<jaegerca> It's definitely worth a try -
+
+<jaegerca> Though you might just need to update your path to find
+           the Magick-config it's looking for if you know where it
+           is
+
+<kfogel>   jaegerca: I just installed libmagick-dev and
+           libmagic++-dev; trying now
+
+<jaegerca> I would think that should do it
+
+<kfogel>   jaegerca: (delay b/c I'm also making notes of what we did
+           that worked, so the record-keeping slows me down a bit
+           but is def worth it)
+
+<jaegerca> No worries
+
+<kfogel>   jaegerca: nope, same error about not findin Magick-config
+           -- I'll Google and see if that's a separate package or
+           something.
+
+<kfogel>   jaegerca:
+           http://stackoverflow.com/questions/3894225/imagemagick-rmagick-cant-install-rmagick-2-13-1-cant-find-magick-config
+
+<jaegerca> I suppose try libmagik9 ?
+
+<kfogel>   jaegerca: well, I tried libmagickwand-dev first (b/c am
+           on Debian, but maybe I should try treating Debian like
+           Ubuntu first, since libmagickwand-dev didn't fix it --
+           trying libmagick9 now.)
+
+<kfogel>   jaegerca: graphicsmagick-libmagick-dev-compat is the
+           Debian name, it turns out
+
+<jaegerca> I hope that works - if it doesn't then I would imagine
+           it's a path issue - but there really shouldn't be one
+
+<kfogel>   jaegerca: and... that gets me to a new one:
+           https://hastebin.com/jugicacake.txt  (line 100)
+
+<jaegerca> Oh great!
+
+<kfogel>   jaegerca: progress :-)
+
+<kfogel>   jaegerca: it's all still part of the imagemagick
+           problems, but this is a new problem
+
+<jaegerca> You have all the -devel libraries?
+
+<jaegerca> Imagemagick-devel as well?
+
+<kfogel>   jaegerca: well, I thought I did, but double-checking
+
+<jaegerca> I have never needed to install anything beyond
+           imagemagick and imagemagick-devel, I wasn't aware so many
+           other packages existed!
+
+<kfogel>   jaegerca: "Imagemagick-devel" isn't a Debian package
+           name, and I thought I'd installed all the ones that are
+           Debian-flavored that I might need (libmagick-dev,
+           libmagick++-dev, libmagickwand-dev,
+           graphicsmagick-libmagick-dev-compat, and of course
+           imagemagick itself)
+
+<kfogel>   jaegerca: for you 'imagemagick-devel' exists?  Are you on
+           Mac, or Ubuntu, or something other than Debian, I guess/
+
+<kfogel>   ?
+
+<jaegerca> I develop on a mac, and run amazon linux in the cloud
+
+<jaegerca> You have this as well right?
+           graphicsmagick-imagemagick-compat
+
+<jaegerca> Not just the dev-compat
+
+<kfogel>   jaegerca: oh, no; will get thaht now
+
+<kfogel>   jaegerca: just dug up
+           http://stackoverflow.com/questions/9992336/installing-rmagick-2-13-1-with-graphicsmagick-on-ubuntu-10-04
+           too FWIW
+
+<jaegerca> I bet that's it!
+
+<kfogel>   jaegerca: that's not a package here, it turns out
+
+<jaegerca> hm
+
+<kfogel>   jaegerca: oh wait
+
+<kfogel>   jaegerca: my bad, I did "apt-get install
+           graphicsmagick-libmagick-compat" ... which is not
+           *exactly* what you said :-)
+
+<kfogel>   jaegerca: hmm, this is going to remove other packages
+           like 'cups' etc
+
+<kfogel>   jaegerca: I'm okay with that for now, but want to record
+           the damage just in case
+
+<kfogel>   jaegerca: hunh, even that didn't do it -- same error.
+           still reading
+
+<jaegerca> kfogel: I am not seeing much other than just having the
+           right libraries installed - I feel like you have all the
+           right ones though
+
+<kfogel>   jaegerca: agreed.  but so far, libmagickcore-dev doesn't
+           do it either; gonna try some more
+
+<kfogel>   jaegerca: oh, you know what, I think I'm being too
+           narrow-minded.  I fixed the Magick-config issue (it's in
+           /usr/bin/ now).  But really, I should just try a more
+           recent version of rmagick.
+
+<kfogel>   jaegerca: the line in Gemfile right now is "gem
+           'rmagick',  '~> 2.13.1'"
+
+<kfogel>   jaegerca: I should play with that a bit.
+
+<jaegerca> kfogel: That could definitely be it
+
+<kfogel>   jaegerca: worth a shot
+
+<kfogel>   jaegerca: went to 2.16.0 -- will see if that does it
+
+<kfogel>   jaegerca: yes; at least, the build made it further!  now
+           problem with do_mysql (line 139 or so in
+           https://hastebin.com/gunutomoba.txt)
+
+<kfogel>   jaegerca: (aha, that really is coming from gem
+           'delayed_job_data_mapper',     '~> 1.0.0.rc', :git =>
+           'https://github.com/Snorby/delayed_job_data_mapper.git')
+
+<jaegerca> Yeah - I am betting you need some header files for that
+           too
+
+<jaegerca> libmysqlclient-dev
+
+<jaegerca> Something like that?
+
+<jaegerca> kfogel: ^
+
+<kfogel>   jaegerca: well, first trying to not build
+           delayed_job_data_mapper from source, and see if that
+           fixes it
+
+<kfogel>   jaegerca: whew.  Well, the result is
+           https://hastebin.com/yaqenaxupi.txt
+
+<kfogel>   jaegerca: that is, "gem 'delayed_job_data_mapper',
+           '1.0.0.rc'"  versus  "gem 'delayed_job_data_mapper',
+           '1.0.0'"
+
+<kfogel>   jaegerca: (You're very generous to come along on this
+           odyssey as far as you have; I continue to keep you
+           updated because you've been generous enough to respond,
+           but there's no implication that you are obligated to
+           continue to help of course.)
+
+<jaegerca> kfogel: Haha, don't worry about it - I am just looking at
+           these two messages - amusing is right.
+
+<jaegerca> kfogel: Did you attempt a bundle update?
+
+<kfogel>   jaegerca: not yet
+
+<jaegerca> I am wary of doing that myself -
+
+<kfogel>   jaegerca: trying it
+
+<jaegerca> Be careful
+
+<kfogel>   jaegerca: one sec; installing
+           https://github.com/seejohnrun/haste-client so as to send
+           these regions to hastebin.com faster :-)
+
+<jaegerca> do_mysql isn't coming from the delayed job gem is it?
+
+<jaegerca> Oh yes it is
+
+<kfogel>   jaegerca: I think it is, yes
+
+<jaegerca> kfogel: I really think your best bet there is to install
+           the client libraries
+
+<kfogel>   jaegerca: you're probably right.
+           https://hastebin.com/anuwepicav  btw
+
+<kfogel>   jaegerca: going the mysql client lib route now
+
+<jaegerca> Yeah - bundle update is often a path to more headache -
+           in my experience!
+
+<kfogel>   jaegerca: 'default-libmysqlclient-dev' in Debian
+           'testing' only (every other release line it's
+           'libmysqlclient-dev', go figure)
+
+<jaegerca> haha
+
+<kfogel>   jaegerca: your advice worked!
+           https://hastebin.com/qoxurokanu.txt
+
+<jaegerca> Excellent!
+
+<jaegerca> Looks like you're all set!
+
+<kfogel>   jaegerca: oh, no, not at all -- now I'm just on the next
+           step ('rake') of
+           https://github.com/onShoreSecurity/snorby/blob/master/README.md
+
+<kfogel>   jaegerca: I do not anticipate that this will Just Work,
+           but who knows, maybe I'll be pleasantly surprised.
+
+<kfogel>   jaegerca: heh -- https://hastebin.com/fulirarawe.txt
+
+<jaegerca> kfogel: Looks like that was dropped a while back, you
+           might need a more up to date do_mysql - but that seems
+           locked in the delayed gem job
+
+<kfogel>   jaegerca: right
+
+<jaegerca> If that's correct you might have to unpack that one too
+           and change the gemspec to require a more up to date
+           version of do_mysql
+
+* kfogel listens
+
+<jaegerca> kfogel: Ha - those are always the most complicated
+
+<kfogel>   jaegerca: oh, you mean use the same :path =>  trick we
+           used with json-1.6.1
+
+<jaegerca> You might be able to just update the do_mysql version in
+           the gemfile first
+
+<kfogel>   jaegerca: but in this case, the "patch" would be updating
+           the module's Gemfile
+
+<jaegerca> kfogel: Yeah - I would be curious to to know what is
+           requiring the do_mysql (I *think* thats the culprit here)
+           - I think it's a dependency of a dependency in the
+           delayed job gem.
+
+<kfogel>   jaegerca: well, they are really using it.
+
+<kfogel>   jaegerca: there's a big SQL dump of sample data
+           accompanying this, from the client
+
+<jaegerca> That delayed job gem is really really old, I have no
+           doubt it's outdated!
+
+<kfogel>   jaegerca:
+           https://github.com/OpenTechStrategies/onShoreSecurity-snorby/commit/82b15105959f1c4546118f6834c7eea8d3e9e035
+           (saving all this work on branch 'ots-dev-deploy' in that
+           repos)
+
+<jaegerca> kfogel: If you remove the delayed job gem from the
+           gemfile does that error go away?
+
+<kfogel>   jaegerca: let me try
+
+<kfogel>   jaegerca: just "gem 'delayed_job',                 '~>
+           3.0.1'"
+
+<kfogel>   jaegerca: not "gem 'delayed_job_data_mapper',     '~>
+           1.0.0.rc', :git =>
+           'https://github.com/Snorby/delayed_job_data_mapper.git'"
+
+<kfogel>   jaegerca: ?
+
+<jaegerca> kfogel: The datamapper one
+
+<jaegerca> And then if it still fails might try the other one too
+
+<kfogel>   jaegerca: https://hastebin.com/ayuxelaniw.txt
+
+<kfogel>   jaegerca: nope.  but remember, the error is now happening
+           on "rake snorby:setup", as we're past "bundle install
+           --path vendor/bundle"
+
+<kfogel>   jaegerca: i'm rerunning "bundle install --path
+           vendor/bundle" before doing "rake snorby:setup" here each
+           time, but the bundle command just succeds each time now,
+           ending with this:
+
+<kfogel>   jaegerca: Bundle complete! 70 Gemfile dependencies, 140
+           gems now installed.
+
+<kfogel>   Bundled gems are installed into ./vendor/bundle.
+
+<jaegerca> I wonder if you explicitly require the DATAMAPPER_VESION
+           of dm_mysql, if your other gem isn't depending on a
+           lesser veriosn that will likely work
+
+<jaegerca> gem 'do_mysql', '1.2.0'
+
+<kfogel>   jaegerca: trying
+
+<kfogel>   jaegerca: https://hastebin.com/igokopupal.txt   -- so now
+           I'm about to do 'bundle update do_mysql'  I guess?
+
+<jaegerca> kfogel: Yeah, that should be safe
+
+<kfogel>   jaegerca: nope :-).  https://hastebin.com/ejezurokar.txt
+
+<kfogel>   jaegerca: well, it was safe, just not effective
+
+<jaegerca> Oops, try this version: 0.10.17
+
+<jaegerca> I thought it was in step with the rest of the datamapper
+           gems
+
+<kfogel>   jaegerca: "The bundle currently has do_mysql locked at
+           0.10.12."
+
+<kfogel>   jaegerca: looking hard at dm-mysql-adapter-1.2.0 as
+           culprit
+
+<kfogel>   jaegerca: heh.  DM_VERSION is 1.2.0 in the Gemfile,
+           and... http://datamapper.org/ says that's still the
+           latest version, as of 2011.
+
+<jaegerca> kfogel: Can you try downgrading to ruby 2.1 and see if it
+           works?
+
+<kfogel>   jaegerca: that's an interesting idea.  let me se.
+
+<kfogel>   jaegerca: hunh.  'ruby2.1' not available in Debian
+           testing, so this won't be as simple as I thought.
+
+<jaegerca> I think that the error you are getting is from that being
+           deprecated in 2.2 - if I am right there is a lot of
+           updating that would need to be done -
+
+<kfogel>   jaegerca: I suspect you are right, and I think they are
+           probably running 2.1 in production for this (I can ask
+           them on Monday).
+
+<jaegerca> I hate to say it but datamapper is going to continue to
+           be a huge issue as it's been DOA for almost 4 years now.
+
+<kfogel>   jaegerca: btw, any objection to my keeping a transcript
+           of our IRC conversation in my branch on GitHub?
+
+<jaegerca> Yeah - I really think you need 2.1
+
+<jaegerca> No not at all
+
+<kfogel>   jaegerca: Strongly suspect you are right.
+
+<kfogel>   jaegerca: Fastest route might be for me to spin up a VM
+           somewhere with an older Debian on it, rather than build
+           ruby from source here or something.
+
+<jaegerca> From what I can tell, it's go with ruby 2.1 and
+           datamapper, or keep ruby > 2.1 and probably need to
+           replace datamapper with activerecord (which really needs
+           to be done anyway if there is going to be any amount of
+           ongoing work with this, in my opinion)
+
+<jaegerca> kfogel: I would definitely test on a vm if you can though
+           - that's a lot of hoops to go through, I really think I
+           am right but better to know for sure!
+
+<kfogel>   jaegerca: yup.  Well, bedtime.  I've learned that pushing
+           through till 3am on this kind of task is never wise.
+           Thank you so much for your help; I really appreciate it.
+           If you ever have a Subversion question (they're getting
+           rarer, but you never know), look me up.
+
+<jaegerca> kfogel: Sounds good! I am here often enough, feel free to
+           ping me! Have a good night, and I am glad you were able
+           to get through the gem installation part!
+
+<kfogel>   jaegerca: me too; was definitely progress!  Okay, good
+           night.
