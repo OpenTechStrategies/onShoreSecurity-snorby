@@ -47,7 +47,15 @@ Pass: snorby
 	
 * Install wkhtmltopdf
 
-	`pdfkit --install-wkhtmltopdf # If this fails - visit http://code.google.com/p/wkhtmltopdf/ for more information`
+	* Mac OSX:
+	
+		`brew install wkhtmltopdf`  _(untested as of 2017-05-13)_
+
+        * Linux:
+
+                `apt-get install wkhtmltopdf`
+
+	If the above fails, visit https://wkhtmltopdf.org/ for more information.
 	
 * Get Snorby from the download section or use the latest edge release via git.
 

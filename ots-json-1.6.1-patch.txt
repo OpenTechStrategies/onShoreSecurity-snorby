@@ -1,0 +1,29 @@
+# See https://github.com/flori/json/issues/229#issuecomment-68822948
+#
+# The original compilation path would have been this:
+#
+#   --- vendor/bundle/ruby/2.3.0/gems/json-1.6.1/ext/json/ext/generator/generator.c.orig
+#   +++ vendor/bundle/ruby/2.3.0/gems/json-1.6.1/ext/json/ext/generator/generator.c
+#
+# But our tmp Gemfile tweak changed it to foo/json-1.6.1/.
+
+--- foo/json-1.6.1/ext/json/ext/generator/generator.c
++++ foo/json-1.6.1/ext/json/ext/generator/generator.c
+@@ -402,7 +402,7 @@
+ 
+     if (len > 0) {
+         result = fbuffer_alloc_with_length(len);
+-        fbuffer_append(result, FBUFFER_PAIR(fb));
++        fbuffer_append(result, FBUFFER_PTR(fb), FBUFFER_LEN(fb));
+     } else {
+         result = fbuffer_alloc();
+     }
+@@ -949,7 +949,7 @@
+ 
+ static VALUE fbuffer_to_s(FBuffer *fb)
+ {
+-    VALUE result = rb_str_new(FBUFFER_PAIR(fb));
++    VALUE result = rb_str_new(FBUFFER_PTR(fb), FBUFFER_LEN(fb));
+     fbuffer_free(fb);
+     FORCE_UTF8(result);
+     return result;
