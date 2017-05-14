@@ -51,11 +51,11 @@ Pass: snorby
 	
 		`brew install wkhtmltopdf`  _(untested as of 2017-05-13)_
 
-        * Linux:
+	* Linux:
 
-                `apt-get install wkhtmltopdf`
+		`apt-get install wkhtmltopdf`
 
-	If the above fails, visit https://wkhtmltopdf.org/ for more information.
+  If the above fails, visit https://wkhtmltopdf.org/ for more information.
 	
 * Get Snorby from the download section or use the latest edge release via git.
 
