@@ -1,0 +1,183 @@
+$ bundle install --path vendor/bundle
+Fetching gem metadata from http://rubygems.org/.............
+Fetching version metadata from http://rubygems.org/...
+Fetching dependency metadata from http://rubygems.org/..
+Resolving dependencies...
+Using rake 0.9.6
+Using Platform 0.4.0
+Using open4 1.3.0
+Using RedCloth 4.2.9
+Using multi_json 1.6.0
+Using builder 3.0.4
+Using i18n 0.6.1
+Using erubis 2.7.0
+Using rack 1.3.10
+Using hike 1.2.1
+Using tilt 1.3.3
+Using mime-types 1.21
+Using polyglot 0.3.3
+Using arel 2.2.3
+Using tzinfo 0.3.35
+Using addressable 2.2.8
+Using ansi 1.4.3
+Using bcrypt-ruby 3.0.1
+Using bundler 1.13.6
+Using cancan 1.6.9
+Using highline 1.6.15
+Using net-ssh 2.9.1
+Using nokogiri 1.5.6
+Using ffi 1.3.1
+Using rubyzip 0.9.9
+Using websocket 1.0.7
+Using hashie 2.1.2
+Using json 1.6.1 from source at `foo/json-1.6.1`
+Using mixlib-log 1.6.0
+Using diff-lcs 1.2.4
+Using mixlib-cli 1.5.0
+Using mixlib-config 2.2.1
+Using mixlib-shellout 1.6.1
+Using ipaddress 0.8.0
+Using systemu 2.5.2
+Using yajl-ruby 1.2.1
+Using coderay 1.1.0
+Using method_source 0.8.2
+Using slop 3.6.0
+Using chronic 0.3.0
+Using closure-compiler 1.1.8
+Using daemons 1.1.9
+Using fastercsv 1.5.5
+Using json_pure 1.8.6 (was 1.7.7)
+Using stringex 1.5.1
+Using uuidtools 2.1.3
+Using orm_adapter 0.0.7
+Using net-ldap 0.2.2
+Using thor 0.14.6
+Using dm-paperclip 2.4.1 from http://github.com/Snorby/dm-paperclip.git (at master@f3101cc)
+Using ruby-graphviz 1.0.8
+Using eventmachine 1.2.3 (was 1.0.0)
+Using pdfkit 0.4.6
+Using geoip 1.1.2
+Using getopt 1.4.1
+Using gmaps4rails 1.5.6
+Using home_run 1.0.7
+Using minitest 4.6.0
+Using moneta 0.6.0
+Using net-dns 0.6.1
+Using netaddr 1.5.0
+Using request_store 1.0.5
+Installing rmagick 2.16.0 (was 2.13.2) with native extensions
+Using rspec-core 2.0.1
+Using simple_form 1.2.2
+Using snmp 1.1.0
+Using whois 2.7.0
+Using will_paginate 3.0.4
+Using POpen4 0.1.4
+Using activesupport 3.1.11
+Using rack-cache 1.2
+Using rack-mount 0.8.3
+Using rack-test 0.6.2
+Using warden 1.2.1
+Using rack-ssl 1.3.3
+Using puma 1.6.3
+Using sprockets 2.0.4
+Using rest-client 1.6.9
+Using treetop 1.4.12
+Using dm-core 1.2.0
+Using data_objects 0.10.12
+Using turn 0.9.6
+Using net-scp 1.0.4
+Using net-sftp 2.0.5
+Using net-ssh-gateway 1.1.0
+Using xpath 1.0.0
+Using childprocess 0.3.8
+Using rdoc 3.12.1
+Using chef-zero 2.0.2
+Using mixlib-authentication 1.3.0
+Using rspec-expectations 2.0.1
+Using ohai 7.0.4
+Using pry 0.10.3
+Using thin 1.7.0 (was 1.3.1)
+Using ezprint 0.2.0 from http://github.com/mephux/ezprint.git (at rails3@c231df7)
+Installing yui-compressor 0.9.6
+Installing activemodel 3.1.11
+Installing delayed_job 3.0.1
+Installing rubycas-client 2.3.9
+Installing devise 1.5.4
+Installing mail 2.3.3
+Installing dm-aggregates 1.2.0
+Installing dm-constraints 1.2.0
+Installing dm-migrations 1.2.0
+Installing dm-serializer 1.2.2
+Installing dm-timestamps 1.2.0
+Installing dm-transactions 1.2.0
+Installing dm-types 1.2.2
+Installing dm-validations 1.2.0
+Installing dm-observer 1.2.0
+Installing dm-ar-finders 1.2.0
+Installing dm-is-audited 0.1.2
+Installing dm-visualizer 0.1.0
+Installing dm-do-adapter 1.2.0
+Installing do_mysql 0.10.12 with native extensions
+Installing capistrano 2.14.2
+Installing net-ssh-multi 1.1
+Installing selenium-webdriver 2.29.0
+Installing rspec-mocks 2.0.1
+Installing jammit 0.5.4
+Installing actionpack 3.1.11
+Installing activerecord 3.1.11
+Installing activeresource 3.1.11
+Installing dm-active_model 1.2.1
+Installing devise_cas_authenticatable 1.10.0 (was 1.0.0.alpha10)
+Installing devise_ldap_authenticatable 0.5.1
+Installing dm-chunked_query 0.3.1
+Installing dm-pager 1.1.0
+Installing data_mapper 1.2.0
+Using delayed_job_data_mapper 1.0.0.rc from https://github.com/Snorby/delayed_job_data_mapper.git (at master@6f1c4a8)
+Gem::Ext::BuildError: ERROR: Failed to build gem native extension.
+
+current directory:
+/home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/vendor/bundle/ruby/2.3.0/gems/do_mysql-0.10.12/ext/do_mysql
+/usr/bin/ruby2.3 -r ./siteconf20170513-22052-1p4do30.rb extconf.rb
+checking for mysql_query() in -lmysqlclient... no
+*** extconf.rb failed ***
+Could not create Makefile due to some reason, probably lack of necessary
+libraries and/or headers.  Check the mkmf.log file for more details.  You may
+need configuration options.
+
+Provided configuration options:
+	--with-opt-dir
+	--without-opt-dir
+	--with-opt-include
+	--without-opt-include=${opt-dir}/include
+	--with-opt-lib
+	--without-opt-lib=${opt-dir}/lib
+	--with-make-prog
+	--without-make-prog
+	--srcdir=.
+	--curdir
+	--ruby=/usr/bin/$(RUBY_BASE_NAME)2.3
+	--with-mysql-config
+	--without-mysql-config
+	--with-mysql-dir
+	--without-mysql-dir
+	--with-mysql-include
+	--without-mysql-include=${mysql-dir}/include
+	--with-mysql-lib
+	--without-mysql-lib=${mysql-dir}/lib
+	--with-mysqlclientlib
+	--without-mysqlclientlib
+
+To see why this extension failed to compile, please check the mkmf.log which can be found here:
+
+/home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/vendor/bundle/ruby/2.3.0/extensions/x86_64-linux/2.3.0/do_mysql-0.10.12/mkmf.log
+
+extconf failed, exit code 1
+
+Gem files will remain installed in
+/home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/vendor/bundle/ruby/2.3.0/gems/do_mysql-0.10.12 for inspection.
+Results logged to
+/home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/vendor/bundle/ruby/2.3.0/extensions/x86_64-linux/2.3.0/do_mysql-0.10.12/gem_make.out
+
+An error occurred while installing do_mysql (0.10.12), and Bundler cannot continue.
+Make sure that `gem install do_mysql -v '0.10.12'` succeeds before bundling.
+$ 

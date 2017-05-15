@@ -1,0 +1,13 @@
+$ bundle install --path vendor/bundle
+Fetching https://github.com/Snorby/delayed_job_data_mapper.git
+Fetching gem metadata from http://rubygems.org/.............
+Fetching version metadata from http://rubygems.org/...
+Fetching dependency metadata from http://rubygems.org/..
+You have requested:
+  do_mysql = 1.2.0
+
+The bundle currently has do_mysql locked at 0.10.12.
+Try running `bundle update do_mysql`
+
+If you are updating multiple gems in your Gemfile at once,
+try passing them all to `bundle update`

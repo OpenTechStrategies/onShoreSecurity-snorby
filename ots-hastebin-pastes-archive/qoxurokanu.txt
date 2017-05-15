@@ -1,0 +1,183 @@
+$ bundle install --path vendor/bundle
+Fetching gem metadata from http://rubygems.org/............
+Fetching version metadata from http://rubygems.org/...
+Fetching dependency metadata from http://rubygems.org/..
+Resolving dependencies...
+Using rake 0.9.6
+Using Platform 0.4.0
+Using open4 1.3.0
+Using RedCloth 4.2.9
+Using multi_json 1.6.0
+Using builder 3.0.4
+Using i18n 0.6.1
+Using erubis 2.7.0
+Using rack 1.3.10
+Using hike 1.2.1
+Using tilt 1.3.3
+Using mime-types 1.21
+Using polyglot 0.3.3
+Using arel 2.2.3
+Using tzinfo 0.3.35
+Using addressable 2.2.8
+Using ansi 1.4.3
+Using bcrypt-ruby 3.0.1
+Using bundler 1.13.6
+Using cancan 1.6.9
+Using highline 1.6.15
+Using net-ssh 2.9.1
+Using nokogiri 1.5.6
+Using ffi 1.3.1
+Using rubyzip 0.9.9
+Using websocket 1.0.7
+Using hashie 2.1.2
+Using json 1.6.1 from source at `foo/json-1.6.1`
+Using mixlib-log 1.6.0
+Using diff-lcs 1.2.4
+Using mixlib-cli 1.5.0
+Using mixlib-config 2.2.1
+Using mixlib-shellout 1.6.1
+Using ipaddress 0.8.0
+Using systemu 2.5.2
+Using yajl-ruby 1.2.1
+Using coderay 1.1.0
+Using method_source 0.8.2
+Using slop 3.6.0
+Using chronic 0.3.0
+Using closure-compiler 1.1.8
+Using daemons 1.1.9
+Using fastercsv 1.5.5
+Using json_pure 1.8.6 (was 1.7.7)
+Using stringex 1.5.1
+Using uuidtools 2.1.3
+Using orm_adapter 0.0.7
+Using net-ldap 0.2.2
+Using thor 0.14.6
+Using dm-paperclip 2.4.1 from http://github.com/Snorby/dm-paperclip.git (at master@f3101cc)
+Using ruby-graphviz 1.0.8
+Using eventmachine 1.2.3 (was 1.0.0)
+Using pdfkit 0.4.6
+Using geoip 1.1.2
+Using getopt 1.4.1
+Using gmaps4rails 1.5.6
+Using home_run 1.0.7
+Using minitest 4.6.0
+Using moneta 0.6.0
+Using net-dns 0.6.1
+Using netaddr 1.5.0
+Using request_store 1.0.5
+Using rmagick 2.16.0 (was 2.13.2)
+Using rspec-core 2.0.1
+Using simple_form 1.2.2
+Using snmp 1.1.0
+Using whois 2.7.0
+Using will_paginate 3.0.4
+Using POpen4 0.1.4
+Using activesupport 3.1.11
+Using rack-cache 1.2
+Using rack-mount 0.8.3
+Using rack-test 0.6.2
+Using warden 1.2.1
+Using rack-ssl 1.3.3
+Using puma 1.6.3
+Using sprockets 2.0.4
+Using rest-client 1.6.9
+Using treetop 1.4.12
+Using dm-core 1.2.0
+Using data_objects 0.10.12
+Using turn 0.9.6
+Using net-scp 1.0.4
+Using net-sftp 2.0.5
+Using net-ssh-gateway 1.1.0
+Using xpath 1.0.0
+Using childprocess 0.3.8
+Using rdoc 3.12.1
+Using chef-zero 2.0.2
+Using mixlib-authentication 1.3.0
+Using rspec-expectations 2.0.1
+Using ohai 7.0.4
+Using pry 0.10.3
+Using thin 1.7.0 (was 1.3.1)
+Using ezprint 0.2.0 from http://github.com/mephux/ezprint.git (at rails3@c231df7)
+Using yui-compressor 0.9.6
+Using activemodel 3.1.11
+Using delayed_job 3.0.1
+Using rubycas-client 2.3.9
+Using devise 1.5.4
+Using mail 2.3.3
+Using dm-aggregates 1.2.0
+Using dm-constraints 1.2.0
+Using dm-migrations 1.2.0
+Using dm-serializer 1.2.2
+Using dm-timestamps 1.2.0
+Using dm-transactions 1.2.0
+Using dm-types 1.2.2
+Using dm-validations 1.2.0
+Using dm-observer 1.2.0
+Using dm-ar-finders 1.2.0
+Using dm-is-audited 0.1.2
+Using dm-visualizer 0.1.0
+Using dm-do-adapter 1.2.0
+Installing do_mysql 0.10.12 with native extensions
+Using capistrano 2.14.2
+Using net-ssh-multi 1.1
+Using selenium-webdriver 2.29.0
+Using rspec-mocks 2.0.1
+Using jammit 0.5.4
+Using actionpack 3.1.11
+Using activerecord 3.1.11
+Using activeresource 3.1.11
+Using dm-active_model 1.2.1
+Using devise_cas_authenticatable 1.10.0 (was 1.0.0.alpha10)
+Using devise_ldap_authenticatable 0.5.1
+Using dm-chunked_query 0.3.1
+Using dm-pager 1.1.0
+Using data_mapper 1.2.0
+Using delayed_job_data_mapper 1.0.0.rc from https://github.com/Snorby/delayed_job_data_mapper.git (at master@6f1c4a8)
+Installing dm-mysql-adapter 1.2.0
+Installing chef 11.12.8
+Installing capybara 2.0.2
+Installing rspec 2.0.1
+Installing actionmailer 3.1.11
+Installing railties 3.1.11
+Installing dm-noisy-failures 0.2.3
+Installing rspec-rails 2.0.1
+Installing dm-rails 1.2.1
+Installing jquery-rails 2.2.1
+Installing rails 3.1.11
+Installing dm-devise 1.5.0
+Bundle complete! 72 Gemfile dependencies, 142 gems now installed.
+Bundled gems are installed into ./vendor/bundle.
+Post-install message from rspec-rails:
+**************************************************
+
+  Thank you for installing rspec-rails-2.0.1!
+
+  This version of rspec-rails only works with versions of rails >= 3.0.0
+
+  To configure your app to use rspec-rails, add a declaration to your Gemfile.
+  If you are using Bundler's grouping feature in your Gemfile, be sure to include
+  rspec-rails in the :development group as well as the :test group so that you
+  can access its generators and rake tasks.
+
+    group :development, :test do
+      gem "rspec-rails", ">= 2.0.1"
+    end
+
+  Be sure to run the following command in each of your Rails apps if you're
+  upgrading:
+
+    script/rails generate rspec:install
+
+  Even if you've run it before, this ensures that you have the latest updates
+  to spec/spec_helper.rb and any other support files.
+
+  Beta versions of rspec-rails-2 installed files that are no longer being used,
+  so please remove these files if you have them:
+
+    lib/tasks/rspec.rake
+    config/initializers/rspec_generator.rb
+
+  Lastly, be sure to look at Upgrade.markdown to see what might have changed
+  since the last release.
+
+**************************************************

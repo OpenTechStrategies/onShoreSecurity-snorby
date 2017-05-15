@@ -1,0 +1,6 @@
+$ bundle update do_mysql
+Fetching https://github.com/Snorby/delayed_job_data_mapper.git
+Fetching gem metadata from http://rubygems.org/............
+Fetching version metadata from http://rubygems.org/...
+Fetching dependency metadata from http://rubygems.org/..
+Could not find gem 'do_mysql (= 1.2.0)' in any of the gem sources listed in your Gemfile or available on this machine.

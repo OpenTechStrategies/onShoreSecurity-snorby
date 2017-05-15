@@ -1,0 +1,45 @@
+How amusing:
+
+--------------------------------------------------------------
+With 1.0.0.rc, I get this:
+--------------------------------------------------------------
+
+bundle install --path vendor/bundle
+Fetching gem metadata from http://rubygems.org/............
+Fetching version metadata from http://rubygems.org/...
+Fetching dependency metadata from http://rubygems.org/..
+Resolving dependencies...
+Bundler could not find compatible versions for gem "delayed_job":
+  In snapshot (Gemfile.lock):
+    delayed_job (= 3.0.1)
+
+  In Gemfile:
+    delayed_job (~> 3.0.1)
+
+    delayed_job_data_mapper (= 1.0.0.rc) was resolved to 1.0.0.rc, which depends on
+      delayed_job (~> 2.1)
+
+Running `bundle update` will rebuild your snapshot from scratch, using only
+the gems in your Gemfile, which may resolve the conflict.
+
+--------------------------------------------------------------
+With 1.0.0 proper, I get this:
+--------------------------------------------------------------
+
+bundle install --path vendor/bundle
+Fetching gem metadata from http://rubygems.org/............
+Fetching version metadata from http://rubygems.org/...
+Fetching dependency metadata from http://rubygems.org/..
+Resolving dependencies...
+Bundler could not find compatible versions for gem "delayed_job":
+  In snapshot (Gemfile.lock):
+    delayed_job (= 3.0.1)
+
+  In Gemfile:
+    delayed_job (~> 3.0.1)
+
+    delayed_job_data_mapper (= 1.0.0) was resolved to 1.0.0, which depends on
+      delayed_job (~> 4.0)
+
+Running `bundle update` will rebuild your snapshot from scratch, using only
+the gems in your Gemfile, which may resolve the conflict.

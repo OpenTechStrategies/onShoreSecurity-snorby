@@ -1,0 +1,13 @@
+$ rake snorby:setup
+/home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/vendor/bundle/ruby/2.3.0/gems/activesupport-3.1.11/lib/active_support/values/time_zone.rb:270: warning: circular argument reference - now
+rake aborted!
+LoadError: /home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/vendor/bundle/ruby/2.3.0/gems/do_mysql-0.10.12/lib/do_mysql/do_mysql.so: undefined symbol: rb_thread_select - /home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/vendor/bundle/ruby/2.3.0/gems/do_mysql-0.10.12/lib/do_mysql/do_mysql.so
+/home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/vendor/bundle/ruby/2.3.0/gems/do_mysql-0.10.12/lib/do_mysql.rb:29:in `require'
+/home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/vendor/bundle/ruby/2.3.0/gems/do_mysql-0.10.12/lib/do_mysql.rb:29:in `<top (required)>'
+/home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/vendor/bundle/ruby/2.3.0/gems/dm-mysql-adapter-1.2.0/lib/dm-mysql-adapter/adapter.rb:1:in `require'
+/home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/vendor/bundle/ruby/2.3.0/gems/dm-mysql-adapter-1.2.0/lib/dm-mysql-adapter/adapter.rb:1:in `<top (required)>'
+/home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/vendor/bundle/ruby/2.3.0/gems/dm-mysql-adapter-1.2.0/lib/dm-mysql-adapter.rb:1:in `require'
+/home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/vendor/bundle/ruby/2.3.0/gems/dm-mysql-adapter-1.2.0/lib/dm-mysql-adapter.rb:1:in `<top (required)>'
+/home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/config/application.rb:13:in `<top (required)>'
+/home/kfogel/private/work/ots/clients/onshore/r/onshore-snorby/Rakefile:4:in `<top (required)>'
+(See full trace by running task with --trace)

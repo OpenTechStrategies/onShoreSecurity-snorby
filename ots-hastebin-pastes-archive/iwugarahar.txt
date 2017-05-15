@@ -1,0 +1,71 @@
+I'm trying to build https://github.com/onShoreSecurity/snorby
+(which is an old fork of upstream Snorby/snorby).  I'm using
+'bundle install --path vendor/bundle' to build.
+
+The Gemfile specifies
+
+  gem 'json',   '1.6.1'
+
+...and for various reasons I can't upgrade it past 1.6.1 (or
+at least, going down that road would be very hairy -- like I
+said, this is an old fork).
+
+However, json 1.6.1 doesn't build anymore, because of this:
+https://github.com/flori/json/issues/229#issuecomment-68822948.
+
+BUT, I have a patch that should fix the native build of
+json 1.6.1:
+
+  $ pushd vendor/bundle/ruby/2.3.0/gems/json-1.6.1/ext/json/ext/generator/
+  $ diff -u generator.c.orig generator.c
+  --- generator.c.orig	2017-05-13 19:37:23.480681077 -0500
+  +++ generator.c	2017-05-13 19:37:37.124301690 -0500
+  @@ -402,7 +402,7 @@
+   
+       if (len > 0) {
+           result = fbuffer_alloc_with_length(len);
+  -        fbuffer_append(result, FBUFFER_PAIR(fb));
+  +        fbuffer_append(result, FBUFFER_PTR(fb), FBUFFER_LEN(fb));
+       } else {
+           result = fbuffer_alloc();
+       }
+  @@ -949,7 +949,7 @@
+   
+   static VALUE fbuffer_to_s(FBuffer *fb)
+   {
+  -    VALUE result = rb_str_new(FBUFFER_PAIR(fb));
+  +    VALUE result = rb_str_new(FBUFFER_PTR(fb), FBUFFER_LEN(fb));
+       fbuffer_free(fb);
+       FORCE_UTF8(result);
+       return result;
+$ popd
+
+SO, MY QUESTION: How do I get my patch to apply *after* json 1.6.1
+is fetched but before it is compiled?
+
+I don't think it matters, but just for completeness's sake, here
+are some minor tweaks I've made to the Gemfile, to get me to the
+point where my "next problem" is this json 1.6.1 build issue:
+
+  --- Gemfile
+  +++ Gemfile
+  @@ -11,7 +11,7 @@ gem 'thin', '~> 1.3.1'
+   
+   gem 'rails',                       RAILS_VERSION
+   gem 'jquery-rails'
+  -gem 'bundler',                     '~> 1.6.1'
+  +gem 'bundler',                     '> 1.6.1'
+   
+   # DateTime Patches
+   gem 'home_run',                    :require => 'date', :platforms => :mri
+  @@ -50,7 +50,8 @@ gem 'jammit',                      '~> 0.5.4'
+   gem 'devise',                      '~> 1.5.4'
+   gem 'dm-devise',                   '~> 1.5'
+   gem 'rubycas-client'
+  -gem 'devise_cas_authenticatable',  :git => 'http://github.com/Snorby/snorby_cas_authenticatable.git'
+  +# gem 'devise_cas_authenticatable',  :git => 'http://github.com/Snorby/snorby_cas_authenticatable.git'
+  +gem 'devise_cas_authenticatable'
+   gem 'devise_ldap_authenticatable', '~> 0.5.1'
+   gem "mail",                        '~> 2.3'
+   gem "RedCloth",                    "~> 4.2.9", :require => 'redcloth'
+

@@ -1,5 +1,10 @@
 #ruby in IRC on Freenode.net, between ~7pm CT and 11:55pm CT, 2017-05-13.
 
+NOTE: All hastebin.com pages mentioned below are archived in
+      ots-hastebin-pastes-archive/ here.
+
+-------------------------------------------------------------------------
+
 <kfogel>   Anyone know how to patch a gem for native build, during a
            bundle install process?
            https://hastebin.com/iwugarahar.txt
