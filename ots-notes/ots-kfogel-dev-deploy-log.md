@@ -1,8 +1,12 @@
-   Oh Most Grandiose and Puissant Emacs, please be in -*- org -*- mode!
+I used `bundle install --path vendor/bundle` with Ruby 2.3.
 
-#+STARTUP: showeverything
+This log records the successive errors I encountered, and what changes
+I made to get through each error and on to the `rake snorby:setup`
+step.
 
-I'm using 'bundle install --path vendor/bundle'.
+(Then `rake snorby:setup` gave its own errors; next I may try from
+pristine with Ruby 2.1 instead of 2.3 and see if that involves less
+pain.)
 
 * Made various changes in Gemfile; see diff.
 
